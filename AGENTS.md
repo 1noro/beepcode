@@ -90,13 +90,16 @@ está mal, dilo antes de tocar código; no la cambies por iniciativa propia.
    datos** (ADR 0003), preparados para el "Modo Pro". Los modos componen keyer,
    tablero y audio a través de los eventos del keyer, que no conoce a nadie.
 4. **GitHub Pages con rutas por hash** (ADR 0004): sin `404.html`; el base path
-   sale de `BASE_PATH`. CI y despliegue usan **los mismos objetivos de `make`**
-   que en local.
+   sale de `BASE_PATH`. Actions usa **los mismos objetivos de `make`** que en
+   local.
 5. **El nombre es beepcode; el código, GPL-3.0-or-later; el logo y los textos,
    CC BY-SA 4.0** (ADR 0005).
 6. **La documentación y los agentes, como en dhtcrawler** (ADR 0006): este
    enrutador, `estado.md`, fichas, ADR, bitácora y rutinas iguales en las tres
    herramientas. **Ni commits por iniciativa propia ni atribución a la IA.**
+7. **Se desarrolla en ramas que acaban en `main`, y solo `main` se despliega**
+   (ADR 0007): GitHub Actions solo corre en los push a `main` (`deploy.yml`);
+   las ramas se verifican con `make ci` en local.
 
 ## Reglas que no se saltan
 
@@ -164,7 +167,7 @@ make dev              # Vite con recarga en caliente → http://localhost:5173
 make dev-https        # ídem con HTTPS, para el móvil en la LAN
 make check            # lint + typecheck + test + build + docs-check: lo que hay que pasar
 make e2e              # Playwright contra el build en nginx (si tocaste UI o entrada)
-make ci               # todo, como GitHub Actions: deps + check + e2e + owner-check
+make ci               # todo, como en Actions: deps + check + e2e + owner-check; antes de ir a main
 make web              # el build en nginx → http://localhost:8080
 make build BASE_PATH=/beepcode/   # el build como en Pages
 make format | coverage | test-watch | icons
@@ -191,8 +194,18 @@ make down | clean | distclean
 - [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`,
   `fix:`, `test:`, `docs:`, `build:`, `ci:`, `chore:`…), **en castellano**.
 - **Un commit lógico por paso**; no se mezcla refactor y funcionalidad.
-- Los commits van en la rama en la que se esté. **No cambiar de rama, ni crear
-  una, ni forzar contra `main`**, salvo que el usuario lo pida.
+- **En `main` no se desarrolla** (ADR 0007): cada push a `main` despliega.
+  Cada desarrollo va en una rama **`<tipo>/<slug>`** (`feat/f1-nucleo`,
+  `fix/…`, `docs/…`, `ci/…`), y **una rama puede llevar más de un desarrollo**.
+  - Al empezar una tarea **en una rama de desarrollo, se sigue en ella**. **En
+    `main`, se crea una** antes de tocar nada (esto, sin preguntar).
+  - **No se cambia a otra rama existente, ni se fuerza contra `main`**, salvo
+    que el usuario lo pida.
+  - **A `main` se llega solo cuando lo pide el usuario**, con `make ci` en
+    verde en la rama: `git merge --no-ff` con un mensaje en castellano que
+    diga qué trae la rama (`merge: F1, el núcleo y el modo Libre`), y el push
+    de `main`, que es el despliegue. La rama se borra solo si lo pide.
+  - **Push, solo cuando lo pide el usuario**, también el de una rama.
 - **Nunca una línea de atribución a un agente de IA o su herramienta**
   (`Co-Authored-By`, "Generated with …") en commits ni PRs, aunque la
   herramienta lo haga por defecto.

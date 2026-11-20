@@ -16,6 +16,9 @@ Antes de escribir nada, lee lo justo y nada más:
 
 Al implementar:
 
+- **En una rama de desarrollo** (ADR 0007): si se está en una, se sigue en
+  ella; si se está en `main`, se crea una `<tipo>/<slug>` (`feat/f1-nucleo`)
+  antes de tocar nada.
 - **Nada de una fase posterior**, aunque sea fácil dejarlo hecho.
 - Respeta las firmas que ya existen. No refactorices de paso nada que no te
   hayan pedido.
@@ -36,4 +39,4 @@ Al terminar:
    `CHANGELOG.md`, "Sin publicar", si cambia algo para quien usa la app.
 5. `make docs-check` sin errores.
 
-No hagas commit: eso lo pide el usuario.
+No hagas commit, ni push, ni merge a `main`: eso lo pide el usuario.

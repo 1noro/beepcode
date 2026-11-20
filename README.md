@@ -53,7 +53,7 @@ Todo se queda en tu navegador. La especificación completa, en
 | `make dev` | Vite con recarga en caliente → http://localhost:5173 |
 | `make check` | lint, tipos, tests unitarios, build y la documentación |
 | `make e2e` | Playwright, en escritorio y móvil emulado, contra el build en nginx |
-| `make ci` | todo, como en GitHub Actions |
+| `make ci` | todo, como en GitHub Actions; obligatorio antes de llevar una rama a `main` |
 | `make web` | el build de producción en nginx → http://localhost:8080 |
 | `make npm ARGS="install -D foo"` | npm, en el contenedor |
 | `make down` / `clean` / `distclean` | parar; borrar lo generado; y además `node_modules` y las imágenes |
@@ -72,9 +72,12 @@ documentación.
 
 ## Publicación
 
-Cada push a `main` pasa `make ci` y publica en **GitHub Pages**
-(`.github/workflows/deploy.yml`), en `https://1noro.github.io/beepcode/`. En el
-repo: **Settings → Pages → Source: GitHub Actions**.
+**Solo `main` se publica.** Cada desarrollo va en una rama que acaba en
+`main`, y en ella se pasa `make ci` en local; GitHub Actions solo corre al
+hacer push a `main` (salvo si solo cambia documentación): pasa `make ci` y
+publica en **GitHub Pages** (`.github/workflows/deploy.yml`), en
+`https://1noro.github.io/beepcode/`. En el repo: **Settings → Pages → Source:
+GitHub Actions**.
 
 ## Documentación
 

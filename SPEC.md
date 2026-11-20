@@ -388,7 +388,7 @@ Se abren desde el panel ⚙ y se persisten en `localStorage` (con versión de es
 │  └─ e2e/              smoke en Playwright (escritorio + móvil)
 ├─ Makefile             ÚNICO punto de entrada para todas las tareas (§10.5)
 ├─ Dockerfile, compose.yaml, nginx.conf, .dockerignore
-└─ .github/workflows/   ci.yml (lint+test+build), deploy.yml (Pages)
+└─ .github/workflows/   deploy.yml (make ci + Pages, solo desde main)
 ```
 
 Regla de arquitectura: `src/morse/` no importa nada del DOM ni del audio. Los modos componen keyer + board + audio a través de los eventos del keyer.
@@ -464,8 +464,8 @@ Todo se lanza con `make`. `make` sin argumentos equivale a `make help`, que list
 
 - Gratis para repositorios públicos.
 - CI usa **los mismos objetivos de `make`** que en local (los runners `ubuntu-latest` traen Docker y make), sin `actions/setup-node`. Así lo que pasa en local pasa en CI.
-  - `ci.yml`, en cada push y PR: `make ci`.
-  - `deploy.yml`, al hacer push a `main`: `make ci`, después `make build BASE_PATH=/<nombre-repo>/` y despliegue de `dist/` con `actions/configure-pages`, `actions/upload-pages-artifact` y `actions/deploy-pages`.
+  - **Solo `main` ejecuta Actions y se despliega** (decidido el 2026-11-20, [ADR 0007](docs/decisions/0007-ramas-y-despliegue-solo-desde-main.md)): no hay `ci.yml`; cada desarrollo va en una rama que acaba en `main`, y en las ramas se pasa `make ci` en local.
+  - `deploy.yml`, al hacer push a `main` (salvo si solo cambia documentación): `make ci`, después `make build BASE_PATH=/<nombre-repo>/` y despliegue de `dist/` con `actions/configure-pages`, `actions/upload-pages-artifact` y `actions/deploy-pages`.
   - Opcional: caché de capas de Docker en CI para acelerar.
 - En el repo, **Settings → Pages → Source: GitHub Actions**.
 - Base path: `vite.config.ts` lee `BASE_PATH` (por defecto `/`). En el workflow se fija a `/<nombre-repo>/`; Docker y dev usan `/`. El manifest y el service worker deben respetar ese base path.

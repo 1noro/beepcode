@@ -1,6 +1,6 @@
 # Estado
 
-**Al día:** 2026-11-20, 12:40 UTC. **Revisada:** 2026-11-20, la última
+**Al día:** 2026-11-20, 13:00 UTC. **Revisada:** 2026-11-20, la última
 [`/revisar-docs`](agentes/revisar-docs.md), que se lanza a mano cada semana.
 
 Lo vivo del desarrollo: en qué fase está, qué hay publicado, lo abierto y lo
@@ -17,7 +17,10 @@ de F0 a F4, y F5 (las estadísticas) llega al final.
 ## Lo publicado
 
 - **La página "hola" de F0**, en `https://1noro.github.io/beepcode/`, desde
-  `25ce416` (el workflow `deploy.yml`, en cada push a `main`).
+  `25ce416`. **Solo se publica `main`** (ADR 0007): `deploy.yml`, en cada push
+  a `main` que no sea solo documentación.
+- **En desarrollo**: la rama `ci/despliegue-solo-main` (este cambio de flujo),
+  sin llevar a `main`.
 - **Sin versión**: `package.json` está en `0.0.0` y no hay tags.
 
 ## Lo abierto, en este orden
@@ -41,4 +44,5 @@ de F0 a F4, y F5 (las estadísticas) llega al final.
 
 ## Lo próximo
 
-- **F1 con `/tarea 2`**, paso a paso (el orden, en su ficha).
+- **F1 con `/tarea 2`**, en una rama `feat/…` (ADR 0007), paso a paso (el
+  orden, en su ficha).
