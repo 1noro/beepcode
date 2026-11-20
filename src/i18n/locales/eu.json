@@ -1,0 +1,10 @@
+{
+  "app.name": "beepcode",
+  "app.tagline": "Ikasi Morse kodea sakagailu bakar batekin.",
+  "home.title": "Kaixo!",
+  "home.body": "Hau beepcoderen aldamioa da. Morse zuhaitza hurrengo fasean dator.",
+  "language.label": "Hizkuntza",
+  "pwa.offlineReady": "Konexiorik gabe erabiltzeko prest",
+  "pwa.updateAvailable": "Bertsio berria eskuragarri",
+  "pwa.reload": "Birkargatu"
+}

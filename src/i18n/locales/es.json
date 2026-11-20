@@ -1,0 +1,10 @@
+{
+  "app.name": "beepcode",
+  "app.tagline": "Aprende código Morse con un solo pulsador.",
+  "home.title": "¡Hola!",
+  "home.body": "Esto es el andamiaje de beepcode. El árbol Morse llega en la siguiente fase.",
+  "language.label": "Idioma",
+  "pwa.offlineReady": "Lista para usar sin conexión",
+  "pwa.updateAvailable": "Nueva versión disponible",
+  "pwa.reload": "Recargar"
+}

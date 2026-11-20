@@ -1,0 +1,10 @@
+# Lo generado, y la documentación: va escrita a mano y la cuida make docs-check
+dist/
+dev-dist/
+coverage/
+playwright-report/
+test-results/
+.cache/
+public/
+package-lock.json
+*.md

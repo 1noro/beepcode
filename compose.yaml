@@ -1,0 +1,73 @@
+# Everything runs here, launched by the Makefile (SPEC §10.3, ADR 0002).
+# node, dev and e2e mount the repo and run as the host user: the Makefile
+# exports HOST_UID/HOST_GID from `id -u`/`id -g`, so nothing they write is root's.
+name: beepcode
+
+services:
+  # Tools for one-off tasks: `docker compose run --rm node npm …`.
+  node:
+    build:
+      context: .
+      target: toolchain
+    user: '${HOST_UID:-1000}:${HOST_GID:-1000}'
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      BASE_PATH: '${BASE_PATH:-/}'
+    profiles: [tools]
+
+  # Vite with hot reload on :5173. DEV_HTTPS=1 adds a self-signed certificate
+  # (to try the PWA from a phone on the LAN); DEV_POLLING=1 watches files by
+  # polling (Docker Desktop on macOS/Windows).
+  dev:
+    build:
+      context: .
+      target: toolchain
+    user: '${HOST_UID:-1000}:${HOST_GID:-1000}'
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: npm run dev -- --host 0.0.0.0
+    ports:
+      - '5173:5173'
+    environment:
+      DEV_HTTPS: '${DEV_HTTPS:-}'
+      DEV_POLLING: '${DEV_POLLING:-}'
+    profiles: [dev]
+
+  # The production build served by nginx on :8080, to try the PWA and offline.
+  web:
+    build:
+      context: .
+      target: web
+    ports:
+      - '8080:80'
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1/']
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  # Playwright against `web`. The image version must match @playwright/test
+  # in package.json exactly. It shares web's network so the app is reached at
+  # http://localhost, a secure context: the service worker registers and
+  # offline can be tested, as on GitHub Pages.
+  e2e:
+    image: mcr.microsoft.com/playwright:v1.65.1-noble
+    user: '${HOST_UID:-1000}:${HOST_GID:-1000}'
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      HOME: /app/.cache/home
+      BASE_URL: http://localhost
+      CI: '${CI:-}'
+      npm_config_update_notifier: 'false'
+    network_mode: service:web
+    ipc: host
+    depends_on:
+      web:
+        condition: service_healthy
+    command: npx playwright test
+    profiles: [test]

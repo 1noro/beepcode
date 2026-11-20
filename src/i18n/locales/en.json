@@ -1,0 +1,10 @@
+{
+  "app.name": "beepcode",
+  "app.tagline": "Learn Morse code with a single key.",
+  "home.title": "Hello!",
+  "home.body": "This is the scaffolding of beepcode. The Morse tree arrives in the next phase.",
+  "language.label": "Language",
+  "pwa.offlineReady": "Ready to work offline",
+  "pwa.updateAvailable": "New version available",
+  "pwa.reload": "Reload"
+}

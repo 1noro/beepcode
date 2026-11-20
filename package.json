@@ -1,0 +1,41 @@
+{
+  "name": "beepcode",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Learn and practise Morse code with a single key and a tree that lights up",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "engines": {
+    "node": "^26.13.1"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "e2e": "playwright test",
+    "icons": "cp assets/icon/beepcode.svg public/favicon.svg && pwa-assets-generator",
+    "docs:check": "node scripts/docs/check.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.65.1",
+    "@types/node": "^26.6.6",
+    "@vite-pwa/assets-generator": "^2.0.0",
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "@vitest/coverage-v8": "^5.1.1",
+    "eslint": "^10.15.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.73.0",
+    "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.1"
+  }
+}
