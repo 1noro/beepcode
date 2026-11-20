@@ -1,0 +1,11 @@
+#!/bin/sh
+# Antes de cada commit, el comprobador de la documentación (make docs-check):
+# que un enlace roto, una ficha que no casa con estado.md o un comando distinto
+# entre herramientas no lleguen a un commit. Lo instala `make hooks`
+# (core.hooksPath). Mira el árbol de trabajo, no solo lo preparado.
+# Para saltárselo a sabiendas: git commit --no-verify.
+if ! out=$(make -s docs-check 2>&1); then
+	printf '%s\n\n' "$out"
+	echo "pre-commit: make docs-check falla; arréglalo o, a sabiendas, git commit --no-verify"
+	exit 1
+fi
