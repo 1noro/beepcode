@@ -14,6 +14,8 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
 
 ## Sin publicar
 
+## 0.1.0 — 2026-11-20
+
 ### Añadido
 
 - **Una página "hola" instalable como PWA**, que funciona sin conexión y avisa
@@ -23,6 +25,38 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
   nativo.
 - **Tema claro u oscuro**, según el sistema.
 - Un icono provisional, hasta que esté el logo.
+- **El modo Libre**: el árbol Morse, que se ilumina siguiendo lo que tecleas
+  (verde el punto, rojo la raya; círculo y rectángulo, para no depender del
+  color), con un pulsador en pantalla o con el teclado (`Espacio`, `.`, `-`,
+  `Enter`, `Retroceso`, `Escape`), tono mientras se pulsa y, si se
+  activa, un toque de vibración al pulsar, en Android. Las pausas que cierran
+  la letra y separan las palabras se adaptan a tu ritmo, como el oído de un
+  telegrafista.
+- **La cinta**: las letras escritas, con espacios entre palabras, la
+  secuencia en curso en `·−`, y borrar, borrar la última y copiar.
+- **Explorar**: tocar una letra del árbol enseña su camino y suena su código.
+- **Los ajustes**, que se recuerdan: idioma, tema (sistema, claro, oscuro,
+  Gruvbox oscuro y claro, alto contraste), visión del color (protanopia,
+  deuteranopia, tritanopia, acromatopsia), colores del punto y la raya,
+  velocidad, tolerancia de pausa, umbral de raya, tono, volumen, silencio
+  y vibración.
+- **El camino iluminado dice cuándo seguir**: tras cada letra se apaga con un
+  fundido rápido, y después aún hay margen para la letra siguiente de la
+  misma palabra. Ese margen aprende cuánto sueles pensar entre letras, y
+  crece si borras un espacio que llegó antes de tiempo.
+- **El árbol se centra en la antena**, de donde parte la luz.
+- **Un pulsador que da ganas de pulsar**: se hunde como una tecla de verdad,
+  se pone verde al pulsar y roja cuando ya es una raya, y un degradado que
+  lo barre marca cuándo.
+- **La versión y las licencias**, al pie de los ajustes, con enlaces a las
+  licencias y al código fuente.
+
+### Cambiado
+
+- La página "hola" da paso al modo Libre, y el selector de idioma pasa a los
+  ajustes.
+- Toda la interfaz, en una sola tipografía monoespaciada (JetBrains Mono),
+  servida con la app: la misma letra en todos los dispositivos.
 
 ### Documentación
 

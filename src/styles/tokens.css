@@ -1,30 +1,41 @@
 /*
  * Theme tokens (SPEC §7): every colour in the app comes from these variables.
- * "System" follows prefers-color-scheme live; data-theme on <html> forces one.
- * TODO(2): the theme setting, the dot/dash colour pickers and the extra
- * palettes ("Brass", "High contrast").
+ * "System" (no data-theme on <html>) follows prefers-color-scheme live;
+ * data-theme forces one. data-vision, which combines with any theme, changes
+ * only the colours that depend on hue: dot, dash and error.
+ *
+ * Each theme also gives the shades that the colour vision settings use on
+ * its background (--cvd-*). The contrast (AA; AAA in high contrast) and that
+ * dot and dash stay apart for each type of colour blindness are checked by
+ * tests/unit/themes.test.ts, which reads this file.
  */
 :root {
   color-scheme: light;
   --color-bg: #f7f7f5;
   --color-surface: #ffffff;
   --color-fg: #16181d;
-  --color-muted: #646a73;
+  --color-muted: #5f656e;
   --color-border: #d9dbe0;
-  --color-dot: #1f9d5c;
+  --color-dot: #1a8f53;
   --color-dash: #d63c42;
   --color-accent: #2f6fdb;
   --color-error: #c2410c;
   --color-on-accent: #ffffff;
+  --cvd-blue: #0072b2;
+  --cvd-orange: #d55e00;
+  --cvd-red: #c0392b;
+  --cvd-teal: #008a6a;
+  --cvd-gray: #767676;
 
-  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  /* The whole interface, monospaced: a telegraph, an old terminal (ADR 0008). */
+  --font-mono:
+    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
   --radius: 12px;
   --space: 16px;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
+  :root:not([data-theme]) {
     color-scheme: dark;
     --color-bg: #14161a;
     --color-surface: #1d2026;
@@ -36,6 +47,11 @@
     --color-accent: #6b9cf5;
     --color-error: #fb923c;
     --color-on-accent: #0d0f12;
+    --cvd-blue: #56b4e9;
+    --cvd-orange: #e69f00;
+    --cvd-red: #ff6b6b;
+    --cvd-teal: #3ccfb0;
+    --cvd-gray: #8a8a8a;
   }
 }
 
@@ -51,4 +67,93 @@
   --color-accent: #6b9cf5;
   --color-error: #fb923c;
   --color-on-accent: #0d0f12;
+  --cvd-blue: #56b4e9;
+  --cvd-orange: #e69f00;
+  --cvd-red: #ff6b6b;
+  --cvd-teal: #3ccfb0;
+  --cvd-gray: #8a8a8a;
+}
+
+/* Gruvbox (dark and light), by Pavel Pertsev: dot and dash in its green and red. */
+:root[data-theme='gruvbox-dark'] {
+  color-scheme: dark;
+  --color-bg: #282828;
+  --color-surface: #32302f;
+  --color-fg: #ebdbb2;
+  --color-muted: #a89984;
+  --color-border: #504945;
+  --color-dot: #b8bb26;
+  --color-dash: #fb4934;
+  --color-accent: #83a598;
+  --color-error: #fe8019;
+  --color-on-accent: #282828;
+  --cvd-blue: #83a598;
+  --cvd-orange: #fabd2f;
+  --cvd-red: #fb4934;
+  --cvd-teal: #8ec07c;
+  --cvd-gray: #928374;
+}
+
+:root[data-theme='gruvbox-light'] {
+  color-scheme: light;
+  --color-bg: #fbf1c7;
+  --color-surface: #f2e5bc;
+  --color-fg: #3c3836;
+  --color-muted: #665c54;
+  --color-border: #d5c4a1;
+  --color-dot: #79740e;
+  --color-dash: #9d0006;
+  --color-accent: #076678;
+  --color-error: #af3a03;
+  --color-on-accent: #fbf1c7;
+  --cvd-blue: #076678;
+  --cvd-orange: #b57614;
+  --cvd-red: #9d0006;
+  --cvd-teal: #427b58;
+  --cvd-gray: #7c6f64;
+}
+
+/* High contrast: AAA (7:1) for text and for dot and dash. */
+:root[data-theme='high-contrast'] {
+  color-scheme: dark;
+  --color-bg: #000000;
+  --color-surface: #0d0d0d;
+  --color-fg: #ffffff;
+  --color-muted: #d0d0d0;
+  --color-border: #bdbdbd;
+  --color-dot: #3dff8a;
+  --color-dash: #ff6b6b;
+  --color-accent: #ffd60a;
+  --color-error: #ff9f1a;
+  --color-on-accent: #000000;
+  --cvd-blue: #6cc4ff;
+  --cvd-orange: #ffb000;
+  --cvd-red: #ff6b6b;
+  --cvd-teal: #3ee6c8;
+  --cvd-gray: #9a9a9a;
+}
+
+/*
+ * Colour vision (SPEC §7), after the themes so that it wins over them. Red–green
+ * (protanopia, deuteranopia): the blue–orange axis of Okabe–Ito; blue–yellow
+ * (tritanopia): red–turquoise; no colour (achromatopsia): by lightness. The
+ * error, in the foreground colour, also blinks and is drawn dashed.
+ */
+:root[data-vision='protanopia'],
+:root[data-vision='deuteranopia'] {
+  --color-dot: var(--cvd-blue);
+  --color-dash: var(--cvd-orange);
+  --color-error: var(--color-fg);
+}
+
+:root[data-vision='tritanopia'] {
+  --color-dot: var(--cvd-teal);
+  --color-dash: var(--cvd-red);
+  --color-error: var(--color-fg);
+}
+
+:root[data-vision='achromatopsia'] {
+  --color-dot: var(--color-fg);
+  --color-dash: var(--cvd-gray);
+  --color-error: var(--color-fg);
 }

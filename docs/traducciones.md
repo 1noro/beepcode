@@ -18,7 +18,9 @@ navegador (`navigator.languages`) y se puede cambiar a mano.
 1. La clave y el texto en `en.json`.
 2. La misma clave en los otros cuatro.
 3. En el código, `t('la.clave')`; con valores, `t('la.clave', { n: 3 })` y
-   `{n}` en el texto.
+   `{n}` en el texto. **En el DOM, `tText(nodo, 'la.clave')` o
+   `tAttr(nodo, 'aria-label', 'la.clave')`** (`src/i18n/dom.ts`): recuerdan la
+   clave, y al cambiar de idioma se traduce todo sin rehacer la página.
 
 ## La revisión
 

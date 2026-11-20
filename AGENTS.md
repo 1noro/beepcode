@@ -100,6 +100,9 @@ está mal, dilo antes de tocar código; no la cambies por iniciativa propia.
 7. **Se desarrolla en ramas que acaban en `main`, y solo `main` se despliega**
    (ADR 0007): GitHub Actions solo corre en los push a `main` (`deploy.yml`);
    las ramas se verifican con `make ci` en local.
+8. **Toda la interfaz, en JetBrains Mono servida con la app** (ADR 0008):
+   el subconjunto latino, del paquete `@fontsource-variable/jetbrains-mono`;
+   nunca de un CDN.
 
 ## Reglas que no se saltan
 

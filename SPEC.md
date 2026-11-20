@@ -30,7 +30,7 @@ Y aprovechar que es web para añadir lo que la tarjeta no tiene: histórico de l
 
 - Estadísticas de progreso (se dejan para el final).
 - "Modo Pro": números, signos de puntuación, prosignos, caracteres nacionales (Ñ, Ç…).
-- Manipulador iámbico (dos palas), temporización adaptativa.
+- Manipulador iámbico (dos palas), temporización adaptativa (salvo las pausas, que se adaptan ya en v1, §4.2).
 
 ---
 
@@ -58,7 +58,7 @@ El árbol es binario: desde la raíz, un punto lleva a un hijo y una raya al otr
 
 ### 2.2 Layout del árbol (inspirado en el original)
 
-La disposición replica la topología de la tarjeta. Coordenadas en una rejilla lógica (`x` columna, `y` fila; origen arriba a la izquierda). La raíz (icono de antena) está entre T y E.
+La disposición replica la topología de la tarjeta. Coordenadas en una rejilla lógica (`x` columna, `y` fila; origen arriba a la izquierda). La raíz (icono de antena) está entre T y E, y **el dibujo se centra en ella**, de donde parte la luz (decidido el 2026-11-20). Como el lado punto tiene una columna más (llega a H), **sus columnas van más juntas y las del lado raya, más separadas**, como en la tarjeta, hasta que los dos lados llegan igual de lejos; T y E quedan a media columna de la antena, para que quepan N y A. El reparto se calcula del layout, así que vale también para un árbol más grande.
 
 - Lado **punto** (derecha, a partir de E): en general punto = seguir a la derecha, raya = bajar.
 - Lado **raya** (izquierda, a partir de T): en general raya = seguir a la izquierda, punto = bajar.
@@ -110,6 +110,7 @@ Test obligatorio: para cada nodo, el camino ROOT→nodo del layout reproduce exa
 ### 3.1 Principios
 
 - Flat, minimalista, mucho contraste, sin texturas. Inspirada en la tarjeta, sin imitarla.
+- **Toda la interfaz en una sola tipografía monoespaciada, JetBrains Mono**, servida con la app (decidido el 2026-11-20, ADR 0008): un aire de telégrafo y de terminal antigua, igual en todos los dispositivos.
 - Una sola pantalla por modo; nada de scroll durante el tecleo.
 - Mobile-first, vertical. Debe funcionar también en horizontal y en escritorio.
 
@@ -147,7 +148,8 @@ Test obligatorio: para cada nodo, el camino ROOT→nodo del layout reproduce exa
 
 - Las aristas del camino también se iluminan.
 - La antena (raíz) se "enciende" mientras el pulsador está apretado, como indicador de transmisión.
-- **Tras cerrar la letra**, el camino se mantiene encendido `pathHoldMs` (1200 ms por defecto, como el original, algo más de 1 s) y después se apaga con un fundido. Si empieza una nueva pulsación antes, se apaga al instante.
+- **Tras cerrar la letra**, el camino se mantiene encendido **lo mismo que tardó en cerrarse** (`letterGap`, §4.2) y se apaga con un fundido rápido, de 300 ms, que acaba a esa hora. **Apagado quiere decir "listo, sigue"**: después aún queda el margen de palabra (§4.2) para empezar la letra siguiente de la misma palabra. Si empieza una nueva pulsación antes, se apaga al instante. (Decidido el 2026-11-20: antes duraba `pathHoldMs`, 1200 ms como el original, y el espacio llegaba con el camino aún encendido; quien esperaba a que se apagara para seguir, se encontraba un espacio.)
+- **Explorar** (tocar una letra del árbol) no escribe nada: su camino dura 1,5 s, fundido incluido.
 - Respetar `prefers-reduced-motion`: sin brillos animados ni fundidos.
 
 ### 3.4 Cinta histórica
@@ -169,6 +171,8 @@ Test obligatorio: para cada nodo, el camino ROOT→nodo del layout reproduce exa
 - Usa `setPointerCapture` para que soltar fuera del botón cuente como soltar.
 - Solo cuenta un puntero activo; los demás toques se ignoran.
 - Estado visual "pulsado" inmediato.
+- **Una tecla mecánica** (decidido el 2026-11-20): con un faldón debajo, se hunde al instante al pulsar y vuelve con un pequeño rebote al soltar.
+- **Mientras se mantiene, toma el color del punto y, al cruzar el umbral de raya, el de la raya**, como lo hará el árbol; un degradado barre el pulsador de izquierda a derecha en el tiempo del umbral. Así se ve, en el dedo, cuándo un punto pasa a ser raya. También al manipular con `Espacio`. Con `prefers-reduced-motion`, sin rebote ni degradado: el color basta.
 
 ### 3.6 Teclado (PC)
 
@@ -201,10 +205,11 @@ Test obligatorio: para cada nodo, el camino ROOT→nodo del layout reproduce exa
 Máquina de estados pura, sin dependencias del DOM y testeable con reloj falso:
 
 ```
-IDLE ──press──▶ PRESSED ──release──▶ GAP ──(letterGap)──▶ commit letra ──▶ IDLE_AFTER_LETTER
+IDLE ──press──▶ PRESSED ──release──▶ GAP ──(letterGap)──▶ commit letra ──▶ HOLD
                    ▲                   │                                       │
                    └──────press────────┘◀──────────────press───────────────────┘
-IDLE_AFTER_LETTER ──(wordGap)──▶ inserta espacio en el histórico ──▶ IDLE
+HOLD ──(letterGap)──▶ READY ──(margen de palabra)──▶ inserta espacio en el histórico ──▶ IDLE
+(en HOLD el camino de la letra sigue encendido; en READY, ya apagado; una pulsación en cualquiera de los dos empieza la letra siguiente de la misma palabra)
 ```
 
 - Duración de la pulsación `d`:
@@ -212,9 +217,11 @@ IDLE_AFTER_LETTER ──(wordGap)──▶ inserta espacio en el histórico ─�
   - `d < dashThreshold`: **punto**; si no, **raya**. Por defecto `dashThreshold = 2 u`.
 - Tras soltar:
   - Si pasa `letterGap = 3 u × gapTolerance` sin nueva pulsación, **se cierra la letra**.
-  - Si pasa `wordGap = 7 u × gapTolerance` desde el último símbolo, se inserta un **espacio de palabra**. Solo uno; nunca al principio ni duplicado.
+  - El camino de la letra se apaga a `2 × letterGap` del último símbolo (§3.3). Si después pasa el **margen de palabra** sin nueva pulsación, se inserta un **espacio de palabra**. Solo uno; nunca al principio ni duplicado.
+  - **El margen de palabra** empieza en 1 s × `gapTolerance` / 1,5 y **se adapta a las pausas entre letras** de quien manipula (decidido el 2026-11-20): cuánto piensa la letra siguiente no depende de lo rápido que pulse los símbolos. Cada vez que empieza una letra que sigue la palabra, se mide la pausa desde que se apagó el camino (0 si empezó antes) y el margen se mueve hacia 2,5 veces esa pausa, en una media exponencial (peso 0,25), acotado a 0,4–3 s (antes de multiplicar por la tolerancia). Solo se ven las pausas que llegaron a tiempo, así que **un espacio que se borra (`Retroceso` o el botón) antes de volver a pulsar** dice que el margen se quedó corto: crece un 30 %. Los rebotes no cuentan; los símbolos tecleados con `.`/`-`, sí. Al recargar vuelve a 1 s.
+- **Las pausas se adaptan al ritmo de quien manipula** (decidido el 2026-11-20). En Morse no hay un signo de espacio: el espacio es el silencio, y el oído del telegrafista lo mide contra el ritmo de quien transmite, no contra un reloj. Así que la `u` de `letterGap` no es la de los WPM de los ajustes, sino una estimada de las propias pulsaciones: cada punto cuenta como 1 u, cada raya como 3 u y cada silencio entre símbolos de una letra como 1 u, en una media exponencial (peso 0,25) que parte de la `u` de los WPM. Cada muestra se acota a entre la mitad y el doble de la estimación, y la estimación, a la `u` de 5–40 WPM. Lo que no cuenta: los rebotes, los símbolos tecleados con `.`/`-` y el silencio entre letras (ese lo mide el margen de palabra). **El umbral de raya no se adapta**: sigue en `dashThreshold` de los WPM de los ajustes. Al cambiar los ajustes de temporización, la estimación vuelve a partir de ellos.
 - `gapTolerance` viene a 1.5 por defecto, para principiantes.
-- Ejemplo a 12 WPM: u = 100 ms, umbral de raya 200 ms, cierre de letra 450 ms y espacio de palabra 1050 ms.
+- Ejemplo a 12 WPM: u = 100 ms, umbral de raya 200 ms, cierre de letra 450 ms, camino apagado a 900 ms y, con el margen inicial de 1 s, espacio de palabra a 1900 ms. Si quien manipula va más despacio y su `u` estimada sube a 150 ms, el cierre de letra pasa a 675 ms y el camino se apaga a 1350 ms; si además suele tardar 0,6 s en seguir, el margen tiende a 1,5 s y el espacio, a 2850 ms.
 - La entrada directa `.`/`-` inyecta símbolos en la misma máquina y usa los mismos temporizadores de pausa.
 
 ### 4.3 Eventos que emite el keyer
@@ -239,7 +246,7 @@ Si un símbolo lleva a un nodo inexistente o se superan 4 símbolos en v1:
 - El tono arranca en `keyDown` y para en `keyUp` (sidetone en tiempo real). En reproducción se programa con `AudioContext.currentTime` para que la temporización sea precisa.
 - Ajustes: frecuencia (400–1000 Hz, por defecto 600), volumen y silencio.
 - El `AudioContext` se crea o reanuda en el primer gesto del usuario (requisito de iOS/Safari).
-- **Vibración** opcional con `navigator.vibrate`, solo donde exista (Android/Chrome). En iOS no está disponible y se oculta la opción.
+- **Vibración** opcional con `navigator.vibrate`, solo donde exista (Android/Chrome). En iOS no está disponible y se oculta la opción. Es **un toque corto al pulsar** (30 ms), no una vibración que dure lo que la pulsación, y viene **desactivada** (decidido el 2026-11-20): en un Pixel 7 con Brave, el navegador no cortaba las vibraciones y se encadenaban. Refinarla, en el TODO 9.
 
 ---
 
@@ -311,10 +318,9 @@ Se abren desde el panel ⚙ y se persisten en `localStorage` (con versión de es
 | WPM efectivo (Farnsworth) | = WPM | 5–WPM |
 | Tolerancia de pausa | 1.5 | 1.0–3.0 |
 | Umbral de raya | 2 u | 1.5–2.5 u |
-| Tiempo de camino iluminado | 1200 ms | 0–3000 ms |
 | Frecuencia del tono | 600 Hz | 400–1000 |
 | Volumen / silencio | 70 % / no | — |
-| Vibración | sí (si está soportada) | — |
+| Vibración | no (la opción, solo si está soportada) | — |
 
 - **Temas**: todos los colores son variables CSS (`--color-bg`, `--color-fg`, `--color-dot`, `--color-dash`, `--color-accent`, …). "Sistema" sigue `prefers-color-scheme` en vivo. Paletas extra: **Gruvbox oscuro**, **Gruvbox claro** y **Alto contraste** (contraste AAA, 7:1) (decidido el 2026-11-20, §12.4).
 - **Visión del color** (decidido el 2026-11-20, §12.4): un ajuste aparte del tema, que se combina con cualquiera de ellos y cambia solo los colores que dependen del matiz (punto, raya, acento y error) por unos que se distinguen con ese tipo de daltonismo:
@@ -324,6 +330,7 @@ Se abren desde el panel ⚙ y se persisten en `localStorage` (con versión de es
 
   La forma (círculo / rectángulo, §2.2) ya distingue punto y raya sin color; esto lo refuerza. El selector de color de punto / raya, si se usa, manda sobre los dos. Un test comprueba, simulando cada tipo de daltonismo, que punto y raya se distinguen en todos los temas.
 - Botón "Restablecer valores por defecto".
+- **Acerca de**, al pie del panel: la versión del build (la de `git describe --tags --dirty --always`, como en dhtcrawler; `dev` si se construye sin el Makefile) y las licencias, con enlaces: el código, GPL-3.0-or-later; el logo y los textos, CC BY-SA 4.0 (ADR 0005); la tipografía, JetBrains Mono con OFL 1.1 (ADR 0008); y el código fuente. En el panel y no en la pantalla principal, que no tiene sitio que perder.
 
 ---
 

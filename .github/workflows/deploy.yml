@@ -32,6 +32,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          # All the history and the tags, for `git describe` (the version).
+          fetch-depth: 0
       - run: make ci
         env:
           CI: 'true'

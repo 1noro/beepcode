@@ -1,0 +1,579 @@
+/* The shell and the Free mode (SPEC §3.2): one screen, no scrolling while
+   keying, mobile first and vertical; the board takes what is left. */
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px var(--space);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.brand {
+  display: flex;
+  margin: 0;
+}
+
+.brand img {
+  width: 28px;
+  height: 28px;
+}
+
+.topbar-actions {
+  display: flex;
+  margin-left: auto;
+}
+
+.view {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.mode {
+  flex: 1;
+  min-height: 0;
+  max-width: 760px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-areas: 'tape' 'board' 'hints' 'key';
+  gap: 8px;
+  padding: 8px var(--space) var(--space);
+}
+
+/* The tape (SPEC §3.4). */
+.tape {
+  grid-area: tape;
+  min-width: 0;
+}
+
+.tape-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tape-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Fixed heights, whatever they hold (the placeholder, letters or nothing):
+   if the tape grew with its first letter, the tree below would jump. */
+.tape-line {
+  height: 1.3em;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  overflow: hidden;
+  white-space: pre;
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 6vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+}
+
+.tape-text {
+  flex: none;
+}
+
+.tape-placeholder {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  color: var(--color-muted);
+}
+
+.tape-cursor {
+  flex: none;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 2px;
+  align-self: center;
+  background: var(--color-accent);
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.tape-actions {
+  display: flex;
+  flex: none;
+}
+
+.tape-sequence {
+  height: 1.5em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  line-height: 1.5;
+  letter-spacing: 0.25em;
+  color: var(--color-muted);
+}
+
+/* The tree (SPEC §3.3). */
+.board-wrap {
+  grid-area: board;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.board {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.edge {
+  stroke: var(--color-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.edge.is-on {
+  stroke-width: 4;
+}
+
+.edge--dot.is-on {
+  stroke: var(--color-dot);
+}
+
+.edge--dash.is-on {
+  stroke: var(--color-dash);
+}
+
+.antenna {
+  color: var(--color-muted);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.antenna .tip {
+  fill: currentColor;
+}
+
+.antenna .waves {
+  opacity: 0;
+}
+
+.antenna.is-tx {
+  color: var(--color-accent);
+}
+
+.antenna.is-tx .waves {
+  opacity: 1;
+}
+
+.antenna.is-error {
+  color: var(--color-error);
+  animation: blink 0.18s steps(1) 4;
+}
+
+.node {
+  cursor: pointer;
+  outline: none;
+}
+
+.node .hit {
+  fill: transparent;
+}
+
+.node .shape {
+  fill: var(--color-bg);
+  stroke: var(--color-muted);
+  stroke-width: 2.5;
+}
+
+.node .ring {
+  fill: none;
+  stroke: none;
+  stroke-width: 2.5;
+}
+
+.node .label {
+  fill: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.node:hover .shape {
+  stroke: var(--color-fg);
+}
+
+.node:focus-visible .ring {
+  stroke: var(--color-accent);
+  stroke-width: 3;
+}
+
+.node--dot.is-on .shape {
+  fill: var(--color-dot);
+  stroke: var(--color-dot);
+  filter: drop-shadow(0 0 4px var(--color-dot));
+}
+
+.node--dash.is-on .shape {
+  fill: var(--color-dash);
+  stroke: var(--color-dash);
+  filter: drop-shadow(0 0 4px var(--color-dash));
+}
+
+.node.is-on .label {
+  fill: var(--color-fg);
+}
+
+.node.is-final .ring {
+  stroke: var(--color-fg);
+}
+
+.node.is-final .label {
+  font-weight: 800;
+}
+
+/* The error blinks, and is also dashed: it does not depend on colour. */
+.node.is-error .shape {
+  fill: var(--color-error);
+  stroke: var(--color-error);
+  animation: blink 0.18s steps(1) 4;
+}
+
+.node.is-error .ring {
+  stroke: var(--color-error);
+  stroke-dasharray: 4 3;
+}
+
+/* After the letter, the path fades out (SPEC §3.3); lighting up is instant. */
+.board.is-fading .shape,
+.board.is-fading .edge,
+.board.is-fading .ring {
+  transition: opacity 0.3s;
+}
+
+.board.is-fading .is-on .shape,
+.board.is-fading .edge.is-on,
+.board.is-fading .is-final .ring {
+  opacity: 0.25;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .node.is-on .shape {
+    filter: none;
+  }
+}
+
+/* The key (SPEC §3.5): a mechanical key, with a skirt below that it sinks
+   into at once when pressed and springs back from when released. While held
+   it takes the colour of the dot and, past the dash threshold, of the dash,
+   and the meter sweeps across it in that time. */
+.key {
+  --key-tone: var(--color-border);
+  --key-skirt: color-mix(in srgb, var(--key-tone) 65%, var(--color-bg));
+  grid-area: key;
+  position: relative;
+  display: grid;
+  place-content: center;
+  gap: 2px;
+  width: 100%;
+  min-height: 96px;
+  height: clamp(96px, 18vh, 160px);
+  /* Room for the skirt, which is a shadow and takes none. */
+  margin-bottom: 6px;
+  border-radius: 20px;
+  color: var(--color-fg);
+  background-color: var(--color-surface);
+  /* The light on the top of the key. */
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-fg) 6%, transparent),
+    transparent 55%
+  );
+  border: 2px solid var(--key-tone);
+  box-shadow:
+    0 8px 0 var(--key-skirt),
+    inset 0 1px 0 color-mix(in srgb, var(--color-fg) 12%, transparent);
+  transition:
+    transform 180ms cubic-bezier(0.34, 1.8, 0.64, 1),
+    box-shadow 180ms ease-out,
+    background-color 180ms ease-out,
+    border-color 180ms ease-out;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  overscroll-behavior: none;
+}
+
+/* Down at once: no transition, so that it never lags behind the finger. */
+.key.is-down {
+  transition: none;
+  transform: translateY(6px);
+  box-shadow:
+    0 2px 0 var(--key-skirt),
+    0 0 28px color-mix(in srgb, var(--key-tone) 45%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--color-fg) 12%, transparent);
+}
+
+.key.is-dot {
+  --key-tone: var(--color-dot);
+  background-color: color-mix(in srgb, var(--color-dot) 16%, var(--color-surface));
+}
+
+.key.is-dash {
+  --key-tone: var(--color-dash);
+  background-color: color-mix(in srgb, var(--color-dash) 16%, var(--color-surface));
+}
+
+/* On the tinted key, the muted hint falls below AA in some themes. */
+.key.is-dot .key-hint,
+.key.is-dash .key-hint {
+  color: var(--color-fg);
+}
+
+.key-meter {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* It sweeps the key from left to right, brightest at the front; at most 24 %
+   of the tone, so that the text on it stays AA in every theme. */
+.key-meter-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in srgb, var(--key-tone) 24%, transparent)
+  );
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.key.is-down .key-meter-fill {
+  transform: scaleX(1);
+  transition: transform var(--dash-ms, 200ms) linear;
+}
+
+/* The text, over the sweep, which comes after it. */
+.key-label,
+.key-hint {
+  position: relative;
+  z-index: 1;
+}
+
+/* Without motion the sweep would jump to full at once and lie: the colour
+   alone says dot or dash. */
+@media (prefers-reduced-motion: reduce) {
+  .key-meter {
+    display: none;
+  }
+}
+
+.key-label {
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.key-hint {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+/* The keys, only where there is a keyboard and a fine pointer. */
+.hints {
+  grid-area: hints;
+  display: none;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 16px;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hints {
+    display: flex;
+  }
+}
+
+/* Landscape on a phone: the key beside the tree. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .mode {
+    max-width: none;
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 32%);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas: 'tape tape' 'board key' 'hints key';
+  }
+
+  .key {
+    height: 100%;
+  }
+}
+
+/* The settings panel (SPEC §7). */
+.settings {
+  width: min(32rem, 100% - 2 * var(--space));
+  max-height: calc(100% - 2 * var(--space));
+  padding: 0;
+  color: var(--color-fg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.settings::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+
+.settings-header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px 8px var(--space);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.settings-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.settings-body {
+  display: grid;
+  gap: 12px;
+  padding: var(--space);
+}
+
+.settings-section {
+  display: grid;
+  gap: 12px;
+}
+
+.settings-section h3 {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+}
+
+.setting {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) minmax(0, 1.4fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.setting[hidden] {
+  display: none;
+}
+
+.setting-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.setting-control select,
+.setting-control input[type='range'] {
+  flex: 1;
+  min-width: 0;
+}
+
+.setting-control input[type='range'] {
+  accent-color: var(--color-accent);
+}
+
+.setting-value {
+  flex: none;
+  min-width: 5.5em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted);
+}
+
+.setting-color {
+  width: 48px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: none;
+}
+
+.setting--check .setting-control {
+  justify-content: flex-start;
+}
+
+.setting--check input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--color-accent);
+}
+
+/* The version and the licences, at the foot of the panel. */
+.about {
+  display: grid;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.about p {
+  margin: 0;
+}
+
+.about-version {
+  color: var(--color-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.about a {
+  color: var(--color-accent);
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 420px) {
+  .setting {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}

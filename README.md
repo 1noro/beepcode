@@ -18,9 +18,24 @@
 
 <p align="center"><b>Sin backend, sin conexión, instalable. En el móvil, con ratón o con teclado.</b></p>
 
-> **En desarrollo.** Está hecho el andamiaje (F0): una página "hola"
-> instalable. El árbol, el pulsador y el modo Libre llegan con F1. El estado,
-> en [`docs/estado.md`](docs/estado.md).
+> **En desarrollo.** Publicado, el andamiaje (F0). En la rama
+> `feat/f1-nucleo`, el núcleo y el modo Libre (F1): el árbol, el pulsador, el
+> teclado, el sonido, la cinta, los ajustes y los temas. El estado, en
+> [`docs/estado.md`](docs/estado.md).
+
+## Cómo se usa (modo Libre)
+
+- **El pulsador**: un toque corto es un punto; uno largo (desde 2 unidades,
+  200 ms a 12 PPM), una raya. Tras una pausa se cierra la letra, y tras una
+  más larga se escribe un espacio.
+- **Con teclado**: `Espacio` es el pulsador; `.` y `-` escriben un punto y una
+  raya; `Enter` cierra la letra; `Retroceso` cancela la secuencia o borra la
+  última letra; `Escape` cancela.
+- **Explorar**: toca una letra del árbol para ver su camino y oír su código.
+- **Ajustes** (⚙): idioma, tema (sistema, claro, oscuro, Gruvbox oscuro y
+  claro, alto contraste), visión del color (para protanopia, deuteranopia,
+  tritanopia y acromatopsia), los colores del punto y la raya, la velocidad,
+  las pausas, el tono, el volumen y la vibración.
 
 ## TL;DR
 
@@ -65,7 +80,9 @@ En macOS o Windows con Docker Desktop, si la recarga no detecta cambios:
 **Para probar la PWA en un móvil de tu red**: `http://192.168.x.x` no es un
 contexto seguro y el service worker no se registra (el audio y el táctil sí
 funcionan). Dos opciones: `make dev-https` y aceptar el certificado en el
-móvil, o la URL de GitHub Pages.
+móvil, o la URL de GitHub Pages. Con `make dev-https`, **la URL es la que
+imprime `make`** (`https://<IP del equipo>:5173`), no la «Network» de Vite,
+que es la IP del contenedor.
 
 Una vez por clon, `make hooks` instala el pre-commit, que comprueba la
 documentación.
@@ -95,3 +112,6 @@ GitHub Actions**.
 - **El logo, la documentación y las traducciones**,
   [CC BY-SA 4.0](LICENSE.CC-BY-SA-4.0.txt): se pueden copiar y adaptar citando
   al autor (1noro, beepcode) y compartiendo lo derivado con la misma licencia.
+- **La tipografía, [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono)**,
+  de sus autores, con la [SIL Open Font License 1.1](https://openfontlicense.org);
+  va servida con la app.

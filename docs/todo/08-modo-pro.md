@@ -13,5 +13,10 @@ grabaciones.
 Fuera de v1. Lo que se hace ya por él: **el alfabeto y el layout son datos**
 (ADR 0003), para que un árbol más grande no reescriba la lógica.
 
+**De la temporización adaptativa, las pausas ya se adaptan en F1** (SPEC
+§4.2, decidido por el usuario el 2026-11-20): el cierre de letra y el espacio
+de palabra siguen el ritmo de quien manipula (`morse/rhythm.ts`). Queda para
+aquí el umbral de raya, que sigue fijo.
+
 <!-- docs:historia -->
 ## Historia
