@@ -13,3 +13,4 @@ lo mismo, manda el ADR, y se corrige la lista.
 | [0004](0004-github-pages-y-rutas-hash.md) | GitHub Pages con rutas por hash, y CI con los mismos `make` que en local |
 | [0005](0005-nombre-y-licencias.md) | El nombre, beepcode; GPL-3.0 para el código y CC BY-SA 4.0 para el logo y los textos |
 | [0006](0006-documentacion-para-agentes.md) | La documentación y los agentes, como en dhtcrawler |
+| [0007](0007-ramas-y-despliegue-solo-desde-main.md) | Se desarrolla en ramas que acaban en `main`, y solo `main` se despliega y ejecuta GitHub Actions |

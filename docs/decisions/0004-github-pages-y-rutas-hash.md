@@ -32,3 +32,10 @@ bajo `/<repo>/` y no reescribe rutas.
 - Todo enlace o asset va relativo al base path (`import.meta.env.BASE_URL`).
 - CI construye las imágenes de Docker en cada ejecución; si se hace lento, la
   caché de capas es opcional (SPEC §10.4).
+
+## 2026-11-20 — sin `ci.yml`
+
+El usuario no quiere gastar ejecuciones de Actions en lo que no se publica:
+**`ci.yml` desaparece** y solo queda `deploy.yml`, en cada push a `main` que
+no sea solo documentación. Las ramas se verifican con `make ci` en local. Ver
+[ADR 0007](0007-ramas-y-despliegue-solo-desde-main.md).

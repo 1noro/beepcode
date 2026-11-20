@@ -27,6 +27,11 @@ concreto:
 - **ADR 0004**: ¿alguna ruta va sin hash, o algún asset o enlace con `/` fijo
   en vez del base path? ¿Los workflows llaman a `make`, sin
   `actions/setup-node`?
+- **ADR 0007**: ¿hay algún workflow además de `deploy.yml`, o se dispara con
+  algo más que el push a `main` (salvo `workflow_dispatch`)? ¿Sigue pasando
+  `make ci` antes de construir, y saltándose los push de solo documentación?
+  ¿Hay commits de desarrollo directos en `main`, sin pasar por un merge de su
+  rama (`git log --first-parent main`)?
 - **ADR 0005**: ¿`package.json` sigue en `GPL-3.0-or-later`? ¿Una dependencia
   nueva es compatible?
 - **ADR 0006**: ¿`CLAUDE.md` es solo `@AGENTS.md`? ¿Hay en `AGENTS.md` algo

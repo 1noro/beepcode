@@ -1,6 +1,6 @@
 # Estado
 
-**Al día:** 2026-11-20, 11:45 UTC. **Revisada:** 2026-11-20, la última
+**Al día:** 2026-11-20, 13:00 UTC. **Revisada:** 2026-11-20, la última
 [`/revisar-docs`](agentes/revisar-docs.md), que se lanza a mano cada semana.
 
 Lo vivo del desarrollo: en qué fase está, qué hay publicado, lo abierto y lo
@@ -10,23 +10,24 @@ Qué va en cada sitio, en `AGENTS.md`, "Dónde va cada información".
 
 ## La fase
 
-**F0, el andamiaje: hecho y sin commitear** ([TODO 1](todo/01-andamiaje.md)).
-`make ci` pasa en local; falta subirlo y publicar en Pages para cerrarlo.
-Después, **F1** (el núcleo y el modo Libre). El plan entero, en SPEC §13; v1 es
+**F0, el andamiaje: cerrado** ([TODO 1](todo/01-andamiaje.md)), publicado
+y con CI en verde. **Lo siguiente es F1** (el núcleo y el modo Libre). El plan entero, en SPEC §13; v1 es
 de F0 a F4, y F5 (las estadísticas) llega al final.
 
 ## Lo publicado
 
-- **Nada todavía.** Al subir `main` con Pages activado, en
-  `https://1noro.github.io/beepcode/` (el workflow `deploy.yml`).
+- **La página "hola" de F0**, en `https://1noro.github.io/beepcode/`, desde
+  `25ce416`. **Solo se publica `main`** (ADR 0007): `deploy.yml`, en cada push
+  a `main` que no sea solo documentación.
+- **En desarrollo**: la rama `ci/despliegue-solo-main` (este cambio de flujo),
+  sin llevar a `main`.
 - **Sin versión**: `package.json` está en `0.0.0` y no hay tags.
 
 ## Lo abierto, en este orden
 
 | TODO | Estado | Qué falta |
 |---|---|---|
-| [1](todo/01-andamiaje.md), F0, el andamiaje | a la espera | Que el usuario lo revise, lo commitee, lo suba y active Pages |
-| [2](todo/02-nucleo-y-modo-libre.md), F1, el núcleo y el modo Libre | abierto | Todo; antes, las tres preguntas de SPEC §12 de su ficha |
+| [2](todo/02-nucleo-y-modo-libre.md), F1, el núcleo y el modo Libre | abierto | Todo; lo que quedaba abierto en SPEC §12, ya decidido en su ficha |
 | [7](todo/07-logo.md), el logo | a la espera | Que lo dibuje el usuario; hay uno provisional |
 | [3](todo/03-texto-a-morse.md), F2, texto a Morse | abierto | Todo; tras el 2 |
 | [4](todo/04-aprender-y-escuchar.md), F3, Aprender y Escuchar | abierto | Todo; tras el 2 y el 3 |
@@ -36,16 +37,12 @@ de F0 a F4, y F5 (las estadísticas) llega al final.
 
 ## Lo pendiente del usuario
 
-- **Revisar y commitear** lo de la primera sesión (los agentes no commitean).
-- **Activar Pages**: Settings → Pages → Source: **GitHub Actions**.
 - **`make hooks`**, una vez en este clon: el pre-commit con `make docs-check`.
 - **El logo** ([TODO 7](todo/07-logo.md)).
-- **Las preguntas de SPEC §12** que quedan (la cinta, las paletas, guardar el
-  histórico), antes de llegar a ellas en F1.
 - **Que alguien nativo revise** las traducciones al gallego, catalán y euskera
   ([`traducciones.md`](traducciones.md)).
 
 ## Lo próximo
 
-- Con F0 publicado, **F1 con `/tarea 2`**, paso a paso (el orden, en su
-  ficha).
+- **F1 con `/tarea 2`**, en una rama `feat/…` (ADR 0007), paso a paso (el
+  orden, en su ficha).

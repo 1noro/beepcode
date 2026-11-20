@@ -1,6 +1,6 @@
 # TODO 1 — F0, el andamiaje
 
-**Estado:** a la espera · **Fase:** F0 · **SPEC:** §10, §13 · **ADR:** [0002](../decisions/0002-solo-docker-y-make.md), [0004](../decisions/0004-github-pages-y-rutas-hash.md) · **Código:** `Makefile`, `Dockerfile`, `compose.yaml`, `vite.config.ts`, `.github/workflows/`
+**Estado:** cerrado · **Fase:** F0 · **SPEC:** §10, §13 · **ADR:** [0002](../decisions/0002-solo-docker-y-make.md), [0004](../decisions/0004-github-pages-y-rutas-hash.md) · **Código:** `Makefile`, `Dockerfile`, `compose.yaml`, `vite.config.ts`, `.github/workflows/`
 
 ## Qué pide
 
@@ -16,10 +16,9 @@ publicado.**
 
 ## Dónde está
 
-Hecho el 2026-11-20, **sin commitear**: falta que el usuario lo revise, lo
-commitee y lo suba, y que active Pages (**Settings → Pages → Source: GitHub
-Actions**). Con eso, el deploy publica en `https://1noro.github.io/beepcode/`
-y la ficha se cierra.
+**Cerrado el 2026-11-20**: commiteado en `6f02c36` y `25ce416`, con CI y
+Deploy en verde en GitHub Actions, y publicado en
+`https://1noro.github.io/beepcode/` (Pages con Source: GitHub Actions).
 
 - `make ci` en verde en local: lint, typecheck, 21 tests unitarios, build,
   `docs-check`, 10 e2e (5 en escritorio y 5 en móvil emulado, incluido
