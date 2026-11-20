@@ -50,6 +50,6 @@ describe('translate', () => {
   it('fills {params} and leaves unknown ones as they are', () => {
     expect(format('{a} and {b}, {n}', { a: 'x', n: 3 })).toBe('x and {b}, 3');
     expect(format('no params')).toBe('no params');
-    expect(translate('en', 'home.title', { unused: 1 })).toBe('Hello!');
+    expect(translate('en', 'pwa.reload', { unused: 1 })).toBe('Reload');
   });
 });
