@@ -159,7 +159,7 @@ Test obligatorio: para cada nodo, el camino ROOT→nodo del layout reproduce exa
 - Se guarda como máximo un número razonable de caracteres (p. ej. 500); no se persiste entre sesiones en v1.
 - Anuncio accesible: `aria-live="polite"` con la letra decodificada.
 
-> El diseño de la cinta está abierto a refinar; ver §12.
+> Diseño de la cinta (decidido el 2026-11-20, §12.3): **solo texto corrido**, con una letra legible en cualquier pantalla; sin el código bajo cada letra y sin acción al tocarla.
 
 ### 3.5 Pulsador (móvil y ratón)
 
@@ -304,7 +304,8 @@ Se abren desde el panel ⚙ y se persisten en `localStorage` (con versión de es
 | Ajuste | Por defecto | Rango |
 |---|---|---|
 | Idioma | el del navegador si está soportado; si no, `en` | en, es, gl, ca, eu |
-| Tema | sistema | sistema / claro / oscuro / (paletas extra) |
+| Tema | sistema | sistema / claro / oscuro / Gruvbox oscuro / Gruvbox claro / alto contraste |
+| Visión del color | normal | normal / protanopia / deuteranopia / tritanopia / acromatopsia |
 | Color de punto / raya | verde / rojo | selector de color |
 | Velocidad (WPM) | 12 | 5–40 |
 | WPM efectivo (Farnsworth) | = WPM | 5–WPM |
@@ -315,7 +316,13 @@ Se abren desde el panel ⚙ y se persisten en `localStorage` (con versión de es
 | Volumen / silencio | 70 % / no | — |
 | Vibración | sí (si está soportada) | — |
 
-- **Temas**: todos los colores son variables CSS (`--color-bg`, `--color-fg`, `--color-dot`, `--color-dash`, `--color-accent`, …). "Sistema" sigue `prefers-color-scheme` en vivo. Paletas extra sugeridas: "Brass" (dorado sobre negro, guiño al original) y "Alto contraste".
+- **Temas**: todos los colores son variables CSS (`--color-bg`, `--color-fg`, `--color-dot`, `--color-dash`, `--color-accent`, …). "Sistema" sigue `prefers-color-scheme` en vivo. Paletas extra: **Gruvbox oscuro**, **Gruvbox claro** y **Alto contraste** (contraste AAA, 7:1) (decidido el 2026-11-20, §12.4).
+- **Visión del color** (decidido el 2026-11-20, §12.4): un ajuste aparte del tema, que se combina con cualquiera de ellos y cambia solo los colores que dependen del matiz (punto, raya, acento y error) por unos que se distinguen con ese tipo de daltonismo:
+  - **protanopia** y **deuteranopia** (rojo-verde): punto y raya en el eje azul–naranja;
+  - **tritanopia** (azul-amarillo): punto y raya en el eje rojo–turquesa;
+  - **acromatopsia** (sin color): punto y raya por luminosidad, uno claro y otro oscuro respecto al fondo.
+
+  La forma (círculo / rectángulo, §2.2) ya distingue punto y raya sin color; esto lo refuerza. El selector de color de punto / raya, si se usa, manda sobre los dos. Un test comprueba, simulando cada tipo de daltonismo, que punto y raya se distinguen en todos los temas.
 - Botón "Restablecer valores por defecto".
 
 ---
@@ -485,9 +492,9 @@ Todo se lanza con `make`. `make` sin argumentos equivale a `make help`, que list
 
 1. ~~**Nombre** del proyecto y del repositorio~~: **beepcode** (decidido el 2026-11-20, [ADR 0005](docs/decisions/0005-nombre-y-licencias.md)).
 2. ~~**Licencia**~~: **GPL-3.0-or-later** para el código y **CC BY-SA 4.0** para el logo y los textos (decidido el 2026-11-20, [ADR 0005](docs/decisions/0005-nombre-y-licencias.md)).
-3. **Diseño final de la cinta histórica**: tamaño de letra, si muestra el código bajo cada letra y qué pasa al tocar una letra (¿repetirla?).
-4. **Paletas** de color definitivas e iconografía (icono de la app).
-5. Si se persiste el histórico del modo Libre entre sesiones.
+3. ~~**Diseño final de la cinta histórica**~~: solo texto corrido, con letra legible en cualquier pantalla; sin el código debajo y sin acción al tocar una letra (decidido el 2026-11-20, §3.4).
+4. ~~**Paletas** de color definitivas~~: Gruvbox oscuro, Gruvbox claro y Alto contraste, además de claro y oscuro; y un ajuste de visión del color por tipo de daltonismo (decidido el 2026-11-20, §7). Queda la **iconografía** (el icono de la app): la dibuja el usuario ([TODO 7](docs/todo/07-logo.md)).
+5. ~~Si se persiste el histórico del modo Libre entre sesiones~~: **no** (decidido el 2026-11-20, §3.4).
 
 ---
 
