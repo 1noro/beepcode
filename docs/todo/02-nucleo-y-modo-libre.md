@@ -1,6 +1,6 @@
 # TODO 2 — F1, el núcleo y el modo Libre
 
-**Estado:** abierto · **Fase:** F1 · **SPEC:** §2–§5, §6.1, §7, §8, §11 · **ADR:** [0003](../decisions/0003-logica-morse-pura-y-datos.md) · **Código:** `src/morse/`, `src/ui/`, `src/input/`, `src/audio/`, `src/state/`, `TODO(2)`
+**Estado:** cerrado · **Fase:** F1 · **SPEC:** §2–§5, §6.1, §7, §8, §11 · **ADR:** [0003](../decisions/0003-logica-morse-pura-y-datos.md) · **Código:** `src/morse/`, `src/ui/`, `src/input/`, `src/audio/`, `src/state/`, `TODO(2)`
 
 ## Qué pide
 
@@ -16,13 +16,89 @@ de idioma y de tema. Funciona sin conexión. Cobertura ≥ 90 % en `src/morse/`.
 
 ## Dónde está
 
-Sin empezar. Los `TODO(2)` del código marcan dónde se engancha: el router en
-`src/main.ts` y los temas en `src/styles/tokens.css`.
+**Cerrado el 2026-11-20**: revisado por el usuario, llevado a `main` con la
+PR de la rama `feat/f1-nucleo` y publicado en Pages como **v0.1.0**, la
+primera versión con tag.
 
-Un orden razonable, un commit por paso: `alphabet` y `tree` con el test del
-layout (SPEC §2.2) → `timing` → `keyer` con reloj falso → el tablero SVG →
-audio → pulsador y teclado → cinta → modo Libre y Explorar → ajustes y temas →
-los e2e.
+- `make ci` en verde: 274 tests unitarios, 42 e2e (21 en escritorio y 21 en
+  móvil emulado) y la cobertura de `src/morse/` al 100 % en líneas. El bundle
+  inicial, unos 21 kB gzip, más los 40 kB de la fuente.
+- **`src/morse/`**: `alphabet.ts`, `tree.ts` (el layout de SPEC §2.2 como
+  datos, con su test obligatorio), `timing.ts`, `keyer.ts` (con `clock.ts`
+  inyectable y `emitter.ts`).
+- **La UI**: `ui/board.ts` (el SVG), `ui/tape.ts`, `ui/settingsPanel.ts`,
+  `ui/appearance.ts`; `input/pointer.ts` y `input/keyboard.ts`;
+  `audio/tone.ts` (tono y vibración); `state/` (almacén, ajustes con versión
+  de esquema, texto de la cinta); `modes/free.ts` y el router en `main.ts`.
+- **Los temas** en `styles/tokens.css`, y `tests/unit/themes.test.ts`, que lo
+  lee: contraste AA en todos (AAA en alto contraste) y punto y raya
+  distinguibles en las 35 combinaciones de tema y visión, simulando cada una
+  con las matrices de Machado (2009) y ΔE ≥ 20.
+
+Decisiones menores, por el camino:
+
+- **Farnsworth**: `timing.sendTiming` ya lo calcula, pero **el ajuste "WPM
+  efectivo" llega con F2** (`TODO(3)` en `state/settings.ts`), que es el
+  primer modo que lo usa; en F1 no cambiaría nada.
+- **Explorar** usa `timing.letterTimeline` (el código de una letra con sus
+  tiempos); el `player.ts` de F2 puede partir de ahí.
+- **El dibujo del árbol es más ancho que alto** (celdas de 80 × 60): con
+  celdas cuadradas, las etiquetas de N y A, y de D y W, se pisaban. El layout
+  de datos no cambia.
+- **El selector de modo solo lista los modos que existen**: en F1, Libre. El
+  e2e de "cambiar de modo" comprueba que una ruta desconocida lleva a
+  `#/free`; el de cambiar de verdad, con el segundo modo (F2).
+- **El selector de idioma pasa a los ajustes**, un `<dialog>` modal; con él
+  abierto, el teclado no manipula.
+- **La visión del color**: cada tema da sus tonos `--cvd-*` para su fondo, y
+  `data-vision` los asigna a punto y raya. El error, en esos modos, va en el
+  color del texto: además parpadea y su anillo es discontinuo.
+- **Tras una secuencia inválida** puede seguir llegando el espacio de
+  palabra, si antes se escribió una letra (cuenta desde el último símbolo).
+- **`Retroceso`** sin secuencia borra el último carácter, también un espacio.
+- **El camino dura lo que tardó en cerrarse la letra, y el espacio llega un
+  margen de palabra adaptativo después** (SPEC §3.3 y §4.2, cambiados a
+  petición del usuario): el evento `letter` del keyer dice cuánto dura el
+  camino (`holdMs`) y `board.turnOffIn` lo apaga con el fundido;
+  `morse/pauses.ts` aprende el margen y `keyer.rejectSpace()` lo ensancha
+  cuando se borra el espacio recién puesto. El ajuste "tiempo del camino
+  iluminado" desaparece; Explorar, 1,5 s fijos. El esquema de ajustes no
+  cambia de versión: el campo viejo se ignora.
+- **El pulsador, como una tecla mecánica, en verde y luego en rojo**
+  (SPEC §3.5, a petición del usuario): lo pinta el modo desde los eventos
+  `keyDown`/`keyUp` del keyer, así que vale también con `Espacio`; el cambio
+  a raya, con un temporizador de `dashThresholdMs`. Teñido, la ayuda pasa a
+  `--color-fg`: el `--color-muted` no llegaba a AA en Gruvbox.
+- **El árbol se centra en la antena** (SPEC §2.2), como en la tarjeta: el
+  lado con más columnas las junta (70) y el otro las separa hasta llegar igual
+  de lejos (`ui/columns.ts`, con su test). Un primer intento rellenaba el lado
+  corto, y el árbol encogía un 7 %.
+- **La versión y las licencias, al pie de los ajustes** (SPEC §7, a
+  petición del usuario), en "Acerca de": la pantalla principal no tiene
+  sitio. La versión, como en dhtcrawler: `VERSION` de `git describe` en el
+  `Makefile`, hasta `src/version.ts` por el `define` de Vite; `dev` sin él.
+- **Los avisos** salen sobre el pulsador y dejan pasar el puntero: nunca
+  estorban al manipular.
+- **El Wake Lock** (opcional, SPEC §9) no se hace.
+- **La vibración es un toque de 30 ms al pulsar, y viene desactivada**
+  (SPEC §5 y §7, cambiados por el usuario): en un Pixel 7 con Brave se
+  encadenaban. Refinarla, en el [TODO 9](09-vibracion.md).
+- **Las pausas se adaptan al ritmo de quien manipula** (SPEC §4.2, decidido
+  por el usuario): `morse/rhythm.ts` estima la unidad de sus puntos, rayas y
+  silencios dentro de la letra, y el keyer escala con ella el cierre de letra
+  y el espacio de palabra (`adaptive: true` en el modo Libre). Lo que el SPEC
+  dejaba para el Modo Pro, solo en las pausas: el umbral de raya sigue fijo.
+- **Toda la interfaz, en JetBrains Mono** servida con la app
+  ([ADR 0008](../decisions/0008-tipografia-jetbrains-mono.md)).
+- **El tono programa por delante del reloj de audio** (`baseLatency`, como
+  mucho 30 ms) y retiene la rampa con `cancelAndHoldAtTime`: en Android sonaba
+  sucio, con chasquidos.
+- **La cinta tiene alto fijo**: al aparecer la primera letra crecía y el árbol
+  bajaba; lo comprueba un e2e.
+
+Sin probar de forma automática: **que suene** (el tono y sus rampas),
+**la vibración** y el táctil en iOS. Se prueba con `make dev-https` en un
+móvil.
 
 ## Lo decidido de SPEC §12 (el usuario, 2026-11-20)
 
@@ -49,3 +125,6 @@ los e2e.
 
 <!-- docs:historia -->
 ## Historia
+
+- 2026-11-20: hecho en `feat/f1-nucleo`, revisado por el usuario en su
+  Brave, y cerrado: a `main` por PR y publicado como v0.1.0.
