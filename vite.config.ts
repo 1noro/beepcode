@@ -11,9 +11,11 @@ const brandColor = '#14161a';
 
 export default defineConfig({
   base,
-  server: {
-    watch: process.env.DEV_POLLING === '1' ? { usePolling: true, interval: 300 } : null,
-  },
+  // The version of the build, from `git describe` in the Makefile (src/version.ts).
+  define: { __APP_VERSION__: JSON.stringify(process.env.VERSION ?? 'dev') },
+  // Without `watch`, Vite's own watcher (inotify). Never `watch: null`: that
+  // turns watching off, and the dev server keeps serving what it first built.
+  server: process.env.DEV_POLLING === '1' ? { watch: { usePolling: true, interval: 300 } } : {},
   plugins: [
     ...(process.env.DEV_HTTPS === '1' ? [basicSsl()] : []),
     VitePWA({
@@ -44,7 +46,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest,woff2}'],
       },
     }),
   ],

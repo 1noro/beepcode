@@ -24,6 +24,9 @@ ARG BASE_PATH=/
 ENV BASE_PATH=${BASE_PATH}
 COPY package.json package-lock.json ./
 RUN npm ci
+# The version, from `git describe` in the Makefile: .git does not reach here.
+ARG VERSION=dev
+ENV VERSION=${VERSION}
 COPY . .
 RUN npm run build
 

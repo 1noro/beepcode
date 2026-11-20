@@ -10,7 +10,10 @@ SHELL := /bin/bash
 HOST_UID := $(shell id -u)
 HOST_GID := $(shell id -g)
 BASE_PATH ?= /
-export HOST_UID HOST_GID BASE_PATH
+# La versión que muestra la app, como en dhtcrawler: el tag, o el commit, y
+# -dirty si hay cambios sin commitear. Llega al build por VERSION (src/version.ts).
+VERSION := $(shell git describe --tags --dirty --always 2>/dev/null || echo dev)
+export HOST_UID HOST_GID BASE_PATH VERSION
 
 COMPOSE := docker compose
 RUN := $(COMPOSE) --progress quiet run --rm --build node
@@ -41,7 +44,12 @@ deps: | $(CACHE) ## fuerza la descarga de las librerías (normalmente es automá
 dev: $(DEPS) ## desarrollo con recarga en caliente → http://localhost:5173
 	$(COMPOSE) run --rm --build --service-ports dev
 
+# La «Network» que imprime Vite es la IP del contenedor, que el móvil no ve:
+# la buena es la de este equipo en la LAN (ip en Linux, ipconfig en macOS).
 dev-https: $(DEPS) ## ídem con HTTPS, para probar la PWA desde un móvil en la LAN
+	@lan=$$( { ip -4 route get 1.1.1.1 2>/dev/null | awk '{ for (i = 1; i < NF; i++) if ($$i == "src") print $$(i + 1) }'; \
+		ipconfig getifaddr en0 2>/dev/null; } | head -1 ); \
+	echo "En el móvil: https://$${lan:-<la IP de este equipo>}:5173 (no la «Network» de Vite, que es la del contenedor)"
 	DEV_HTTPS=1 $(COMPOSE) run --rm --build --service-ports dev
 
 lint: $(DEPS) ## ESLint y Prettier en modo comprobación
