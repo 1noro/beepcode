@@ -18,9 +18,8 @@
 
 <p align="center"><b>Sin backend, sin conexión, instalable. En el móvil, con ratón o con teclado.</b></p>
 
-> **En desarrollo.** Publicado, el modo Libre (v0.1.0). En la rama
-> `feat/f2-texto-a-morse`, el modo Texto → Morse (F2). El estado, en
-> [`docs/estado.md`](docs/estado.md).
+> **En desarrollo.** Publicados, el modo Libre y el modo Texto → Morse
+> (v0.2.0). El estado, en [`docs/estado.md`](docs/estado.md).
 
 ## Cómo se usa (modo Libre)
 

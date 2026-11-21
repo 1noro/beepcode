@@ -1,6 +1,6 @@
 # Estado
 
-**Al día:** 2026-11-21, 10:45 UTC. **Revisada:** 2026-11-20, la última
+**Al día:** 2026-11-21, 17:00 UTC. **Revisada:** 2026-11-20, la última
 [`/revisar-docs`](agentes/revisar-docs.md), que se lanza a mano cada semana.
 
 Lo vivo del desarrollo: en qué fase está, qué hay publicado, lo abierto y lo
@@ -10,17 +10,18 @@ Qué va en cada sitio, en `AGENTS.md`, "Dónde va cada información".
 
 ## La fase
 
-**F0, el andamiaje, y F1, el núcleo y el modo Libre: cerrados**
-([TODO 1](todo/01-andamiaje.md), [TODO 2](todo/02-nucleo-y-modo-libre.md)),
-publicados como **v0.1.0**. **F2, texto a Morse
-([TODO 3](todo/03-texto-a-morse.md)), hecho en la rama
-`feat/f2-texto-a-morse`**, revisado, commiteado y subido; falta la PR a
-`main`. El plan entero, en SPEC §13; v1 es de
-F0 a F4, y F5 (las estadísticas) llega al final.
+**F0, el andamiaje, F1, el núcleo y el modo Libre, y F2, texto a Morse:
+cerrados** ([TODO 1](todo/01-andamiaje.md),
+[TODO 2](todo/02-nucleo-y-modo-libre.md),
+[TODO 3](todo/03-texto-a-morse.md)), publicados como **v0.2.0**. Lo
+siguiente, **F3**: Aprender y Escuchar. El plan entero, en SPEC §13; v1 es
+de F0 a F4, y F5 (las estadísticas) llega al final.
 
 ## Lo publicado
 
-- **v0.1.0, el modo Libre** (F1), en `https://1noro.github.io/beepcode/`.
+- **v0.2.0, el modo Libre (F1) y el modo Texto → Morse (F2)**, en
+  `https://1noro.github.io/beepcode/`. Se despliega con
+  [`/desplegar`](agentes/desplegar.md).
   **Solo se publica `main`** (ADR 0007): `deploy.yml`, en cada push a `main`
   que no sea solo documentación.
 - **La versión** sale de `git describe --tags --dirty --always` y se ve en
@@ -32,8 +33,7 @@ F0 a F4, y F5 (las estadísticas) llega al final.
 | TODO | Estado | Qué falta |
 |---|---|---|
 | [7](todo/07-logo.md), el logo | a la espera | Que lo dibuje el usuario; hay uno provisional |
-| [3](todo/03-texto-a-morse.md), F2, texto a Morse | abierto | Hecho y subido en su rama; la PR a `main` y el tag v0.2.0 |
-| [4](todo/04-aprender-y-escuchar.md), F3, Aprender y Escuchar | abierto | Todo; tras el 3 |
+| [4](todo/04-aprender-y-escuchar.md), F3, Aprender y Escuchar | abierto | Todo; el siguiente |
 | [5](todo/05-grabar-y-reproducir.md), F4, grabar y reproducir | abierto | Todo |
 | [6](todo/06-estadisticas.md), F5, las estadísticas | a futuro | Especificarlas con el usuario |
 | [8](todo/08-modo-pro.md), el Modo Pro | a futuro | Fuera de v1 |
@@ -45,13 +45,12 @@ F0 a F4, y F5 (las estadísticas) llega al final.
 - **El logo** ([TODO 7](todo/07-logo.md)).
 - **Que alguien nativo revise** las traducciones al gallego, catalán y euskera
   ([`traducciones.md`](traducciones.md)): 66 textos con F1 y 78 con F2.
-- **Probar v0.1.0 en un móvil** (o con `make dev-https`): el sonido y el
+- **Probar v0.2.0 en un móvil** (o con `make dev-https`): el sonido y el
   táctil no tienen e2e, y desde la prueba en el Pixel 7 cambiaron el
-  pulsador, las pausas y el centrado del árbol.
+  pulsador, las pausas y el centrado del árbol; del modo Texto, escribir
+  sobre el texto con el teclado del móvil y la barra de desplazamiento en el
+  PC.
 
 ## Lo próximo
 
-- **La PR de `feat/f2-texto-a-morse` a `main`**, cuando la pida el usuario,
-  y el tag v0.2.0 (las decisiones menores, en la
-  [ficha 3](todo/03-texto-a-morse.md)).
-- Después, **F3 con `/tarea 4`**: Aprender y Escuchar, que usarán `player.ts`.
+- **F3 con `/tarea 4`**: Aprender y Escuchar, que usarán `player.ts`.

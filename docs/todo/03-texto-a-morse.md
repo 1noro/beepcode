@@ -1,6 +1,6 @@
 # TODO 3 — F2, texto a Morse
 
-**Estado:** abierto · **Fase:** F2 · **SPEC:** §4.1, §6.5 · **ADR:** [0003](../decisions/0003-logica-morse-pura-y-datos.md) · **Código:** `src/morse/player.ts`, `src/morse/text.ts`, `src/modes/text.ts`
+**Estado:** cerrado · **Fase:** F2 · **SPEC:** §4.1, §6.5 · **ADR:** [0003](../decisions/0003-logica-morse-pura-y-datos.md) · **Código:** `src/morse/player.ts`, `src/morse/text.ts`, `src/modes/text.ts`
 
 ## Qué pide
 
@@ -16,8 +16,8 @@ tests del player en reloj falso.
 
 ## Dónde está
 
-**Hecho y revisado por el usuario en la rama `feat/f2-texto-a-morse`,
-commiteado y subido; falta la PR a `main` y el tag** (2026-11-21). `make check` y `make e2e` en verde:
+**Cerrado: publicado como v0.2.0** (2026-11-21), desde la rama
+`feat/f2-texto-a-morse` con `/desplegar`. `make check` y `make e2e` en verde:
 307 tests unitarios, 70 e2e (35 en escritorio y 35 en móvil emulado) y
 `player.ts` al 99 % en líneas. El bundle inicial, unos 25 kB gzip (JS, CSS
 y `workbox-window`), más la fuente.
