@@ -20,12 +20,13 @@ const node = (page: Page, char: string) => page.locator(`.node[data-char="${char
  * widest gap tolerance gives the checks time to see it.
  */
 async function withWideGaps(page: Page): Promise<void> {
-  await page.addInitScript(() => {
-    localStorage.setItem(
-      'beepcode.settings',
-      JSON.stringify({ version: 1, settings: { gapTolerance: 3 } }),
-    );
-  });
+  await withSettings(page, { gapTolerance: 3 });
+}
+
+async function withSettings(page: Page, settings: Record<string, unknown>): Promise<void> {
+  await page.addInitScript((value) => {
+    localStorage.setItem('beepcode.settings', JSON.stringify({ version: 1, settings: value }));
+  }, settings);
 }
 
 async function expectEarlLit(page: Page): Promise<void> {
@@ -86,7 +87,54 @@ test('.-.. with the key on screen', async ({ page, hasTouch }) => {
   await expectEarlLit(page);
 });
 
+test('Enter, with no letter in progress, and the space button end the word', async ({ page }) => {
+  await page.goto('./');
+  const space = page.getByRole('button', { name: 'Space' });
+  // Nothing to end yet.
+  await page.keyboard.press('Enter');
+  await space.click();
+  await expect(tape(page)).toHaveText('');
+  await page.keyboard.press('-');
+  await page.keyboard.press('Enter');
+  // No pause writes it.
+  await page.waitForTimeout(2200);
+  await expect(tape(page)).toHaveText('T');
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Enter');
+  await expect(tape(page)).toHaveText('T ');
+  // The button closes the letter in progress too, and leaves the focus.
+  await page.keyboard.press('.');
+  await space.click();
+  await expect(tape(page)).toHaveText('T E ');
+  await expect(space).not.toBeFocused();
+});
+
+test('the space button sits beside the key, as tall', async ({ page }) => {
+  await page.goto('./');
+  const key = await page.getByRole('button', { name: /^Key/ }).boundingBox();
+  const space = await page.getByRole('button', { name: 'Space' }).boundingBox();
+  expect(space?.height).toBeCloseTo(key?.height ?? 0, 0);
+  expect(space?.y).toBeCloseTo(key?.y ?? 0, 0);
+  expect(space?.x).toBeGreaterThan((key?.x ?? 0) + (key?.width ?? 0));
+});
+
+test('automatic word spaces, from the settings: off by default', async ({ page }) => {
+  await page.goto('./');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  // Under the name of the mode it changes.
+  const auto = page
+    .locator('section', { hasText: 'Free mode' })
+    .getByLabel('Automatic word spaces');
+  await expect(auto).not.toBeChecked();
+  await auto.check();
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('-');
+  await page.keyboard.press('Enter');
+  await expect(tape(page)).toHaveText('T ', { timeout: 3000 });
+});
+
 test('a pause makes a word space; Backspace and the actions edit the tape', async ({ page }) => {
+  await withSettings(page, { autoSpace: true });
   await page.goto('./');
   await page.keyboard.press('-');
   await page.keyboard.press('Enter');
@@ -161,6 +209,7 @@ test('the page never scrolls, not even on a short window', async ({ page }) => {
 });
 
 test('the path goes off, and the word space comes a second later', async ({ page }) => {
+  await withSettings(page, { autoSpace: true });
   await page.goto('./');
   await page.evaluate(() => {
     const marks: Record<string, number> = {};

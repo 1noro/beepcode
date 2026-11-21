@@ -539,3 +539,71 @@ describe('the word margin adapts to the pauses between letters (SPEC §4.2)', ()
     fixed.dispose();
   });
 });
+
+describe('word spaces by hand (SPEC §4.2)', () => {
+  beforeEach(() => {
+    keyer.dispose();
+    keyer = createKeyer({ tree: TREE_V1, timing: TIMING, clock, autoSpace: false });
+    record(keyer);
+  });
+
+  it('without automatic spaces, the margin inserts nothing', () => {
+    key(80, 10_000);
+    expect(log).toEqual(['symbol .', 'letter E']);
+  });
+
+  it('space() ends the word after a letter, once', () => {
+    key(80, 600);
+    keyer.space();
+    keyer.space();
+    expect(log).toEqual(['symbol .', 'letter E', 'wordSpace']);
+  });
+
+  it('space() closes the letter in progress first', () => {
+    key(80, 0);
+    key(300, 0);
+    keyer.space();
+    expect(log).toEqual(['symbol .', 'symbol .-', 'letter A', 'wordSpace']);
+  });
+
+  it('space() does nothing at the start, after an invalid letter or with the key down', () => {
+    keyer.space();
+    keyer.press();
+    clock.advance(80);
+    keyer.space();
+    keyer.release();
+    expect(log).toEqual(['symbol .']);
+    keyer.cancel();
+    keyer.space();
+    expect(log).toEqual(['symbol .', 'cancel .']);
+  });
+
+  it('a space asked for and deleted does not widen the margin', () => {
+    const adaptive = createKeyer({ tree: TREE_V1, timing: TIMING, clock, adaptive: true });
+    adaptive.input('dot');
+    adaptive.space();
+    adaptive.rejectSpace();
+    expect(adaptive.wordMarginMs).toBe(1000);
+  });
+
+  it('turning them on arms the margin; off, disarms it', () => {
+    key(80, 600);
+    keyer.setAutoSpace(true);
+    clock.advance(1299);
+    expect(log.at(-1)).toBe('letter E');
+    clock.advance(1);
+    expect(log.at(-1)).toBe('wordSpace');
+    key(80, 600);
+    keyer.setAutoSpace(false);
+    clock.advance(10_000);
+    expect(log.at(-1)).toBe('letter E');
+  });
+
+  it('with automatic spaces too, space() ends the word before the margin', () => {
+    keyer.setAutoSpace(true);
+    key(80, 600);
+    keyer.space();
+    clock.advance(10_000);
+    expect(log.filter((e) => e === 'wordSpace')).toHaveLength(1);
+  });
+});

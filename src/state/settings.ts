@@ -39,6 +39,11 @@ export interface Settings {
    */
   effectiveWpm: number | null;
   gapTolerance: number;
+  /**
+   * The Free mode writes the word space by itself after a pause (SPEC §4.2);
+   * if not, it comes with its button or Enter.
+   */
+  autoSpace: boolean;
   /** In units. */
   dashThreshold: number;
   toneHz: number;
@@ -57,6 +62,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   wpm: 12,
   effectiveWpm: null,
   gapTolerance: 1.5,
+  autoSpace: false,
   dashThreshold: 2,
   toneHz: 600,
   volume: 70,
@@ -128,6 +134,7 @@ export function sanitize(raw: Raw): Settings {
     wpm,
     effectiveWpm: effective(raw.effectiveWpm, wpm),
     gapTolerance: inRange('gapTolerance', raw.gapTolerance),
+    autoSpace: bool(raw.autoSpace, DEFAULT_SETTINGS.autoSpace),
     dashThreshold: inRange('dashThreshold', raw.dashThreshold),
     toneHz: inRange('toneHz', raw.toneHz),
     volume: inRange('volume', raw.volume),

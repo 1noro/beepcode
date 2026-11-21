@@ -14,6 +14,30 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
 
 ## Sin publicar
 
+## 0.3.0 — 2026-11-21
+
+### Añadido
+
+- **Un botón de espacio** (␣) junto al pulsador, en el modo Libre: termina
+  la palabra cuando quieras, y cierra antes la letra en curso. Con el
+  teclado, `Enter` sin letra en curso hace lo mismo.
+
+### Cambiado
+
+- **Los espacios entre palabras, a mano por defecto** en el modo Libre: ya
+  no llega uno solo mientras piensas la letra siguiente. Los automáticos,
+  por pausa, siguen en los ajustes ("Espacios entre palabras automáticos").
+- **Los ajustes, agrupados por a qué afectan**: lo de todos los modos
+  (aspecto; sonido y velocidad) y una sección por modo con lo suyo.
+
+### Corregido
+
+- **Los primeros pitidos** al abrir la app, o tras un rato sin tocarla, ya
+  no se pierden ni suenan más largos de lo pulsado. El audio arranca con
+  cualquier toque (también el primero en el móvil), no se duerme mientras la
+  app está a la vista, y lo que se pulsa mientras arranca suena después con
+  su duración exacta.
+
 ## 0.2.0 — 2026-11-21
 
 ### Añadido

@@ -46,15 +46,20 @@ const toneSettings = (s: Settings) => ({
 });
 const tone = createTone(toneSettings(settings.get()));
 const vibration = createVibration(settings.get().vibration);
-// The audio starts with the first gesture anywhere (opening the settings,
-// choosing a mode…), so that it is already running when the key is pressed.
-const warmUp = () => {
-  tone.unlock();
-  window.removeEventListener('pointerdown', warmUp, true);
-  window.removeEventListener('keydown', warmUp, true);
-};
-window.addEventListener('pointerdown', warmUp, true);
-window.addEventListener('keydown', warmUp, true);
+// The audio starts with any gesture (opening the settings, choosing a
+// mode…), so that it is already running when the key is pressed; and again
+// with each one until it runs. On a touch screen pointerdown is not yet a
+// gesture that may start it (it could be a scroll): pointerup and touchend
+// are.
+for (const type of ['pointerdown', 'pointerup', 'touchend', 'keydown']) {
+  window.addEventListener(type, () => tone.unlock(), true);
+}
+// Hidden, it stops: the signal that keeps it awake (tone.ts) would spend
+// battery for nothing.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') tone.suspend();
+  else tone.unlock();
+});
 settings.subscribe((value) => {
   tone.configure(toneSettings(value));
   vibration.setEnabled(value.vibration);

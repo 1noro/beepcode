@@ -90,6 +90,7 @@ describe('the settings (SPEC §7)', () => {
       dashColor: 'red',
       wpm: 99.4,
       gapTolerance: 0.2,
+      autoSpace: 1,
       dashThreshold: '2',
       toneHz: 700,
       volume: -5,
@@ -106,6 +107,11 @@ describe('the settings (SPEC §7)', () => {
       volume: 0,
       vibration: false,
     });
+  });
+
+  it('leave the word spaces of the Free mode to the hand by default', () => {
+    expect(DEFAULT_SETTINGS.autoSpace).toBe(false);
+    expect(sanitize({ autoSpace: true }).autoSpace).toBe(true);
   });
 
   it('keep the effective speed (Farnsworth) below the speed, or follow it', () => {

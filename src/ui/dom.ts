@@ -48,6 +48,8 @@ const ICONS = {
     ['path', { d: 'M9 5h11v14H9l-6-7z' }],
     ['path', { d: 'M12 9l5 6M17 9l-5 6' }],
   ],
+  // The open box of a space (␣).
+  space: [['path', { d: 'M3 10v5h18v-5' }]],
   clear: [['path', { d: 'M6 6l12 12M18 6L6 18' }]],
   copy: [
     ['rect', { x: 8, y: 8, width: 12, height: 12, rx: 2 }],

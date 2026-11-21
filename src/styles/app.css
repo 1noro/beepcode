@@ -293,10 +293,22 @@
    into at once when pressed and springs back from when released. While held
    it takes the colour of the dot and, past the dash threshold, of the dash,
    and the meter sweeps across it in that time. */
-.key {
+/* The key and, beside it, as tall, the word space: what sits below the tree
+   is as high with it as without. */
+.key-row {
+  grid-area: key;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(64px, 22%, 112px);
+  gap: 12px;
+}
+
+.key,
+.space-key {
   --key-tone: var(--color-border);
   --key-skirt: color-mix(in srgb, var(--key-tone) 65%, var(--color-bg));
-  grid-area: key;
+}
+
+.key {
   position: relative;
   display: grid;
   place-content: center;
@@ -384,6 +396,58 @@
   transition: transform var(--dash-ms, 200ms) linear;
 }
 
+/* The space: the same body as the key, plainer, and it only goes down. */
+.space-key {
+  display: grid;
+  place-content: center;
+  place-items: center;
+  gap: 2px;
+  height: clamp(96px, 18vh, 160px);
+  min-height: 96px;
+  margin-bottom: 6px;
+  padding: 0;
+  border-radius: 20px;
+  color: var(--color-muted);
+  background-color: var(--color-surface);
+  border: 2px solid var(--key-tone);
+  box-shadow: 0 8px 0 var(--key-skirt);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    transform 180ms cubic-bezier(0.34, 1.8, 0.64, 1),
+    box-shadow 180ms ease-out;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.space-key:hover {
+  color: var(--color-fg);
+}
+
+.space-key:active {
+  transition: none;
+  transform: translateY(6px);
+  box-shadow: 0 2px 0 var(--key-skirt);
+}
+
+.space-key .icon {
+  width: 32px;
+  height: 32px;
+}
+
+.space-key-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .space-key {
+    transition: none;
+  }
+}
+
 /* The text, over the sweep, which comes after it. */
 .key-label,
 .key-hint {
@@ -439,8 +503,21 @@
     grid-template-areas: 'tape tape' 'board key' 'hints key';
   }
 
+  /* The space, under the key, as wide. */
+  .key-row {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
   .key {
     height: 100%;
+  }
+
+  .space-key {
+    height: 56px;
+    min-height: 0;
+    grid-auto-flow: column;
+    gap: 8px;
   }
 }
 

@@ -4,7 +4,8 @@
 //   IDLE ─press→ PRESSED ─release→ GAP ─letterGap→ letter → HOLD ─letterGap→ READY ─margin→ space → IDLE
 //
 // After the last symbol: the letter gap closes the letter; as long again, its
-// path stays lit (HOLD); once it is off, the word margin inserts the space.
+// path stays lit (HOLD); once it is off, the word margin inserts the space,
+// if the spaces are automatic. If not, the space comes with space().
 // If it is adaptive, the gaps scale with the rhythm of whoever keys
 // (rhythm.ts), and the margin, with their pauses between letters (pauses.ts).
 // It emits events (SPEC §4.3) and knows nobody: the UI, the audio and the
@@ -46,6 +47,14 @@ export interface Keyer {
   /** Closes the letter in progress now (Enter). */
   commit(): void;
   /**
+   * The word space now: closes the letter in progress, if any, and ends the
+   * word, if a letter was written since the last space. A space asked for is
+   * no sign of the margin: deleting it does not widen it.
+   */
+  space(): void;
+  /** Whether the word margin inserts the space by itself (SPEC §4.2). */
+  setAutoSpace(on: boolean): void;
+  /**
    * The word space just written was deleted before keying again: it came too
    * soon, and the adaptive margin widens.
    */
@@ -75,6 +84,11 @@ export interface KeyerOptions {
    * margin follows the pauses between letters, typed ones too.
    */
   adaptive?: boolean;
+  /**
+   * The word margin inserts the space by itself; by default, yes. Without,
+   * only space() does.
+   */
+  autoSpace?: boolean;
 }
 
 export function createKeyer(options: KeyerOptions): Keyer {
@@ -82,6 +96,7 @@ export function createKeyer(options: KeyerOptions): Keyer {
   const clock = options.clock ?? systemClock;
   const events = createEmitter<KeyerEvents>();
   let timing = options.timing;
+  let autoSpace = options.autoSpace ?? true;
   const rhythm = options.adaptive ? createRhythm(timing.unitMs) : null;
   const pauses = options.adaptive ? createWordPauses() : null;
   let pressed = false;
@@ -129,8 +144,8 @@ export function createKeyer(options: KeyerOptions): Keyer {
     clearTimer();
     if (pressed || disposed || lastSymbolAt === null) return;
     if (sequence) schedule(lastSymbolAt + letterGapMs(), closeLetter);
-    else if (spacePending) {
-      schedule(lastSymbolAt + 2 * letterGapMs() + wordMarginMs(), wordSpace);
+    else if (spacePending && autoSpace) {
+      schedule(lastSymbolAt + 2 * letterGapMs() + wordMarginMs(), () => wordSpace());
     }
   }
 
@@ -172,10 +187,10 @@ export function createKeyer(options: KeyerOptions): Keyer {
     arm();
   }
 
-  function wordSpace(): void {
+  function wordSpace(asked = false): void {
     spacePending = false;
     readyAt = null;
-    spaceLast = true;
+    spaceLast = !asked;
     events.emit('wordSpace', { at: clock.now() });
   }
 
@@ -216,6 +231,17 @@ export function createKeyer(options: KeyerOptions): Keyer {
     commit() {
       if (pressed || !sequence) return;
       closeLetter();
+    },
+    space() {
+      if (pressed || disposed) return;
+      if (sequence) closeLetter();
+      if (!spacePending) return;
+      clearTimer();
+      wordSpace(true);
+    },
+    setAutoSpace(on) {
+      autoSpace = on;
+      arm();
     },
     rejectSpace() {
       if (!spaceLast) return;
