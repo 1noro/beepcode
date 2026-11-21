@@ -63,6 +63,8 @@
   "tape.invalid": "Unknown sequence",
   "text.input": "Text to play",
   "text.placeholder": "Type a text to hear it in Morse",
+  "text.clear": "Clear the text",
+  "text.count": "{count} / {max}",
   "text.preview": "Text as it is played",
   "text.transcription": "Transcription",
   "text.skipped": "Faded characters are not in the alphabet and are skipped.",

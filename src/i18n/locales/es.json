@@ -63,6 +63,8 @@
   "tape.invalid": "Secuencia desconocida",
   "text.input": "Texto para reproducir",
   "text.placeholder": "Escribe un texto para oírlo en Morse",
+  "text.clear": "Borrar el texto",
+  "text.count": "{count} / {max}",
   "text.preview": "El texto tal como suena",
   "text.transcription": "Transcripción",
   "text.skipped": "Los caracteres atenuados no están en el alfabeto y se saltan.",

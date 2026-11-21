@@ -467,10 +467,27 @@
   min-width: 0;
 }
 
+/* The field, with its clear button in the corner. */
+.text-field {
+  position: relative;
+}
+
+.text-clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.text-clear:disabled {
+  visibility: hidden;
+}
+
 .text-input {
+  display: block;
   width: 100%;
   resize: none;
-  padding: 8px 10px;
+  /* Room on the right for the clear button. */
+  padding: 8px 44px 8px 10px;
   font: inherit;
   font-size: 1rem;
   color: var(--color-fg);
@@ -533,10 +550,24 @@
   border-radius: 3px;
 }
 
-.text-hint {
+/* The hint of what is skipped, and the count of characters on the right. */
+.text-footer {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.text-hint,
+.text-count {
   margin: 0;
   font-size: 0.85rem;
   color: var(--color-muted);
+}
+
+.text-count {
+  flex: none;
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
 }
 
 .text-hint[hidden] {

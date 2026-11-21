@@ -63,6 +63,8 @@
   "tape.invalid": "Sekuentzia ezezaguna",
   "text.input": "Erreproduzitzeko testua",
   "text.placeholder": "Idatzi testu bat Morsez entzuteko",
+  "text.clear": "Ezabatu testua",
+  "text.count": "{count} / {max}",
   "text.preview": "Testua, entzuten den bezala",
   "text.transcription": "Transkripzioa",
   "text.skipped": "Itzalitako karaktereak ez daude alfabetoan, eta saltatu egiten dira.",

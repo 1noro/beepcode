@@ -10,7 +10,6 @@ import { displayCode } from '../morse/alphabet.ts';
 import { createPlayer } from '../morse/player.ts';
 import { tokenize, type TextToken } from '../morse/text.ts';
 import { sendTiming } from '../morse/timing.ts';
-import { HISTORY_MAX } from '../state/history.ts';
 import { effectiveWpm, type Settings } from '../state/settings.ts';
 import { createBoard } from '../ui/board.ts';
 import { el, icon, type IconName } from '../ui/dom.ts';
@@ -18,6 +17,12 @@ import type { Mode, ModeContext } from './mode.ts';
 
 /** How long the path of the last letter stays lit, its fade included. */
 const END_HOLD_MS = 1500;
+
+/**
+ * The longest text: some 3 minutes at 12 WPM, enough to practise, and what
+ * fits under the field. Counted as the field counts (UTF-16 units).
+ */
+const TEXT_MAX = 200;
 
 /** The text, kept while the app is open, when going to another mode and back. */
 let lastText = '';
@@ -46,11 +51,16 @@ export function createTextMode(context: ModeContext): Mode {
   let tokens: TextToken[] = [];
   let txTimer: ReturnType<typeof setTimeout> | undefined;
 
-  const input = el('textarea', { className: 'text-input', rows: 3, maxLength: HISTORY_MAX });
+  const input = el('textarea', { className: 'text-input', rows: 3, maxLength: TEXT_MAX });
   input.spellcheck = false;
   input.autocapitalize = 'characters';
   tAttr(input, 'aria-label', 'text.input');
   tAttr(input, 'placeholder', 'text.placeholder');
+  const clear = el('button', { type: 'button', className: 'icon-button text-clear' }, [
+    icon('clear'),
+  ]);
+  tAttr(clear, 'aria-label', 'text.clear');
+  tAttr(clear, 'title', 'text.clear');
 
   // The text as it will be played, one span per character, and the
   // transcription, one span per letter, both with data-index of the token.
@@ -60,6 +70,7 @@ export function createTextMode(context: ModeContext): Mode {
   tAttr(transcription, 'aria-label', 'text.transcription');
   const skippedHint = el('p', { className: 'text-hint', hidden: true });
   tText(skippedHint, 'text.skipped');
+  const count = el('p', { className: 'text-count' });
 
   const play = button('play', 'text.play');
   const stop = button('stop', 'text.stop');
@@ -88,7 +99,9 @@ export function createTextMode(context: ModeContext): Mode {
     });
     transcription.replaceChildren(...codes);
     skippedHint.hidden = !tokens.some((token) => token.kind === 'skip');
+    tText(count, 'text.count', { count: lastText.length, max: TEXT_MAX });
     play.disabled = !tokens.some((token) => token.kind === 'letter');
+    clear.disabled = tokens.length === 0;
   }
 
   /** Highlights the character of token `index`, and its code; null, none. */
@@ -150,10 +163,16 @@ export function createTextMode(context: ModeContext): Mode {
     }),
   ];
 
-  input.addEventListener('input', () => {
+  function edit(text: string): void {
     silence();
     board.clear();
-    load(input.value);
+    load(text);
+  }
+  input.addEventListener('input', () => edit(input.value));
+  clear.addEventListener('click', () => {
+    input.value = '';
+    edit('');
+    input.focus();
   });
   play.addEventListener('click', () => {
     if (player.state === 'playing') {
@@ -185,9 +204,9 @@ export function createTextMode(context: ModeContext): Mode {
 
   const element = el('div', { className: 'mode mode-text' }, [
     el('section', { className: 'text-panel' }, [
-      input,
+      el('div', { className: 'text-field' }, [input, clear]),
       el('div', { className: 'text-output' }, [preview, transcription]),
-      skippedHint,
+      el('div', { className: 'text-footer' }, [skippedHint, count]),
     ]),
     el('div', { className: 'board-wrap' }, [board.element]),
     el('div', { className: 'player-controls' }, [play, stop, loop]),

@@ -61,9 +61,14 @@ Decisiones menores, por el camino:
 - **El árbol de este modo no es interactivo** (`createBoard(tree, {
   interactive: false })`): sin Explorar, sus nodos no son botones. **La
   antena se enciende** mientras suena cada símbolo, como al manipular.
+- **Un botón ✕ en la esquina del campo lo vacía** (a petición del usuario):
+  para lo que suena y devuelve el foco al campo; con el campo vacío, oculto.
 - **El texto se recuerda al cambiar de modo**, mientras la app sigue
-  abierta; no se guarda entre sesiones. Como mucho 500 caracteres, como la
-  cinta.
+  abierta; no se guarda entre sesiones.
+- **Como mucho 200 caracteres, con un contador siempre visible** (`37 / 200`,
+  a petición del usuario): unos 3 minutos a 12 PPM, que basta para
+  practicar y cabe bajo el campo. Al principio eran 500, como la cinta, y no
+  se veía.
 - **El player recibe texto, no código suelto** (`.- -...`): §6.5 solo pide
   un campo de texto. Una letra suelta ya la cubre `timing.letterTimeline`
   (Explorar); si F3 necesita más, `plan` admite cualquier lista de fichas.

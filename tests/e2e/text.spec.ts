@@ -72,6 +72,37 @@ test('pauses where it is, and stops back at the start', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Stop' })).toBeDisabled();
 });
 
+test('takes at most 200 characters, and counts them', async ({ page }) => {
+  await page.goto('./#/text');
+  await expect(page.getByText('0 / 200')).toBeVisible();
+  await input(page).fill('SOS');
+  await expect(page.getByText('3 / 200')).toBeVisible();
+  await input(page).fill('');
+  await input(page).pressSequentially('E'.repeat(205));
+  await expect(input(page)).toHaveValue('E'.repeat(200));
+  await expect(page.getByText('200 / 200')).toBeVisible();
+});
+
+test('the clear button empties the text and stops', async ({ page }) => {
+  await atSlowSpeed(page);
+  await page.goto('./#/text');
+  // Empty, it is hidden: out of the accessibility tree too.
+  const hiddenClear = page.locator('.text-clear');
+  await expect(hiddenClear).toBeDisabled();
+  await expect(hiddenClear).toBeHidden();
+  const clear = page.getByRole('button', { name: 'Clear the text' });
+  await input(page).fill('t t t');
+  await page.getByRole('button', { name: 'Play' }).click();
+  await expect(current(page)).toHaveText('T');
+  await clear.click();
+  await expect(input(page)).toHaveValue('');
+  await expect(input(page)).toBeFocused();
+  await expect(preview(page)).toHaveText('');
+  await expect(transcription(page)).toHaveText('');
+  await expect(page.getByRole('button', { name: 'Play' })).toBeDisabled();
+  await expect(hiddenClear).toBeDisabled();
+});
+
 test('the loop is a toggle, and the text stays when coming back', async ({ page }) => {
   await page.goto('./#/text');
   const loop = page.getByRole('button', { name: 'Loop' });
