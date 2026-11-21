@@ -79,6 +79,6 @@
   "key.spaceHint": "Amaitu hitza (Sartu)",
   "board.label": "Morse zuhaitza",
   "board.node": "{letter}: {code}",
-  "hint.keys": "Zuriune-tekla: sakagailua · . eta -: puntua eta marra · Sartu: itxi letra edo hitza · Atzera-tekla: ezabatu",
+  "hint.keys": "Zuriunea: sakagailua · . eta -: puntu eta marra · Sartu: letra/hitza · Atzera: ezabatu",
   "hint.explore": "Egin klik zuhaitzaren letra batean entzuteko."
 }

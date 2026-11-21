@@ -110,7 +110,7 @@ export function createTextMode(context: ModeContext): Mode {
   ]);
   tAttr(transcription, 'aria-label', 'text.transcription');
   // Hidden with a class, not with `hidden`: it keeps its room (app.css).
-  const skippedHint = el('p', { className: 'text-hint is-off' });
+  const skippedHint = el('p', { className: 'hint is-off' });
   tText(skippedHint, 'text.skipped');
   const count = el('p', { className: 'text-count' });
 
@@ -297,7 +297,7 @@ export function createTextMode(context: ModeContext): Mode {
     el('section', { className: 'text-panel' }, [
       editor,
       output,
-      el('div', { className: 'text-footer' }, [skippedHint, count]),
+      el('div', { className: 'mode-footer' }, [skippedHint, count]),
     ]),
     el('div', { className: 'board-wrap' }, [board.element]),
     el('div', { className: 'player-controls' }, [play, stop, loop]),

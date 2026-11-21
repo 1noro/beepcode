@@ -79,6 +79,6 @@
   "key.spaceHint": "Acaba la paraula (Retorn)",
   "board.label": "Arbre Morse",
   "board.node": "{letter}: {code}",
-  "hint.keys": "Espai: polsador · . i -: punt i ratlla · Retorn: tanca lletra o mot · Retrocés: esborra",
+  "hint.keys": "Espai: polsador · . i -: punt i ratlla · Retorn: lletra o mot · Retrocés: esborra",
   "hint.explore": "Fes clic en una lletra de l'arbre per sentir-la."
 }

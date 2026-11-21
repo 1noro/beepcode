@@ -79,6 +79,6 @@
   "key.spaceHint": "Rematar a palabra (Intro)",
   "board.label": "Árbore Morse",
   "board.node": "{letter}: {code}",
-  "hint.keys": "Espazo: pulsador · . e -: punto e raia · Intro: remata letra ou palabra · Retroceso: borrar",
+  "hint.keys": "Espazo: pulsador · . e -: punto e raia · Intro: letra ou palabra · Retroceso: borrar",
   "hint.explore": "Fai clic nunha letra da árbore para oíla."
 }

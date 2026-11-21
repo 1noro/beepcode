@@ -79,6 +79,6 @@
   "key.spaceHint": "Terminar la palabra (Enter)",
   "board.label": "Árbol Morse",
   "board.node": "{letter}: {code}",
-  "hint.keys": "Espacio: pulsador · . y -: punto y raya · Enter: fin de letra o palabra · Retroceso: borrar",
+  "hint.keys": "Espacio: pulsador · . y -: punto y raya · Enter: letra o palabra · Retroceso: borrar",
   "hint.explore": "Haz clic en una letra del árbol para oírla."
 }

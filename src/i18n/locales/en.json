@@ -79,6 +79,6 @@
   "key.spaceHint": "End the word (Enter)",
   "board.label": "Morse tree",
   "board.node": "{letter}: {code}",
-  "hint.keys": "Space: key · . and -: dot and dash · Enter: end the letter or the word · Backspace: delete",
+  "hint.keys": "Space: key · . and -: dot and dash · Enter: end letter or word · Backspace: delete",
   "hint.explore": "Click a letter of the tree to hear it."
 }

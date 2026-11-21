@@ -46,8 +46,8 @@
   min-height: 0;
   max-width: 760px;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto auto;
-  grid-template-areas: 'tape' 'board' 'hints' 'key';
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-areas: 'tape' 'hints' 'board' 'key';
   gap: 8px;
   padding: 8px var(--space) var(--space);
 }
@@ -130,6 +130,23 @@
   font-size: 1.5rem;
   line-height: 1.5;
   letter-spacing: 0.25em;
+  color: var(--color-muted);
+}
+
+/* The footer of the top panel, the same in every mode: what to do, in short
+   sentences from the left that fit on one line; on the right, a figure, if
+   the mode has one. */
+.mode-footer {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hint,
+.text-count {
+  margin: 0;
+  font-size: 0.85rem;
   color: var(--color-muted);
 }
 
@@ -475,17 +492,14 @@
   color: var(--color-muted);
 }
 
-/* The keys, only where there is a keyboard and a fine pointer. */
+/* The hints of the free mode, in the footer of the tape: one per line, and
+   only where there is a keyboard and a fine pointer. */
 .hints {
   grid-area: hints;
   display: none;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 4px 16px;
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--color-muted);
-  text-align: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -499,8 +513,8 @@
   .mode {
     max-width: none;
     grid-template-columns: minmax(0, 1fr) minmax(180px, 32%);
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    grid-template-areas: 'tape tape' 'board key' 'hints key';
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-areas: 'tape tape' 'hints hints' 'board key';
   }
 
   /* The space, under the key, as wide. */
@@ -770,14 +784,7 @@
   border-radius: 3px;
 }
 
-/* The hint of what is skipped, and the count of characters on the right. */
-.text-footer {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.text-hint,
+/* The count of characters, on the right of the footer. */
 .text-count {
   margin: 0;
   font-size: 0.85rem;
@@ -795,7 +802,7 @@
 }
 
 /* Hidden, it keeps its room, for the same reason. */
-.text-hint.is-off {
+.hint.is-off {
   visibility: hidden;
 }
 

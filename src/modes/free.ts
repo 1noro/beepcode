@@ -207,7 +207,11 @@ export function createFreeMode(context: ModeContext): Mode {
   // A click leaves the focus where it was: Enter goes on closing letters.
   space.addEventListener('mousedown', (event) => event.preventDefault());
 
-  const hints = el('p', { className: 'hints' }, [el('span'), el('span')]);
+  // In the footer of the tape, as the hints of the other modes (app.css).
+  const hints = el('div', { className: 'mode-footer hints' }, [
+    el('p', { className: 'hint' }),
+    el('p', { className: 'hint' }),
+  ]);
   const [keysHint, exploreHint] = hints.children;
   if (keysHint instanceof HTMLElement) tText(keysHint, 'hint.keys');
   if (exploreHint instanceof HTMLElement) tText(exploreHint, 'hint.explore');
@@ -237,8 +241,8 @@ export function createFreeMode(context: ModeContext): Mode {
 
   const element = el('div', { className: 'mode mode-free' }, [
     tape.element,
-    el('div', { className: 'board-wrap' }, [board.element]),
     hints,
+    el('div', { className: 'board-wrap' }, [board.element]),
     el('div', { className: 'key-row' }, [key, space]),
   ]);
 

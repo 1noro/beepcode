@@ -14,6 +14,13 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
 
 ## Sin publicar
 
+### Cambiado
+
+- **Las ayudas del modo Libre, como las del modo Texto → Morse**: debajo de
+  la cinta, alineadas a la izquierda y en una sola línea cada una, en los
+  cinco idiomas. Antes iban centradas entre el árbol y el pulsador, y la de
+  las teclas partía línea.
+
 ## 0.3.0 — 2026-11-21
 
 ### Añadido

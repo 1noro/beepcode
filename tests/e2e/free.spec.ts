@@ -267,3 +267,29 @@ test('the key takes the colour of the dot, then of the dash, while held', async 
   await expect(key).not.toHaveClass(/is-down|is-dot|is-dash/);
   await expect(page.locator('.tape-sequence')).toHaveText('−');
 });
+
+// The hints, in the footer of the tape as in the other modes, one sentence
+// per line in every language: wrapped, they looked broken.
+for (const locale of ['en', 'es', 'gl', 'ca', 'eu']) {
+  test(`the hints fit on one line each, under the tape (${locale})`, async ({ page, isMobile }) => {
+    test.skip(isMobile, 'Without a keyboard and a fine pointer there are no hints');
+    await withSettings(page, { locale });
+    await page.goto('./');
+    const hints = page.locator('.hints .hint');
+    await expect(hints).toHaveCount(2);
+    for (const hint of await hints.all()) {
+      await expect(hint).toBeVisible();
+      const lines = await hint.evaluate(
+        (node) =>
+          node.getBoundingClientRect().height / parseFloat(getComputedStyle(node).lineHeight),
+      );
+      expect(lines).toBeLessThan(1.5);
+    }
+    const tape = await page.locator('.tape').boundingBox();
+    const footer = await page.locator('.hints').boundingBox();
+    const board = await page.locator('.board-wrap').boundingBox();
+    if (!tape || !footer || !board) throw new Error('No tape, hints or tree');
+    expect(footer.y).toBeGreaterThanOrEqual(tape.y + tape.height);
+    expect(footer.y + footer.height).toBeLessThanOrEqual(board.y);
+  });
+}
