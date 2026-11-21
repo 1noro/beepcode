@@ -14,6 +14,16 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
 
 ## Sin publicar
 
+### Añadido
+
+- **El modo Texto → Morse** (`#/text`): escribe un texto y óyelo en Morse,
+  con reproducir, pausa, parar y bucle. Se pasa a mayúsculas sin tildes; lo
+  que no está en el alfabeto (números, puntuación, Ñ, Ç) se ve atenuado y se
+  salta. Mientras suena, se resalta el carácter, se enciende su camino en el
+  árbol y se ve la transcripción `·−` entera.
+- **La velocidad efectiva (Farnsworth)** en los ajustes: las letras suenan a
+  la velocidad elegida y las pausas entre ellas se alargan hasta la efectiva.
+
 ## 0.1.0 — 2026-11-20
 
 ### Añadido

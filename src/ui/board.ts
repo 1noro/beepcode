@@ -87,7 +87,16 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export function createBoard(tree: MorseTree): Board {
+export interface BoardOptions {
+  /**
+   * The letters can be clicked or activated (Explore, SPEC §6.1). Without
+   * it, the tree only shows: its nodes are not buttons.
+   */
+  interactive?: boolean;
+}
+
+export function createBoard(tree: MorseTree, options: BoardOptions = {}): Board {
+  const interactive = options.interactive ?? true;
   const { layout } = tree;
   const columns = treeColumns(layout, {
     half: (shape) => {
@@ -108,7 +117,7 @@ export function createBoard(tree: MorseTree): Board {
   const height = Math.max(...ys) + margin - minY;
 
   const element = svg('svg', {
-    class: 'board',
+    class: interactive ? 'board' : 'board board--static',
     viewBox: `${minX} ${minY} ${width} ${height}`,
     role: 'group',
   });
@@ -160,8 +169,7 @@ export function createBoard(tree: MorseTree): Board {
         class: `node node--${symbol}`,
         'data-code': node.code,
         'data-char': node.char ?? '',
-        role: 'button',
-        tabindex: 0,
+        ...(interactive ? { role: 'button', tabindex: 0 } : {}),
       },
       [
         svg('circle', { class: 'hit', cx, cy, r: CELL_Y * 0.45 }),
@@ -170,6 +178,9 @@ export function createBoard(tree: MorseTree): Board {
         label,
       ],
     );
+    nodes.append(group);
+    groupOf.set(node.code, group);
+    if (!interactive) continue;
     tAttr(group, 'aria-label', 'board.node', {
       letter: node.char ?? '',
       code: displayCode(node.code),
@@ -184,8 +195,6 @@ export function createBoard(tree: MorseTree): Board {
       event.stopPropagation();
       select();
     });
-    nodes.append(group);
-    groupOf.set(node.code, group);
   }
 
   let timers: ReturnType<typeof setTimeout>[] = [];

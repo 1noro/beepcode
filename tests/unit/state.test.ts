@@ -3,10 +3,12 @@ import { appendLetter, appendSpace, deleteLast } from '../../src/state/history.t
 import {
   DEFAULT_SETTINGS,
   SETTINGS_KEY,
+  effectiveWpm,
   loadSettings,
   migrate,
   sanitize,
   saveSettings,
+  wpmChange,
 } from '../../src/state/settings.ts';
 import { createStore } from '../../src/state/store.ts';
 
@@ -104,6 +106,25 @@ describe('the settings (SPEC §7)', () => {
       volume: 0,
       vibration: false,
     });
+  });
+
+  it('keep the effective speed (Farnsworth) below the speed, or follow it', () => {
+    expect(sanitize({ wpm: 20, effectiveWpm: 9.6 })).toMatchObject({ wpm: 20, effectiveWpm: 10 });
+    expect(sanitize({ wpm: 20, effectiveWpm: 2 }).effectiveWpm).toBe(5);
+    expect(sanitize({ wpm: 20, effectiveWpm: 20 }).effectiveWpm).toBeNull();
+    expect(sanitize({ wpm: 10, effectiveWpm: 15 }).effectiveWpm).toBeNull();
+    expect(sanitize({ effectiveWpm: '8' }).effectiveWpm).toBeNull();
+    expect(effectiveWpm({ wpm: 20, effectiveWpm: 10 })).toBe(10);
+    expect(effectiveWpm({ wpm: 20, effectiveWpm: null })).toBe(20);
+    expect(effectiveWpm({ wpm: 8, effectiveWpm: 10 })).toBe(8);
+  });
+
+  it('drop the effective speed when the speed comes down to it', () => {
+    const farnsworth = { ...DEFAULT_SETTINGS, wpm: 20, effectiveWpm: 10 };
+    expect(wpmChange(farnsworth, 25)).toEqual({ wpm: 25, effectiveWpm: 10 });
+    expect(wpmChange(farnsworth, 11)).toEqual({ wpm: 11, effectiveWpm: 10 });
+    expect(wpmChange(farnsworth, 10)).toEqual({ wpm: 10, effectiveWpm: null });
+    expect(wpmChange(DEFAULT_SETTINGS, 30)).toEqual({ wpm: 30, effectiveWpm: null });
   });
 
   it('migrate only the known versions', () => {

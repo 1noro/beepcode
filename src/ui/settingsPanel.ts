@@ -9,11 +9,14 @@ import {
   onLocaleChange,
   type MessageKey,
 } from '../i18n/index.ts';
+import { MIN_WPM } from '../morse/timing.ts';
 import {
   DEFAULT_SETTINGS,
   RANGES,
   THEMES,
   VISIONS,
+  effectiveWpm,
+  wpmChange,
   type Settings,
   type Theme,
   type Vision,
@@ -135,7 +138,12 @@ export function createSettingsPanel(
     return control;
   }
 
-  function range(key: NumberKey, labelKey: MessageKey, valueKey: MessageKey): HTMLElement {
+  function range(
+    key: NumberKey,
+    labelKey: MessageKey,
+    valueKey: MessageKey,
+    change: (value: number) => Partial<Settings> = (value) => ({ [key]: value }),
+  ): HTMLElement {
     const { min, max, step } = RANGES[key];
     const control = el('input', {
       type: 'range',
@@ -145,7 +153,7 @@ export function createSettingsPanel(
     });
     const output = el('output', { className: 'setting-value' });
     output.htmlFor.add(control.id || (control.id = `setting-${++ids}`));
-    control.addEventListener('input', () => set({ [key]: Number(control.value) }));
+    control.addEventListener('input', () => set(change(Number(control.value))));
     updaters.push((settings) => {
       const value = settings[key];
       control.value = String(value);
@@ -155,6 +163,30 @@ export function createSettingsPanel(
       tText(output, valueKey, { value: number.format(value) });
     });
     return field(labelKey, control, [output]);
+  }
+
+  /**
+   * Farnsworth: from the minimum to the speed, where it follows the speed
+   * (SPEC §7).
+   */
+  function effectiveRange(): HTMLElement {
+    const control = el('input', { type: 'range', min: String(MIN_WPM), step: '1' });
+    control.id = `setting-${++ids}`;
+    const output = el('output', { className: 'setting-value' });
+    output.htmlFor.add(control.id);
+    control.addEventListener('input', () => {
+      const value = Number(control.value);
+      set({ effectiveWpm: value < store.get().wpm ? value : null });
+    });
+    updaters.push((settings) => {
+      // The maximum first, or the value would be clamped to the old one.
+      control.max = String(settings.wpm);
+      const value = effectiveWpm(settings);
+      control.value = String(value);
+      control.disabled = settings.wpm <= MIN_WPM;
+      tText(output, 'settings.wpmValue', { value });
+    });
+    return field('settings.effectiveWpm', control, [output]);
   }
 
   function color(key: 'dotColor' | 'dashColor', labelKey: MessageKey): HTMLElement {
@@ -232,7 +264,8 @@ export function createSettingsPanel(
         color('dashColor', 'settings.dashColor'),
       ]),
       section('settings.keying', [
-        range('wpm', 'settings.wpm', 'settings.wpmValue'),
+        range('wpm', 'settings.wpm', 'settings.wpmValue', (wpm) => wpmChange(store.get(), wpm)),
+        effectiveRange(),
         range('gapTolerance', 'settings.gapTolerance', 'settings.gapToleranceValue'),
         range('dashThreshold', 'settings.dashThreshold', 'settings.dashThresholdValue'),
       ]),

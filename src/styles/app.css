@@ -1,4 +1,4 @@
-/* The shell and the Free mode (SPEC §3.2): one screen, no scrolling while
+/* The shell, the Free mode and the Text mode (SPEC §3.2): one screen, no scrolling while
    keying, mobile first and vertical; the board takes what is left. */
 
 #app {
@@ -441,6 +441,137 @@
 
   .key {
     height: 100%;
+  }
+}
+
+/* A tree that only shows (the Text mode): nothing to click. */
+.board--static .node {
+  cursor: default;
+}
+
+.board--static .node:hover .shape {
+  stroke: var(--color-muted);
+}
+
+/* The Text mode (SPEC §6.5): the text and what will sound, the tree, and the
+   controls in the thumb zone. */
+.mode-text {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'text' 'board' 'controls';
+}
+
+.text-panel {
+  grid-area: text;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.text-input {
+  width: 100%;
+  resize: none;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--color-fg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.text-input::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
+/* What will sound, and its code: a few lines that scroll to what plays. */
+.text-output {
+  display: grid;
+  gap: 4px;
+  max-height: 7.5rem;
+  overflow-y: auto;
+}
+
+/* The room on the left that the highlight takes (below): the box scrolls,
+   so it clips, and the first character would lose it. */
+.text-preview,
+.text-code {
+  margin: 0;
+  padding-left: var(--tracking);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.text-preview {
+  --tracking: 0.06em;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking);
+}
+
+.text-code {
+  --tracking: 0.15em;
+  letter-spacing: var(--tracking);
+  color: var(--color-muted);
+}
+
+/* Faded, not struck through: a struck comma reads as a dash. */
+.text-preview .is-skipped {
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+/* The letter spacing goes after each character, the last one too: the same
+   on the left, taken back by the margin, centres the highlight without
+   moving the text. */
+.text-preview .is-current,
+.text-code .is-current {
+  padding-left: var(--tracking);
+  margin-left: calc(-1 * var(--tracking));
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+  border-radius: 3px;
+}
+
+.text-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.text-hint[hidden] {
+  display: none;
+}
+
+.player-controls {
+  grid-area: controls;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.player-button {
+  flex: 1;
+  max-width: 10rem;
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.player-button[aria-pressed='false'] {
+  color: var(--color-fg);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+/* Landscape on a phone: the tree beside the text. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .mode-text {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas: 'text board' 'controls board';
   }
 }
 
