@@ -36,7 +36,7 @@ function palette(theme: Theme, vision: Vision, scheme: Scheme = 'light'): Record
   } else {
     Object.assign(vars, rules.get(`:root[data-theme='${theme}']`));
   }
-  if (vision !== 'normal') Object.assign(vars, rules.get(`:root[data-vision='${vision}']`));
+  if (vision !== 'default') Object.assign(vars, rules.get(`:root[data-vision='${vision}']`));
   const resolve = (value: string, depth = 0): string => {
     const ref = /^var\((--[\w-]+)\)$/.exec(value);
     if (!ref || depth > 5) return value;
@@ -62,7 +62,7 @@ describe.each(COMBINATIONS)('the theme %s', (_name, theme, scheme) => {
   const text = aaa ? 7 : 4.5;
 
   it(`has text at ${text}:1 on the background and on surfaces`, () => {
-    const p = palette(theme, 'normal', scheme);
+    const p = palette(theme, 'default', scheme);
     for (const fg of ['fg', 'muted']) {
       for (const bg of ['bg', 'surface']) {
         expect(contrast(color(p, fg), color(p, bg)), `${fg} on ${bg}`).toBeGreaterThanOrEqual(text);
@@ -84,7 +84,7 @@ describe.each(COMBINATIONS)('the theme %s', (_name, theme, scheme) => {
 
   it.each(VISIONS)('with %s vision, dot and dash look different to that eye', (vision) => {
     const p = palette(theme, vision, scheme);
-    const deficiency = vision === 'normal' ? null : (vision as Deficiency);
+    const deficiency = vision === 'default' ? null : (vision as Deficiency);
     const difference = deltaE(
       simulate(color(p, 'dot'), deficiency),
       simulate(color(p, 'dash'), deficiency),
@@ -95,9 +95,9 @@ describe.each(COMBINATIONS)('the theme %s', (_name, theme, scheme) => {
 
 describe('reading tokens.css', () => {
   it('resolves themes, the dark system scheme and the vision overrides', () => {
-    expect(palette('system', 'normal')['--color-bg']).toBe('#f7f7f5');
-    expect(palette('system', 'normal', 'dark')['--color-bg']).toBe('#14161a');
-    expect(palette('gruvbox-light', 'normal')['--color-dot']).toBe('#79740e');
+    expect(palette('system', 'default')['--color-bg']).toBe('#f7f7f5');
+    expect(palette('system', 'default', 'dark')['--color-bg']).toBe('#14161a');
+    expect(palette('gruvbox-light', 'default')['--color-dot']).toBe('#79740e');
     expect(palette('dark', 'deuteranopia')['--color-dot']).toBe('#56b4e9');
     expect(palette('high-contrast', 'achromatopsia')['--color-dot']).toBe('#ffffff');
     expect(palette('light', 'tritanopia')['--color-error']).toBe('#16181d');

@@ -24,6 +24,11 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
 - **La velocidad efectiva (Farnsworth)** en los ajustes: las letras suenan a
   la velocidad elegida y las pausas entre ellas se alargan hasta la efectiva.
 
+### Cambiado
+
+- **"Visión del color"** ya no ofrece "Normal", sino **"Por defecto"**: no
+  hay una visión normal y otras que no lo son.
+
 ## 0.1.0 — 2026-11-20
 
 ### Añadido

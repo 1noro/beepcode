@@ -127,6 +127,10 @@ describe('the settings (SPEC §7)', () => {
     expect(wpmChange(DEFAULT_SETTINGS, 30)).toEqual({ wpm: 30, effectiveWpm: null });
   });
 
+  it("read the colour vision 'normal' of v0.1.0 as the default", () => {
+    expect(sanitize({ vision: 'normal' }).vision).toBe('default');
+  });
+
   it('migrate only the known versions', () => {
     expect(migrate({ version: 1, settings: { wpm: 20 } })).toEqual({ wpm: 20 });
     expect(migrate({ version: 99, settings: { wpm: 20 } })).toEqual({});

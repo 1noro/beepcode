@@ -25,7 +25,7 @@
   "theme.gruvboxLight": "Gruvbox light",
   "theme.highContrast": "High contrast",
   "settings.vision": "Colour vision",
-  "vision.normal": "Normal",
+  "vision.default": "Default",
   "vision.protanopia": "Protanopia (no red)",
   "vision.deuteranopia": "Deuteranopia (no green)",
   "vision.tritanopia": "Tritanopia (no blue)",

@@ -15,7 +15,7 @@ export const THEMES = [
 export type Theme = (typeof THEMES)[number];
 
 export const VISIONS = [
-  'normal',
+  'default',
   'protanopia',
   'deuteranopia',
   'tritanopia',
@@ -51,7 +51,7 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Readonly<Settings> = {
   locale: null,
   theme: 'system',
-  vision: 'normal',
+  vision: 'default',
   dotColor: null,
   dashColor: null,
   wpm: 12,

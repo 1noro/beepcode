@@ -7,7 +7,7 @@ export function applyAppearance(settings: Settings): void {
   const root = document.documentElement;
   if (settings.theme === 'system') delete root.dataset.theme;
   else root.dataset.theme = settings.theme;
-  if (settings.vision === 'normal') delete root.dataset.vision;
+  if (settings.vision === 'default') delete root.dataset.vision;
   else root.dataset.vision = settings.vision;
   for (const [name, value] of [
     ['--color-dot', settings.dotColor],

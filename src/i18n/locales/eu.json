@@ -25,7 +25,7 @@
   "theme.gruvboxLight": "Gruvbox argia",
   "theme.highContrast": "Kontraste handia",
   "settings.vision": "Kolore-ikusmena",
-  "vision.normal": "Normala",
+  "vision.default": "Lehenetsia",
   "vision.protanopia": "Protanopia (gorririk gabe)",
   "vision.deuteranopia": "Deuteranopia (berderik gabe)",
   "vision.tritanopia": "Tritanopia (urdinik gabe)",

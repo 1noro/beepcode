@@ -25,7 +25,7 @@
   "theme.gruvboxLight": "Gruvbox clar",
   "theme.highContrast": "Alt contrast",
   "settings.vision": "Visió del color",
-  "vision.normal": "Normal",
+  "vision.default": "Per defecte",
   "vision.protanopia": "Protanopia (sense vermell)",
   "vision.deuteranopia": "Deuteranopia (sense verd)",
   "vision.tritanopia": "Tritanopia (sense blau)",

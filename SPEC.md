@@ -312,7 +312,7 @@ Se abren desde el panel ⚙ y se persisten en `localStorage` (con versión de es
 |---|---|---|
 | Idioma | el del navegador si está soportado; si no, `en` | en, es, gl, ca, eu |
 | Tema | sistema | sistema / claro / oscuro / Gruvbox oscuro / Gruvbox claro / alto contraste |
-| Visión del color | normal | normal / protanopia / deuteranopia / tritanopia / acromatopsia |
+| Visión del color | por defecto | por defecto / protanopia / deuteranopia / tritanopia / acromatopsia |
 | Color de punto / raya | verde / rojo | selector de color |
 | Velocidad (WPM) | 12 | 5–40 |
 | WPM efectivo (Farnsworth) | = WPM | 5–WPM |

@@ -36,7 +36,7 @@ const THEME_KEYS: Record<Theme, MessageKey> = {
 };
 
 const VISION_KEYS: Record<Vision, MessageKey> = {
-  normal: 'vision.normal',
+  default: 'vision.default',
   protanopia: 'vision.protanopia',
   deuteranopia: 'vision.deuteranopia',
   tritanopia: 'vision.tritanopia',
