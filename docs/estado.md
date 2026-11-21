@@ -1,6 +1,6 @@
 # Estado
 
-**Al día:** 2026-11-22, 23:10 UTC. **Revisada:** 2026-11-20, la última
+**Al día:** 2026-11-22, 23:40 UTC. **Revisada:** 2026-11-20, la última
 [`/revisar-docs`](agentes/revisar-docs.md), que se lanza a mano cada semana.
 
 Lo vivo del desarrollo: en qué fase está, qué hay publicado, lo abierto y lo
@@ -57,9 +57,11 @@ de F0 a F4, y F5 (las estadísticas) llega al final.
 ## Lo próximo
 
 - **Mejoras gráficas antes de F3**, en la rama `feat/mejoras-graficas`, que
-  apila varias: la primera, las ayudas del modo Libre en el mismo pie que las
-  del modo Texto (`.mode-footer` y `.hint`, `src/styles/app.css`). El
-  principio: **los componentes, equiparables entre modos**. Sin commitear.
+  apila varias: las ayudas del modo Libre en el mismo pie que las del modo
+  Texto, el árbol arriba desde la punta de la antena y el cursor de bloque
+  en los dos modos. El principio: **los componentes, equiparables entre
+  modos**. Falta llevar el nuevo orden al SPEC (§3.2, §6.5), si el usuario
+  lo acepta.
 - **La vibración**, hoy en la sección "Modo Libre" de los ajustes: cuando
   Aprender use el pulsador (F3), pasará a una sección común.
 - **F3 con `/tarea 4`**: Aprender y Escuchar, que usarán `player.ts`.

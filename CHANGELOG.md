@@ -20,6 +20,12 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
   la cinta, alineadas a la izquierda y en una sola línea cada una, en los
   cinco idiomas. Antes iban centradas entre el árbol y el pulsador, y la de
   las teclas partía línea.
+- **El árbol, arriba, en los dos modos**, empezando en la punta de la
+  antena; el texto, justo debajo, y los controles, abajo. En horizontal, el
+  árbol a la izquierda. La barra superior ya no tiene línea.
+- **El cursor del modo Texto → Morse, un bloque** como el de la cinta del
+  modo Libre: al final del texto, un bloque; en medio, el carácter
+  invertido. El de la cinta toma sus mismas proporciones.
 
 ## 0.3.0 — 2026-11-21
 
