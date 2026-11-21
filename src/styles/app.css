@@ -1,4 +1,4 @@
-/* The shell and the Free mode (SPEC §3.2): one screen, no scrolling while
+/* The shell, the Free mode and the Text mode (SPEC §3.2): one screen, no scrolling while
    keying, mobile first and vertical; the board takes what is left. */
 
 #app {
@@ -441,6 +441,316 @@
 
   .key {
     height: 100%;
+  }
+}
+
+/* A tree that only shows (the Text mode): nothing to click. */
+.board--static .node {
+  cursor: default;
+}
+
+.board--static .node:hover .shape {
+  stroke: var(--color-muted);
+}
+
+/* The Text mode (SPEC §6.5): the text and what will sound, the tree, and the
+   controls in the thumb zone. */
+.mode-text {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'text' 'board' 'controls';
+}
+
+.text-panel {
+  /* The room of the clear button, on both sides of the text, so that the
+     centre is the centre of the box; the code takes it too, so that both
+     wrap in the same column. As wide as the button. */
+  --side: 44px;
+  grid-area: text;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* The text is written on the text as it will be played (text.ts): the field,
+   transparent, lies over it letter on letter, so both take the same font,
+   size, spacing, wrapping and room. Two lines, always: if it grew with the
+   text, the tree below would shrink and move; each scrolls with the other.
+   No frame: the text is the field. */
+.text-editor {
+  --tracking: 0.06em;
+  --line: 1.875rem;
+  position: relative;
+  /* Out of the boxes that scroll: inside, it would show half of a third
+     line. */
+  padding-block: 8px;
+  text-align: center;
+  cursor: text;
+}
+
+.text-editor.is-wrapped {
+  text-align: left;
+}
+
+/* The room on the left that the highlight takes (below): the box scrolls,
+   so it clips, and the first character would lose it. */
+/* The same thin scroll bar for the text and for its code, and its room kept
+   on both sides, used or not: the field and the text below keep the same
+   width, the centre stays the centre, and both start where the code does. */
+.text-preview,
+.text-input,
+.text-code {
+  scrollbar-gutter: stable both-edges;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.text-preview,
+.text-input {
+  display: block;
+  height: calc(2 * var(--line));
+  margin: 0;
+  padding: 0 0 0 var(--tracking);
+  font: inherit;
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-variant-ligatures: none;
+  letter-spacing: var(--tracking);
+  line-height: var(--line);
+  text-align: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.text-preview {
+  margin-inline: var(--side);
+  overflow: hidden;
+}
+
+.text-input {
+  position: absolute;
+  top: 8px;
+  left: var(--side);
+  width: calc(100% - 2 * var(--side));
+  overflow-y: auto;
+  resize: none;
+  color: transparent;
+  caret-color: var(--color-accent);
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+/* Without text: on the first line, a caret that blinks where the real one
+   will be (until the field takes the focus, and its own caret, there); on
+   the second, what to do. Clicks go through, to the field. */
+.text-prompt {
+  position: absolute;
+  inset: 8px 0;
+  display: none;
+  grid-template-rows: var(--line) var(--line);
+  place-items: center;
+  pointer-events: none;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.text-editor.is-empty .text-prompt {
+  display: grid;
+}
+
+.text-caret {
+  width: 2px;
+  height: 1.5rem;
+  background: var(--color-accent);
+  animation: text-caret-blink 1.1s steps(1) infinite;
+}
+
+.text-editor:focus-within .text-caret {
+  visibility: hidden;
+}
+
+/* Visible at the end: with reduced motion it stays still, and lit. */
+@keyframes text-caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.text-clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.text-clear:disabled {
+  visibility: hidden;
+}
+
+/* The code: two lines that scroll on their own to what plays; as wide as
+   its text, centred, until it takes the whole width, and then it wraps from
+   the left. Without text, the name of the app in Morse in its place. */
+.text-output {
+  display: grid;
+  padding-inline: var(--side);
+  container-type: inline-size;
+}
+
+.text-code,
+.text-empty {
+  grid-area: 1 / 1;
+}
+
+.text-code {
+  --tracking: 0.15em;
+  --line: 1.5rem;
+  justify-self: center;
+  max-width: 100%;
+  height: calc(2 * var(--line));
+  margin: 0;
+  padding-left: var(--tracking);
+  overflow-y: auto;
+  line-height: var(--line);
+  letter-spacing: var(--tracking);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--color-muted);
+}
+
+/* Sized to the box: the whole name is some 29 em wide. */
+.text-empty {
+  display: none;
+  align-self: center;
+  justify-self: center;
+  align-items: center;
+  gap: 0.9em;
+  font-size: min(1rem, 3.1cqi);
+}
+
+.text-output.is-empty .text-empty {
+  display: flex;
+}
+
+.text-empty-letter {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+/* Round dots and long dashes, as the nodes of the tree. */
+.text-empty-dot,
+.text-empty-dash {
+  height: 0.5em;
+  border-radius: 0.25em;
+  opacity: 0.35;
+  animation: text-empty-wave calc(var(--steps) * 0.18s + 2s) ease-in-out infinite;
+  animation-delay: calc(var(--step) * 0.18s);
+}
+
+.text-empty-dot {
+  width: 0.5em;
+  background: var(--color-dot);
+}
+
+.text-empty-dash {
+  width: 1.5em;
+  background: var(--color-dash);
+}
+
+/* Each mark lights up in turn and goes back: a wave along the name. */
+@keyframes text-empty-wave {
+  0%,
+  12%,
+  100% {
+    opacity: 0.35;
+  }
+
+  5% {
+    opacity: 1;
+  }
+}
+
+/* The code of a letter is never split between two lines. */
+.text-code span {
+  white-space: nowrap;
+}
+
+/* Faded, not struck through: a struck comma reads as a dash. */
+.text-preview .is-skipped {
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+/* The letter spacing goes after each character, the last one too: the same
+   on the left, taken back by the margin, centres the highlight without
+   moving the text. */
+.text-preview .is-current,
+.text-code .is-current {
+  padding-left: var(--tracking);
+  margin-left: calc(-1 * var(--tracking));
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+  border-radius: 3px;
+}
+
+/* The hint of what is skipped, and the count of characters on the right. */
+.text-footer {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.text-hint,
+.text-count {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.text-count {
+  flex: none;
+  /* As wide as "200 / 200" from the start: growing, it would wrap the hint
+     onto one more line. */
+  min-width: 9ch;
+  margin-left: auto;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hidden, it keeps its room, for the same reason. */
+.text-hint.is-off {
+  visibility: hidden;
+}
+
+.player-controls {
+  grid-area: controls;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.player-button {
+  flex: 1;
+  max-width: 10rem;
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.player-button[aria-pressed='false'] {
+  color: var(--color-fg);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+/* Landscape on a phone: the tree beside the text. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .mode-text {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas: 'text board' 'controls board';
   }
 }
 

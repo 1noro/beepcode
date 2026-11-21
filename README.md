@@ -18,10 +18,8 @@
 
 <p align="center"><b>Sin backend, sin conexión, instalable. En el móvil, con ratón o con teclado.</b></p>
 
-> **En desarrollo.** Publicado, el andamiaje (F0). En la rama
-> `feat/f1-nucleo`, el núcleo y el modo Libre (F1): el árbol, el pulsador, el
-> teclado, el sonido, la cinta, los ajustes y los temas. El estado, en
-> [`docs/estado.md`](docs/estado.md).
+> **En desarrollo.** Publicados, el modo Libre y el modo Texto → Morse
+> (v0.2.0). El estado, en [`docs/estado.md`](docs/estado.md).
 
 ## Cómo se usa (modo Libre)
 
@@ -35,7 +33,16 @@
 - **Ajustes** (⚙): idioma, tema (sistema, claro, oscuro, Gruvbox oscuro y
   claro, alto contraste), visión del color (para protanopia, deuteranopia,
   tritanopia y acromatopsia), los colores del punto y la raya, la velocidad,
-  las pausas, el tono, el volumen y la vibración.
+  la velocidad efectiva (Farnsworth), las pausas, el tono, el volumen y la
+  vibración.
+
+## Texto → Morse
+
+Escribe un texto y pulsa **Reproducir**: suena letra a letra, con el carácter
+resaltado, su camino encendido y la transcripción `·−` debajo. **Pausa**
+sigue luego desde esa letra, **Parar** vuelve al principio y **Bucle** lo
+repite. Se pasa a mayúsculas sin tildes; lo que no está en el alfabeto, como
+los números, la puntuación, la Ñ o la Ç, se ve atenuado y se salta.
 
 ## TL;DR
 

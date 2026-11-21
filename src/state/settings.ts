@@ -15,7 +15,7 @@ export const THEMES = [
 export type Theme = (typeof THEMES)[number];
 
 export const VISIONS = [
-  'normal',
+  'default',
   'protanopia',
   'deuteranopia',
   'tritanopia',
@@ -23,8 +23,6 @@ export const VISIONS = [
 ] as const;
 export type Vision = (typeof VISIONS)[number];
 
-// TODO(3): the effective WPM (Farnsworth, SPEC §7), with the Text mode, the
-// first one that uses it; morse/timing.ts sendTiming already computes it.
 export interface Settings {
   /** null: the browser's language, if supported (SPEC §8). */
   locale: Locale | null;
@@ -34,6 +32,12 @@ export interface Settings {
   dotColor: string | null;
   dashColor: string | null;
   wpm: number;
+  /**
+   * Farnsworth (SPEC §7): the overall speed of what is played, with the
+   * letters at `wpm` and the gaps stretched. null: the same as `wpm`, and
+   * it follows it.
+   */
+  effectiveWpm: number | null;
   gapTolerance: number;
   /** In units. */
   dashThreshold: number;
@@ -47,10 +51,11 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Readonly<Settings> = {
   locale: null,
   theme: 'system',
-  vision: 'normal',
+  vision: 'default',
   dotColor: null,
   dashColor: null,
   wpm: 12,
+  effectiveWpm: null,
   gapTolerance: 1.5,
   dashThreshold: 2,
   toneHz: 600,
@@ -91,15 +96,37 @@ function bool(value: unknown, fallback: boolean): boolean {
   return typeof value === 'boolean' ? value : fallback;
 }
 
+/** The effective speed: below the speed, or null for the same. */
+function effective(value: unknown, wpm: number): number | null {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+  const rounded = Math.round(Math.max(MIN_WPM, value));
+  return rounded < wpm ? rounded : null;
+}
+
+/** The effective speed of what is played: Farnsworth's, or the speed. */
+export function effectiveWpm(settings: Pick<Settings, 'wpm' | 'effectiveWpm'>): number {
+  return Math.min(settings.effectiveWpm ?? settings.wpm, settings.wpm);
+}
+
+/**
+ * The change for a new speed: the effective one stays only if it is still
+ * below it; otherwise it goes back to following it.
+ */
+export function wpmChange(settings: Settings, wpm: number): Partial<Settings> {
+  return { wpm, effectiveWpm: effective(settings.effectiveWpm, wpm) };
+}
+
 /** Valid settings from anything: each field, checked and clamped, or its default. */
 export function sanitize(raw: Raw): Settings {
+  const wpm = Math.round(inRange('wpm', raw.wpm));
   return {
     locale: (LOCALES as readonly unknown[]).includes(raw.locale) ? (raw.locale as Locale) : null,
     theme: oneOf(THEMES, raw.theme, DEFAULT_SETTINGS.theme),
     vision: oneOf(VISIONS, raw.vision, DEFAULT_SETTINGS.vision),
     dotColor: color(raw.dotColor),
     dashColor: color(raw.dashColor),
-    wpm: Math.round(inRange('wpm', raw.wpm)),
+    wpm,
+    effectiveWpm: effective(raw.effectiveWpm, wpm),
     gapTolerance: inRange('gapTolerance', raw.gapTolerance),
     dashThreshold: inRange('dashThreshold', raw.dashThreshold),
     toneHz: inRange('toneHz', raw.toneHz),

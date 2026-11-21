@@ -14,6 +14,25 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
 
 ## Sin publicar
 
+## 0.2.0 — 2026-11-21
+
+### Añadido
+
+- **El modo Texto → Morse** (`#/text`): escribe un texto y óyelo en Morse,
+  con reproducir, pausa, parar y bucle. Se escribe sobre el propio texto,
+  que se pasa a mayúsculas sin tildes; lo que no está en el alfabeto
+  (números, puntuación, Ñ, Ç) se ve atenuado y se salta. Mientras suena, se resalta el carácter, se enciende su camino en el
+  árbol y se ve la transcripción `·−` entera. Un ✕ en el campo lo vacía, y
+  un contador dice cuánto queda de los 200 caracteres que admite. Sin
+  texto, donde irá el código se ve "beepcode" en Morse.
+- **La velocidad efectiva (Farnsworth)** en los ajustes: las letras suenan a
+  la velocidad elegida y las pausas entre ellas se alargan hasta la efectiva.
+
+### Cambiado
+
+- **"Visión del color"** ya no ofrece "Normal", sino **"Por defecto"**: no
+  hay una visión normal y otras que no lo son.
+
 ## 0.1.0 — 2026-11-20
 
 ### Añadido

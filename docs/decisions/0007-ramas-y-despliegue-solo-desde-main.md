@@ -47,3 +47,14 @@ Actions en lo que no se publica.
 - El repositorio es público, y en los repositorios públicos los runners
   estándar de GitHub no gastan minutos de pago; aun así se ejecuta solo lo que
   se publica.
+
+## 2026-11-21 — Con PR, y el tag en el mismo push
+
+A petición del usuario, se llega a `main` con la rutina `/desplegar`
+([`desplegar.md`](../agentes/desplegar.md)), que abre una PR por cada rama.
+**El merge sigue siendo local** (`git merge --no-ff`), no el botón de GitHub,
+y se sube con el tag en el mismo push (`git push --atomic origin main
+v<X>`): el build saca la versión de `git describe`, y un tag que llegara
+después del push de `main` dejaría la app publicada con la versión de antes
+más los commits encima. GitHub da la PR por mergeada al ver sus commits en
+`main`. Las PR siguen sin comprobaciones automáticas: `make ci` en local.

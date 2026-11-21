@@ -53,6 +53,13 @@ const ICONS = {
     ['rect', { x: 8, y: 8, width: 12, height: 12, rx: 2 }],
     ['path', { d: 'M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3' }],
   ],
+  play: [['path', { d: 'M7 4.5v15l12-7.5z' }]],
+  pause: [['path', { d: 'M8 5v14M16 5v14' }]],
+  stop: [['rect', { x: 6, y: 6, width: 12, height: 12, rx: 1.5 }]],
+  loop: [
+    ['path', { d: 'M4 11V9a3 3 0 0 1 3-3h12M16 3l3 3-3 3' }],
+    ['path', { d: 'M20 13v2a3 3 0 0 1-3 3H5M8 21l-3-3 3-3' }],
+  ],
 } as const satisfies Record<
   string,
   readonly (readonly [string, Record<string, string | number>])[]
