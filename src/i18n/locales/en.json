@@ -38,6 +38,7 @@
   "settings.effectiveWpm": "Effective speed (Farnsworth)",
   "settings.gapTolerance": "Pause tolerance",
   "settings.gapToleranceValue": "×{value}",
+  "settings.autoSpace": "Automatic word spaces (Free mode)",
   "settings.dashThreshold": "Dash threshold",
   "settings.dashThresholdValue": "{value} units",
   "settings.toneHz": "Tone pitch",
@@ -73,8 +74,10 @@
   "text.loop": "Loop",
   "key.label": "Key",
   "key.hint": "Tap for a dot, hold for a dash",
+  "key.space": "Space",
+  "key.spaceHint": "End the word (Enter)",
   "board.label": "Morse tree",
   "board.node": "{letter}: {code}",
-  "hint.keys": "Space: key · . and -: dot and dash · Enter: end the letter · Backspace: delete",
+  "hint.keys": "Space: key · . and -: dot and dash · Enter: end the letter or the word · Backspace: delete",
   "hint.explore": "Click a letter of the tree to hear it."
 }

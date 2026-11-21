@@ -128,13 +128,14 @@ Test obligatorio: para cada nodo, el camino ROOT→nodo del layout reproduce exa
 │                               │
 ├───────────────────────────────┤
 │                               │
-│        [  PULSADOR  ]         │  zona del pulgar
+│     [  PULSADOR  ] [ ␣ ]      │  zona del pulgar
 │                               │
 └───────────────────────────────┘
 ```
 
 - Respetar `env(safe-area-inset-*)` (notch, barra de gestos).
-- En escritorio u horizontal: el árbol centrado y el pulsador debajo o al lado; mostrar una pista de teclas ("Espacio = manipulador · `.` / `-` · Enter · Retroceso").
+- En escritorio u horizontal: el árbol centrado y el pulsador debajo o al lado; mostrar una pista de teclas ("Espacio = manipulador · `.` / `-` · Enter (letra o palabra) · Retroceso").
+- **El botón de espacio** (␣, modo Libre; decidido el 2026-11-21): a la derecha del pulsador y de su misma altura, que cede esa franja; en horizontal, debajo de él. Lo de encima, el árbol incluido, no se mueve.
 
 ### 3.3 Estados visuales de los nodos
 
@@ -181,7 +182,7 @@ Test obligatorio: para cada nodo, el camino ROOT→nodo del layout reproduce exa
 | `Espacio` | Manipulador recto: keydown = pulsar y keyup = soltar. Se ignora `event.repeat`. |
 | `.` | Introduce un punto directamente (sin depender de la duración) |
 | `-` (incluido el del teclado numérico) | Introduce una raya directamente |
-| `Enter` | Cierra la letra en curso inmediatamente |
+| `Enter` | Cierra la letra en curso inmediatamente; sin letra en curso, termina la palabra (el espacio, §4.2) |
 | `Backspace` | Si hay secuencia en curso, la cancela; si no, borra la última letra del histórico |
 | `Escape` | Cancela la secuencia en curso |
 | `A`–`Z` | En el modo Escuchar: responder. En los demás modos no hacen nada. |
@@ -217,8 +218,9 @@ HOLD ──(letterGap)──▶ READY ──(margen de palabra)──▶ inserta
   - `d < dashThreshold`: **punto**; si no, **raya**. Por defecto `dashThreshold = 2 u`.
 - Tras soltar:
   - Si pasa `letterGap = 3 u × gapTolerance` sin nueva pulsación, **se cierra la letra**.
-  - El camino de la letra se apaga a `2 × letterGap` del último símbolo (§3.3). Si después pasa el **margen de palabra** sin nueva pulsación, se inserta un **espacio de palabra**. Solo uno; nunca al principio ni duplicado.
-  - **El margen de palabra** empieza en 1 s × `gapTolerance` / 1,5 y **se adapta a las pausas entre letras** de quien manipula (decidido el 2026-11-20): cuánto piensa la letra siguiente no depende de lo rápido que pulse los símbolos. Cada vez que empieza una letra que sigue la palabra, se mide la pausa desde que se apagó el camino (0 si empezó antes) y el margen se mueve hacia 2,5 veces esa pausa, en una media exponencial (peso 0,25), acotado a 0,4–3 s (antes de multiplicar por la tolerancia). Solo se ven las pausas que llegaron a tiempo, así que **un espacio que se borra (`Retroceso` o el botón) antes de volver a pulsar** dice que el margen se quedó corto: crece un 30 %. Los rebotes no cuentan; los símbolos tecleados con `.`/`-`, sí. Al recargar vuelve a 1 s.
+  - El camino de la letra se apaga a `2 × letterGap` del último símbolo (§3.3). Si los espacios automáticos están activados y después pasa el **margen de palabra** sin nueva pulsación, se inserta un **espacio de palabra**. Solo uno; nunca al principio ni duplicado.
+- **El espacio de palabra, a mano por defecto** (decidido el 2026-11-21): quien aprende va a su ritmo, y un espacio que llega solo mientras piensa la letra siguiente frustra. Lo inserta el botón ␣ (§3.2), que cierra antes la letra en curso, o `Enter` sin letra en curso (§3.6); con las mismas reglas: solo uno, nunca al principio ni duplicado. **Los espacios automáticos** por pausa, los de abajo, son un ajuste (§7), desactivado por defecto; con ellos, el botón y `Enter` siguen valiendo para no esperar al margen. Un espacio pedido y borrado no ensancha el margen: no dice nada de él.
+  - **El margen de palabra** (con los espacios automáticos) empieza en 1 s × `gapTolerance` / 1,5 y **se adapta a las pausas entre letras** de quien manipula (decidido el 2026-11-20): cuánto piensa la letra siguiente no depende de lo rápido que pulse los símbolos. Cada vez que empieza una letra que sigue la palabra, se mide la pausa desde que se apagó el camino (0 si empezó antes) y el margen se mueve hacia 2,5 veces esa pausa, en una media exponencial (peso 0,25), acotado a 0,4–3 s (antes de multiplicar por la tolerancia). Solo se ven las pausas que llegaron a tiempo, así que **un espacio que se borra (`Retroceso` o el botón) antes de volver a pulsar** dice que el margen se quedó corto: crece un 30 %. Los rebotes no cuentan; los símbolos tecleados con `.`/`-`, sí. Al recargar vuelve a 1 s.
 - **Las pausas se adaptan al ritmo de quien manipula** (decidido el 2026-11-20). En Morse no hay un signo de espacio: el espacio es el silencio, y el oído del telegrafista lo mide contra el ritmo de quien transmite, no contra un reloj. Así que la `u` de `letterGap` no es la de los WPM de los ajustes, sino una estimada de las propias pulsaciones: cada punto cuenta como 1 u, cada raya como 3 u y cada silencio entre símbolos de una letra como 1 u, en una media exponencial (peso 0,25) que parte de la `u` de los WPM. Cada muestra se acota a entre la mitad y el doble de la estimación, y la estimación, a la `u` de 5–40 WPM. Lo que no cuenta: los rebotes, los símbolos tecleados con `.`/`-` y el silencio entre letras (ese lo mide el margen de palabra). **El umbral de raya no se adapta**: sigue en `dashThreshold` de los WPM de los ajustes. Al cambiar los ajustes de temporización, la estimación vuelve a partir de ellos.
 - `gapTolerance` viene a 1.5 por defecto, para principiantes.
 - Ejemplo a 12 WPM: u = 100 ms, umbral de raya 200 ms, cierre de letra 450 ms, camino apagado a 900 ms y, con el margen inicial de 1 s, espacio de palabra a 1900 ms. Si quien manipula va más despacio y su `u` estimada sube a 150 ms, el cierre de letra pasa a 675 ms y el camino se apaga a 1350 ms; si además suele tardar 0,6 s en seguir, el margen tiende a 1,5 s y el espacio, a 2850 ms.
@@ -257,6 +259,7 @@ Selector de modo en la barra superior. Rutas por hash (`#/free`, `#/learn`, `#/l
 ### 6.1 Libre (`#/free`) — modo por defecto
 
 - Teclear con el pulsador o el teclado; el camino se ilumina y las letras se apilan en la cinta (§3.4).
+- **El espacio entre palabras**, con el botón ␣ o `Enter` (§4.2); por pausa, solo si se activan los espacios automáticos (§7).
 - **Explorar**: tocar o hacer clic sobre cualquier letra del árbol ilumina su camino paso a paso y reproduce su código a la velocidad configurada. No escribe en el histórico.
 
 ### 6.2 Aprender (`#/learn`)
@@ -317,6 +320,7 @@ Se abren desde el panel ⚙ y se persisten en `localStorage` (con versión de es
 | Velocidad (WPM) | 12 | 5–40 |
 | WPM efectivo (Farnsworth) | = WPM | 5–WPM |
 | Tolerancia de pausa | 1.5 | 1.0–3.0 |
+| Espacios entre palabras automáticos | no | sí / no |
 | Umbral de raya | 2 u | 1.5–2.5 u |
 | Frecuencia del tono | 600 Hz | 400–1000 |
 | Volumen / silencio | 70 % / no | — |

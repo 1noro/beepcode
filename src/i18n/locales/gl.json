@@ -38,6 +38,7 @@
   "settings.effectiveWpm": "Velocidade efectiva (Farnsworth)",
   "settings.gapTolerance": "Tolerancia de pausa",
   "settings.gapToleranceValue": "×{value}",
+  "settings.autoSpace": "Espazos entre palabras automáticos (modo Libre)",
   "settings.dashThreshold": "Limiar de raia",
   "settings.dashThresholdValue": "{value} unidades",
   "settings.toneHz": "Frecuencia do ton",
@@ -73,8 +74,10 @@
   "text.loop": "Bucle",
   "key.label": "Pulsador",
   "key.hint": "Toca para un punto, mantén para unha raia",
+  "key.space": "Espazo",
+  "key.spaceHint": "Rematar a palabra (Intro)",
   "board.label": "Árbore Morse",
   "board.node": "{letter}: {code}",
-  "hint.keys": "Espazo: pulsador · . e -: punto e raia · Intro: pechar a letra · Retroceso: borrar",
+  "hint.keys": "Espazo: pulsador · . e -: punto e raia · Intro: remata letra ou palabra · Retroceso: borrar",
   "hint.explore": "Fai clic nunha letra da árbore para oíla."
 }

@@ -5,7 +5,7 @@
 // events (ADR 0003).
 import { attachKeyboard } from '../input/keyboard.ts';
 import { attachPointerKey } from '../input/pointer.ts';
-import { tText } from '../i18n/dom.ts';
+import { tAttr, tText } from '../i18n/dom.ts';
 import { t } from '../i18n/index.ts';
 import { createKeyer } from '../morse/keyer.ts';
 import { keyerTiming, letterTimeline, sendTiming } from '../morse/timing.ts';
@@ -13,7 +13,7 @@ import type { MorseNode } from '../morse/tree.ts';
 import { appendLetter, appendSpace, deleteLast } from '../state/history.ts';
 import type { Settings } from '../state/settings.ts';
 import { createBoard } from '../ui/board.ts';
-import { el } from '../ui/dom.ts';
+import { el, icon } from '../ui/dom.ts';
 import { copyText, createTape } from '../ui/tape.ts';
 import type { Mode, ModeContext } from './mode.ts';
 
@@ -30,7 +30,12 @@ function timingOf(settings: Settings) {
 
 export function createFreeMode(context: ModeContext): Mode {
   const { tree, settings, tone, vibration } = context;
-  const keyer = createKeyer({ tree, timing: timingOf(settings.get()), adaptive: true });
+  const keyer = createKeyer({
+    tree,
+    timing: timingOf(settings.get()),
+    adaptive: true,
+    autoSpace: settings.get().autoSpace,
+  });
   const board = createBoard(tree);
   let text = '';
   let exploring: ReturnType<typeof setTimeout>[] = [];
@@ -135,7 +140,9 @@ export function createFreeMode(context: ModeContext): Mode {
       board.turnOffIn(holdMs);
     }),
     keyer.on('wordSpace', () => {
-      setText(appendSpace(text));
+      const spaced = appendSpace(text);
+      if (spaced === text) return;
+      setText(spaced);
       tape.announce(t('tape.space'));
     }),
     keyer.on('invalid', ({ lastValidNode }) => {
@@ -155,6 +162,7 @@ export function createFreeMode(context: ModeContext): Mode {
       ) {
         keyer.setTiming(timingOf(value));
       }
+      if (value.autoSpace !== previous.autoSpace) keyer.setAutoSpace(value.autoSpace);
     }),
   ];
   board.onSelect(explore);
@@ -189,6 +197,16 @@ export function createFreeMode(context: ModeContext): Mode {
   if (keyLabel instanceof HTMLElement) tText(keyLabel, 'key.label');
   if (keyHint instanceof HTMLElement) tText(keyHint, 'key.hint');
 
+  // The word space, by hand (SPEC §4.2): beside the key and as tall, so that
+  // nothing else moves. It closes the letter in progress too.
+  const label = el('span', { className: 'space-key-label' });
+  tText(label, 'key.space');
+  const space = el('button', { type: 'button', className: 'space-key' }, [icon('space'), label]);
+  tAttr(space, 'title', 'key.spaceHint');
+  space.addEventListener('click', () => keyer.space());
+  // A click leaves the focus where it was: Enter goes on closing letters.
+  space.addEventListener('mousedown', (event) => event.preventDefault());
+
   const hints = el('p', { className: 'hints' }, [el('span'), el('span')]);
   const [keysHint, exploreHint] = hints.children;
   if (keysHint instanceof HTMLElement) tText(keysHint, 'hint.keys');
@@ -209,7 +227,8 @@ export function createFreeMode(context: ModeContext): Mode {
     release: () => keyer.release(),
     dot: () => typeSymbol('dot'),
     dash: () => typeSymbol('dash'),
-    commit: () => keyer.commit(),
+    // Enter closes the letter; with none in progress, the word.
+    commit: () => (keyer.sequence ? keyer.commit() : keyer.space()),
     backspace() {
       if (!keyer.cancel()) deleteLastChar();
     },
@@ -220,7 +239,7 @@ export function createFreeMode(context: ModeContext): Mode {
     tape.element,
     el('div', { className: 'board-wrap' }, [board.element]),
     hints,
-    key,
+    el('div', { className: 'key-row' }, [key, space]),
   ]);
 
   return {

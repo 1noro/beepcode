@@ -24,17 +24,19 @@
 ## Cómo se usa (modo Libre)
 
 - **El pulsador**: un toque corto es un punto; uno largo (desde 2 unidades,
-  200 ms a 12 PPM), una raya. Tras una pausa se cierra la letra, y tras una
-  más larga se escribe un espacio.
+  200 ms a 12 PPM), una raya. Tras una pausa se cierra la letra.
+- **El espacio** entre palabras, con el botón ␣ junto al pulsador, que cierra
+  antes la letra en curso. Si prefieres que llegue solo tras una pausa más
+  larga, actívalo en los ajustes ("Espacios entre palabras automáticos").
 - **Con teclado**: `Espacio` es el pulsador; `.` y `-` escriben un punto y una
-  raya; `Enter` cierra la letra; `Retroceso` cancela la secuencia o borra la
+  raya; `Enter` cierra la letra y, sin letra en curso, la palabra; `Retroceso` cancela la secuencia o borra la
   última letra; `Escape` cancela.
 - **Explorar**: toca una letra del árbol para ver su camino y oír su código.
 - **Ajustes** (⚙): idioma, tema (sistema, claro, oscuro, Gruvbox oscuro y
   claro, alto contraste), visión del color (para protanopia, deuteranopia,
   tritanopia y acromatopsia), los colores del punto y la raya, la velocidad,
-  la velocidad efectiva (Farnsworth), las pausas, el tono, el volumen y la
-  vibración.
+  la velocidad efectiva (Farnsworth), las pausas, los espacios automáticos,
+  el tono, el volumen y la vibración.
 
 ## Texto → Morse
 

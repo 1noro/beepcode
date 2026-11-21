@@ -234,11 +234,16 @@ export function createSettingsPanel(
     (value) => set({ vision: value }),
   );
 
-  const vibration = el('input', { type: 'checkbox' });
-  vibration.addEventListener('change', () => set({ vibration: vibration.checked }));
-  updaters.push((settings) => (vibration.checked = settings.vibration));
-  const vibrationField = field('settings.vibration', vibration);
-  vibrationField.classList.add('setting--check');
+  function check(key: 'autoSpace' | 'vibration', label: MessageKey): HTMLElement {
+    const control = el('input', { type: 'checkbox' });
+    control.addEventListener('change', () => set({ [key]: control.checked }));
+    updaters.push((settings) => (control.checked = settings[key]));
+    const checkField = field(label, control);
+    checkField.classList.add('setting--check');
+    return checkField;
+  }
+
+  const vibrationField = check('vibration', 'settings.vibration');
   // Hidden where the device cannot vibrate (iOS, SPEC §5).
   vibrationField.hidden = !options.vibrationSupported;
 
@@ -267,6 +272,7 @@ export function createSettingsPanel(
         range('wpm', 'settings.wpm', 'settings.wpmValue', (wpm) => wpmChange(store.get(), wpm)),
         effectiveRange(),
         range('gapTolerance', 'settings.gapTolerance', 'settings.gapToleranceValue'),
+        check('autoSpace', 'settings.autoSpace'),
         range('dashThreshold', 'settings.dashThreshold', 'settings.dashThresholdValue'),
       ]),
       section('settings.sound', [
