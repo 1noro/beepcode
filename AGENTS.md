@@ -208,6 +208,9 @@ make down | clean | distclean
     verde en la rama: `git merge --no-ff` con un mensaje en castellano que
     diga qué trae la rama (`merge: F1, el núcleo y el modo Libre`), y el push
     de `main`, que es el despliegue. La rama se borra solo si lo pide.
+    **Se hace con `/desplegar`** ([`docs/agentes/desplegar.md`](docs/agentes/desplegar.md)):
+    la versión, la PR, el merge con su tag en un solo push y la espera al
+    despliegue.
   - **Push, solo cuando lo pide el usuario**, también el de una rama.
 - **Nunca una línea de atribución a un agente de IA o su herramienta**
   (`Co-Authored-By`, "Generated with …") en commits ni PRs, aunque la
@@ -233,7 +236,7 @@ make down | clean | distclean
 5. Al terminar: la ficha, `estado.md`, la bitácora del día y el `CHANGELOG.md`
    si cambia algo para quien usa la app.
 
-Las rutinas (`/tarea N`, `/revisar-adr`, `/revisar-docs`), en
+Las rutinas (`/tarea N`, `/revisar-adr`, `/revisar-docs`, `/desplegar`), en
 [`docs/agentes/`](docs/agentes/README.md): un procedimiento en texto llano y un
 comando igual en las tres herramientas que solo apunta a él. **El
 procedimiento se cambia en `docs/agentes/`, nunca en el comando.** `CLAUDE.md`
