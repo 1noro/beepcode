@@ -501,26 +501,34 @@
   opacity: 1;
 }
 
-/* What will sound, and its code: a few lines that scroll to what plays. */
+/* What will sound, and its code: two lines each, that scroll on their own
+   to what plays, so that both are always in sight. Always as tall, empty or
+   full: if they grew with the text, the tree below would shrink and move. */
 .text-output {
   display: grid;
   gap: 4px;
-  max-height: 7.5rem;
-  overflow-y: auto;
 }
 
 /* The room on the left that the highlight takes (below): the box scrolls,
    so it clips, and the first character would lose it. */
 .text-preview,
 .text-code {
+  /* As wide as its text, centred, until it takes the whole width; then it
+     wraps from the left. */
+  justify-self: center;
+  max-width: 100%;
+  height: calc(2 * var(--line));
   margin: 0;
   padding-left: var(--tracking);
+  overflow-y: auto;
+  line-height: var(--line);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
 .text-preview {
   --tracking: 0.06em;
+  --line: 1.875rem;
   font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: var(--tracking);
@@ -528,11 +536,94 @@
 
 .text-code {
   --tracking: 0.15em;
+  --line: 1.5rem;
   letter-spacing: var(--tracking);
   color: var(--color-muted);
 }
 
 /* Faded, not struck through: a struck comma reads as a dash. */
+/* Without text, the room waits with the name of the app in Morse and a
+   caption, inside a dashed frame; it goes as soon as something is written. */
+.text-output {
+  position: relative;
+  container-type: inline-size;
+}
+
+.text-empty {
+  position: absolute;
+  inset: 2px 0;
+  display: none;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  border: 1px dashed var(--color-border);
+  border-radius: 8px;
+}
+
+.text-output.is-empty .text-empty {
+  display: grid;
+}
+
+/* Sized to the box: the whole name is some 29 em wide. */
+.text-empty-morse {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  font-size: min(1rem, 3.1cqi);
+}
+
+.text-empty-letter {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+/* Round dots and long dashes, as the nodes of the tree. */
+.text-empty-dot,
+.text-empty-dash {
+  height: 0.5em;
+  border-radius: 0.25em;
+  opacity: 0.35;
+  animation: text-empty-wave calc(var(--steps) * 0.18s + 2s) ease-in-out infinite;
+  animation-delay: calc(var(--step) * 0.18s);
+}
+
+.text-empty-dot {
+  width: 0.5em;
+  background: var(--color-dot);
+}
+
+.text-empty-dash {
+  width: 1.5em;
+  background: var(--color-dash);
+}
+
+/* Each mark lights up in turn and goes back: a wave along the name. */
+@keyframes text-empty-wave {
+  0%,
+  12%,
+  100% {
+    opacity: 0.35;
+  }
+
+  5% {
+    opacity: 1;
+  }
+}
+
+.text-empty-caption {
+  margin: 0;
+  padding: 0 12px;
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+/* The code of a letter is never split between two lines. */
+.text-code span {
+  white-space: nowrap;
+}
+
 .text-preview .is-skipped {
   color: var(--color-muted);
   font-weight: 400;
@@ -566,12 +657,17 @@
 
 .text-count {
   flex: none;
+  /* As wide as "200 / 200" from the start: growing, it would wrap the hint
+     onto one more line. */
+  min-width: 9ch;
   margin-left: auto;
+  text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-.text-hint[hidden] {
-  display: none;
+/* Hidden, it keeps its room, for the same reason. */
+.text-hint.is-off {
+  visibility: hidden;
 }
 
 .player-controls {

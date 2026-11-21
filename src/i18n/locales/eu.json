@@ -63,6 +63,7 @@
   "tape.invalid": "Sekuentzia ezezaguna",
   "text.input": "Erreproduzitzeko testua",
   "text.placeholder": "Idatzi testu bat Morsez entzuteko",
+  "text.empty": "Hemen agertuko dira zure testua eta haren Morse kodea",
   "text.clear": "Ezabatu testua",
   "text.count": "{count} / {max}",
   "text.preview": "Testua, entzuten den bezala",

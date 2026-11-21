@@ -63,6 +63,7 @@
   "tape.invalid": "Unknown sequence",
   "text.input": "Text to play",
   "text.placeholder": "Type a text to hear it in Morse",
+  "text.empty": "Your text and its Morse code will appear here",
   "text.clear": "Clear the text",
   "text.count": "{count} / {max}",
   "text.preview": "Text as it is played",

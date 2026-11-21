@@ -18,7 +18,7 @@ tests del player en reloj falso.
 
 **Hecho y revisado por el usuario en la rama `feat/f2-texto-a-morse`,
 commiteado y subido; falta la PR a `main` y el tag** (2026-11-21). `make check` y `make e2e` en verde:
-305 tests unitarios, 56 e2e (28 en escritorio y 28 en móvil emulado) y
+306 tests unitarios, 66 e2e (33 en escritorio y 33 en móvil emulado) y
 `player.ts` al 99 % en líneas. El bundle inicial, unos 25 kB gzip (JS, CSS
 y `workbox-window`), más la fuente.
 
@@ -72,8 +72,22 @@ Decisiones menores, por el camino:
 - **El player recibe texto, no código suelto** (`.- -...`): §6.5 solo pide
   un campo de texto. Una letra suelta ya la cubre `timing.letterTimeline`
   (Explorar); si F3 necesita más, `plan` admite cualquier lista de fichas.
+- **El árbol no se mueve al escribir** (a petición del usuario): el texto
+  como sonará y la transcripción tienen dos líneas fijas cada uno, con
+  scroll propio hasta lo que suena, y la ayuda de lo que se salta guarda su
+  sitio aunque no se vea. Antes la zona crecía con el texto, y el árbol, que
+  ocupa lo que queda, se encogía y se movía. Un e2e lo comprueba.
 - **Lo que se salta, atenuado y sin tachar**: una coma tachada parece un
   guion.
+- **El texto y su código empiezan centrados** (a petición del usuario):
+  cada caja mide lo que su contenido y se centra; cuando llena el ancho, lo
+  ocupa entero y las líneas siguientes empiezan por la izquierda.
+- **Sin texto, el hueco no queda en blanco** (a petición del usuario): un
+  marco discontinuo con "beepcode" en Morse, puntos y rayas con la forma y
+  los colores del árbol, por los que pasa despacio una onda de luz, como si
+  se transmitiera, y debajo "Aquí aparecerán tu texto y su código Morse".
+  El nombre sale de `app.name` y su código, del árbol; es decorativo
+  (`aria-hidden`), y con movimiento reducido se queda quieto.
 
 <!-- docs:historia -->
 ## Historia

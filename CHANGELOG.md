@@ -21,7 +21,8 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
   que no está en el alfabeto (números, puntuación, Ñ, Ç) se ve atenuado y se
   salta. Mientras suena, se resalta el carácter, se enciende su camino en el
   árbol y se ve la transcripción `·−` entera. Un ✕ en el campo lo vacía, y
-  un contador dice cuánto queda de los 200 caracteres que admite.
+  un contador dice cuánto queda de los 200 caracteres que admite. Sin
+  texto, el hueco muestra "beepcode" en Morse y lo que aparecerá ahí.
 - **La velocidad efectiva (Farnsworth)** en los ajustes: las letras suenan a
   la velocidad elegida y las pausas entre ellas se alargan hasta la efectiva.
 

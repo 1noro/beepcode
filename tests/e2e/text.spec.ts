@@ -83,6 +83,16 @@ test('takes at most 200 characters, and counts them', async ({ page }) => {
   await expect(page.getByText('200 / 200')).toBeVisible();
 });
 
+test('without text, the room waits with a caption', async ({ page }) => {
+  await page.goto('./#/text');
+  const caption = page.getByText('Your text and its Morse code will appear here');
+  await expect(caption).toBeVisible();
+  await input(page).fill('E');
+  await expect(caption).toBeHidden();
+  await input(page).fill('');
+  await expect(caption).toBeVisible();
+});
+
 test('the clear button empties the text and stops', async ({ page }) => {
   await atSlowSpeed(page);
   await page.goto('./#/text');
@@ -127,6 +137,31 @@ test('the effective speed (Farnsworth) goes up to the speed', async ({ page }) =
   await page.getByRole('slider', { name: 'Speed', exact: true }).fill('8');
   await page.getByRole('slider', { name: 'Speed', exact: true }).fill('20');
   await expect(effective).toHaveValue('20');
+});
+
+test('the text and its code start centred, and wrap from the left when full', async ({ page }) => {
+  await page.goto('./#/text');
+  const output = await page.locator('.text-output').boundingBox();
+  const centre = (box: { x: number; width: number } | null) => (box ? box.x + box.width / 2 : 0);
+  await input(page).fill('SOS');
+  for (const line of [preview(page), transcription(page)]) {
+    const box = await line.boundingBox();
+    expect(box?.width).toBeLessThan((output?.width ?? 0) / 2);
+    expect(Math.abs(centre(box) - centre(output))).toBeLessThan(2);
+  }
+  await input(page).fill('Hola mundo '.repeat(8));
+  expect((await preview(page).boundingBox())?.width).toBeCloseTo(output?.width ?? 0, 0);
+});
+
+test('the tree does not move when the text is written', async ({ page }) => {
+  await page.goto('./#/text');
+  const board = page.getByRole('group', { name: 'Morse tree' });
+  const before = await board.boundingBox();
+  await input(page).fill('Hola, ñu! '.repeat(20));
+  await expect(preview(page).locator('.is-skipped').first()).toBeVisible();
+  expect(await board.boundingBox()).toEqual(before);
+  await input(page).fill('');
+  expect(await board.boundingBox()).toEqual(before);
 });
 
 test('the page never scrolls in the Text mode', async ({ page }) => {

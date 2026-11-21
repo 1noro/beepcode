@@ -63,6 +63,7 @@
   "tape.invalid": "Secuencia desconocida",
   "text.input": "Texto para reproducir",
   "text.placeholder": "Escribe un texto para oírlo en Morse",
+  "text.empty": "Aquí aparecerán tu texto y su código Morse",
   "text.clear": "Borrar el texto",
   "text.count": "{count} / {max}",
   "text.preview": "El texto tal como suena",
