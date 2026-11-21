@@ -1,6 +1,6 @@
 # Estado
 
-**Al día:** 2026-11-21, 17:00 UTC. **Revisada:** 2026-11-20, la última
+**Al día:** 2026-11-21, 17:45 UTC. **Revisada:** 2026-11-20, la última
 [`/revisar-docs`](agentes/revisar-docs.md), que se lanza a mano cada semana.
 
 Lo vivo del desarrollo: en qué fase está, qué hay publicado, lo abierto y lo
@@ -13,14 +13,16 @@ Qué va en cada sitio, en `AGENTS.md`, "Dónde va cada información".
 **F0, el andamiaje, F1, el núcleo y el modo Libre, y F2, texto a Morse:
 cerrados** ([TODO 1](todo/01-andamiaje.md),
 [TODO 2](todo/02-nucleo-y-modo-libre.md),
-[TODO 3](todo/03-texto-a-morse.md)), publicados como **v0.2.0**. Lo
-siguiente, **F3**: Aprender y Escuchar. El plan entero, en SPEC §13; v1 es
+[TODO 3](todo/03-texto-a-morse.md)), publicados como **v0.2.0**, y unos
+refinamientos antes de F3, como **v0.3.0**. Lo siguiente, **F3**: Aprender y Escuchar. El plan entero, en SPEC §13; v1 es
 de F0 a F4, y F5 (las estadísticas) llega al final.
 
 ## Lo publicado
 
-- **v0.2.0, el modo Libre (F1) y el modo Texto → Morse (F2)**, en
-  `https://1noro.github.io/beepcode/`. Se despliega con
+- **v0.3.0, el modo Libre (F1) y el modo Texto → Morse (F2)**, en
+  `https://1noro.github.io/beepcode/`. Desde v0.2.0: el audio al arrancar,
+  los espacios del modo Libre a mano (el botón ␣ y `Enter`; los
+  automáticos, un ajuste) y los ajustes agrupados por modo. Se despliega con
   [`/desplegar`](agentes/desplegar.md).
   **Solo se publica `main`** (ADR 0007): `deploy.yml`, en cada push a `main`
   que no sea solo documentación.
@@ -44,13 +46,18 @@ de F0 a F4, y F5 (las estadísticas) llega al final.
 - **`make hooks`**, una vez en este clon: el pre-commit con `make docs-check`.
 - **El logo** ([TODO 7](todo/07-logo.md)).
 - **Que alguien nativo revise** las traducciones al gallego, catalán y euskera
-  ([`traducciones.md`](traducciones.md)): 66 textos con F1 y 78 con F2.
-- **Probar v0.2.0 en un móvil** (o con `make dev-https`): el sonido y el
+  ([`traducciones.md`](traducciones.md)): 66 textos con F1, 78 con F2 y 82
+  con v0.3.0.
+- **Probar v0.3.0 en un móvil** (o con `make dev-https`): el sonido y el
   táctil no tienen e2e, y desde la prueba en el Pixel 7 cambiaron el
   pulsador, las pausas y el centrado del árbol; del modo Texto, escribir
   sobre el texto con el teclado del móvil y la barra de desplazamiento en el
-  PC.
+  PC; de v0.3.0, el botón ␣ junto al pulsador.
 
 ## Lo próximo
 
+- **Más refinamientos antes de F3**, si el usuario los pide, en una rama
+  nueva: los de `fix/audio-arranque` salieron en v0.3.0.
+- **La vibración**, hoy en la sección "Modo Libre" de los ajustes: cuando
+  Aprender use el pulsador (F3), pasará a una sección común.
 - **F3 con `/tarea 4`**: Aprender y Escuchar, que usarán `player.ts`.
