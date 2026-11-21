@@ -106,13 +106,16 @@
   color: var(--color-muted);
 }
 
+/* The same block as the caret of the Text mode: a character wide, with its
+   letter spacing, the line tall, and the same blink. */
 .tape-cursor {
   flex: none;
-  width: 0.55em;
-  height: 1em;
+  width: calc(0.6em + 2 * 0.06em);
+  height: 1.3em;
   margin-left: 2px;
   align-self: center;
   background: var(--color-accent);
+  border-radius: 3px;
   animation: blink 1s steps(1) infinite;
 }
 
@@ -322,10 +325,10 @@
    is as high with it as without. */
 .key-row {
   grid-area: key;
+  align-self: end;
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(64px, 22%, 112px);
   gap: 12px;
-  align-self: end;
 }
 
 .key,
@@ -528,10 +531,10 @@
 
   /* The space, under the key, as wide; both, all the height left. */
   .key-row {
+    align-self: stretch;
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) auto;
   }
-    align-self: stretch;
 
   .key {
     height: 100%;
@@ -636,7 +639,8 @@
   overflow-y: auto;
   resize: none;
   color: transparent;
-  caret-color: var(--color-accent);
+  /* Its caret, a line, is drawn as a block on the text below (text.ts). */
+  caret-color: transparent;
   background: transparent;
   border: 0;
   outline: none;
@@ -661,21 +665,59 @@
 }
 
 .text-caret {
-  width: 2px;
-  height: 1.5rem;
+  width: calc(0.6em + 2 * var(--tracking));
+  height: 1.32em;
+  font-size: 1.25rem;
+  /* Where the field draws it when it takes the focus: an empty text, centred,
+     starts at the centre. */
+  translate: calc(0.3em + var(--tracking) / 2) 0;
   background: var(--color-accent);
-  animation: text-caret-blink 1.1s steps(1) infinite;
+  border-radius: 3px;
+  animation: blink 1s steps(1) infinite;
 }
 
 .text-editor:focus-within .text-caret {
   visibility: hidden;
 }
 
-/* Visible at the end: with reduced motion it stays still, and lit. */
-@keyframes text-caret-blink {
+/* The caret of the field, a block as the one of the tape (text.ts), with
+   its blink: on a character, that character, as when it plays; at the end,
+   a block as wide as a character. Lit at rest: with reduced motion it stays
+   still, and lit. */
+.text-preview span.is-caret {
+  padding-left: var(--tracking);
+  margin-left: calc(-1 * var(--tracking));
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+  border-radius: 3px;
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+@keyframes caret-blink {
   50% {
-    opacity: 0;
+    color: var(--caret-color, var(--color-fg));
+    background: transparent;
   }
+}
+
+.text-preview .is-skipped {
+  --caret-color: var(--color-muted);
+}
+
+.text-caret-end {
+  position: relative;
+}
+
+.text-caret-end::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(-1 * var(--tracking));
+  width: calc(0.6em + 2 * var(--tracking));
+  background: var(--color-accent);
+  border-radius: 3px;
+  animation: blink 1s steps(1) infinite;
 }
 
 .text-clear {
@@ -818,6 +860,7 @@
 
 .player-controls {
   grid-area: controls;
+  align-self: end;
   display: flex;
   justify-content: center;
   gap: 8px;
@@ -860,7 +903,6 @@
 }
 
 .settings::backdrop {
-  align-self: end;
   background: rgb(0 0 0 / 0.5);
 }
 

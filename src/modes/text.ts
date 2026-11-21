@@ -103,6 +103,12 @@ export function createTextMode(context: ModeContext): Mode {
   ]);
   prompt.setAttribute('aria-hidden', 'true');
   const editor = el('div', { className: 'text-editor' }, [preview, input, prompt, clear]);
+  // The caret, a block like the one of the tape: the field's own, a line,
+  // is hidden (app.css) and drawn on the text below, the same in every
+  // browser. On a character, it is that character; at the end, this.
+  // A zero-width space in it: empty, with no text around it, it would have
+  // no line, and no height.
+  const caretEnd = el('span', { className: 'text-caret-end' }, ['\u200b']);
   const transcription = el('p', { className: 'text-code' });
   const output = el('div', { className: 'text-output' }, [
     transcription,
@@ -147,6 +153,27 @@ export function createTextMode(context: ModeContext): Mode {
     play.disabled = !tokens.some((token) => token.kind === 'letter');
     clear.disabled = tokens.length === 0;
     align();
+    placeCaret();
+  }
+
+  /**
+   * Draws the caret where the field has it: only with the focus, nothing
+   * selected and nothing playing (the character played is lit the same way).
+   */
+  function placeCaret(): void {
+    for (const span of preview.querySelectorAll('.is-caret')) span.classList.remove('is-caret');
+    caretEnd.remove();
+    const { selectionStart, selectionEnd } = input;
+    const show =
+      document.activeElement === input &&
+      selectionStart === selectionEnd &&
+      player.state === 'stopped';
+    if (!show) return;
+    // Counted as the tokens are: by code point, composed.
+    const index = Array.from(input.value.slice(0, selectionStart).normalize('NFC')).length;
+    const span = preview.children[index];
+    if (span) span.classList.add('is-caret');
+    else preview.append(caretEnd);
   }
 
   /**
@@ -154,8 +181,9 @@ export function createTextMode(context: ModeContext): Mode {
    * cannot be as wide as its text, as the transcription is.
    */
   function align(): void {
-    const first = preview.firstElementChild as HTMLElement | null;
-    const last = preview.lastElementChild as HTMLElement | null;
+    const chars = preview.querySelectorAll<HTMLElement>('[data-index]');
+    const first = chars[0];
+    const last = chars[chars.length - 1];
     editor.classList.toggle('is-wrapped', !!first && !!last && last.offsetTop > first.offsetTop);
   }
 
@@ -211,6 +239,7 @@ export function createTextMode(context: ModeContext): Mode {
         board.clear();
       }
       if (state === 'stopped') highlight(null);
+      placeCaret();
     }),
     settings.subscribe((value, previous) => {
       if (value.wpm !== previous.wpm || value.effectiveWpm !== previous.effectiveWpm) {
@@ -238,6 +267,11 @@ export function createTextMode(context: ModeContext): Mode {
   input.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') event.preventDefault();
   });
+  // Wherever the caret goes: typing, the arrows, a click, the focus.
+  for (const type of ['focus', 'blur', 'select', 'keyup', 'pointerup', 'selectionchange']) {
+    input.addEventListener(type, placeCaret);
+  }
+  document.addEventListener('selectionchange', placeCaret);
   // The text below scrolls with the field.
   input.addEventListener('scroll', () => {
     preview.scrollTop = input.scrollTop;
@@ -313,6 +347,7 @@ export function createTextMode(context: ModeContext): Mode {
       for (const off of offs) off();
       document.removeEventListener('visibilitychange', hidden);
       document.removeEventListener('keydown', typeToWrite);
+      document.removeEventListener('selectionchange', placeCaret);
     },
   };
 }
