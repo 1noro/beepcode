@@ -268,8 +268,10 @@ export function createTextMode(context: ModeContext): Mode {
       player.pause();
       return;
     }
+    // The first time, the audio takes a moment to start: the lights wait
+    // for it, so as not to run ahead of the tone.
     tone.unlock();
-    player.play();
+    void tone.whenReady().then(() => player.play());
   });
   stop.addEventListener('click', () => {
     player.stop();
