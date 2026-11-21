@@ -287,9 +287,9 @@ for (const locale of ['en', 'es', 'gl', 'ca', 'eu']) {
     }
     const tape = await page.locator('.tape').boundingBox();
     const footer = await page.locator('.hints').boundingBox();
-    const board = await page.locator('.board-wrap').boundingBox();
-    if (!tape || !footer || !board) throw new Error('No tape, hints or tree');
+    const key = await page.locator('.key-row').boundingBox();
+    if (!tape || !footer || !key) throw new Error('No tape, hints or key');
     expect(footer.y).toBeGreaterThanOrEqual(tape.y + tape.height);
-    expect(footer.y + footer.height).toBeLessThanOrEqual(board.y);
+    expect(footer.y + footer.height).toBeLessThanOrEqual(key.y);
   });
 }
