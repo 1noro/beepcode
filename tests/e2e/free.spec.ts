@@ -121,7 +121,10 @@ test('the space button sits beside the key, as tall', async ({ page }) => {
 test('automatic word spaces, from the settings: off by default', async ({ page }) => {
   await page.goto('./');
   await page.getByRole('button', { name: 'Settings' }).click();
-  const auto = page.getByLabel('Automatic word spaces (Free mode)');
+  // Under the name of the mode it changes.
+  const auto = page
+    .locator('section', { hasText: 'Free mode' })
+    .getByLabel('Automatic word spaces');
   await expect(auto).not.toBeChecked();
   await auto.check();
   await page.keyboard.press('Escape');

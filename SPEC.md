@@ -333,6 +333,7 @@ Se abren desde el panel ⚙ y se persisten en `localStorage` (con versión de es
   - **acromatopsia** (sin color): punto y raya por luminosidad, uno claro y otro oscuro respecto al fondo.
 
   La forma (círculo / rectángulo, §2.2) ya distingue punto y raya sin color; esto lo refuerza. El selector de color de punto / raya, si se usa, manda sobre los dos. Un test comprueba, simulando cada tipo de daltonismo, que punto y raya se distinguen en todos los temas.
+- **Agrupados por a qué afectan** (decidido el 2026-11-21): idioma; aspecto; sonido y velocidad (todos los modos: velocidad, tono, volumen); y una sección con el nombre de cada modo para lo que solo cambia ese modo. Modo Libre: umbral de raya, tolerancia de pausa, espacios automáticos y vibración; modo Texto → Morse: velocidad efectiva. Un modo nuevo con ajustes propios trae su sección.
 - Botón "Restablecer valores por defecto".
 - **Acerca de**, al pie del panel: la versión del build (la de `git describe --tags --dirty --always`, como en dhtcrawler; `dev` si se construye sin el Makefile) y las licencias, con enlaces: el código, GPL-3.0-or-later; el logo y los textos, CC BY-SA 4.0 (ADR 0005); la tipografía, JetBrains Mono con OFL 1.1 (ADR 0008); y el código fuente. En el panel y no en la pantalla principal, que no tiene sitio que perder.
 

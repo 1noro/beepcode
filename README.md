@@ -36,7 +36,7 @@
   claro, alto contraste), visión del color (para protanopia, deuteranopia,
   tritanopia y acromatopsia), los colores del punto y la raya, la velocidad,
   la velocidad efectiva (Farnsworth), las pausas, los espacios automáticos,
-  el tono, el volumen y la vibración.
+  el tono, el volumen y la vibración; agrupados por el modo al que afectan.
 
 ## Texto → Morse
 

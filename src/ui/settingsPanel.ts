@@ -268,18 +268,19 @@ export function createSettingsPanel(
         color('dotColor', 'settings.dotColor'),
         color('dashColor', 'settings.dashColor'),
       ]),
-      section('settings.keying', [
-        range('wpm', 'settings.wpm', 'settings.wpmValue', (wpm) => wpmChange(store.get(), wpm)),
-        effectiveRange(),
-        range('gapTolerance', 'settings.gapTolerance', 'settings.gapToleranceValue'),
-        check('autoSpace', 'settings.autoSpace'),
-        range('dashThreshold', 'settings.dashThreshold', 'settings.dashThresholdValue'),
-      ]),
+      // What every mode uses, then what only one does, under its name.
       section('settings.sound', [
+        range('wpm', 'settings.wpm', 'settings.wpmValue', (wpm) => wpmChange(store.get(), wpm)),
         range('toneHz', 'settings.toneHz', 'settings.hzValue'),
         range('volume', 'settings.volume', 'settings.percentValue'),
+      ]),
+      section('settings.free', [
+        range('dashThreshold', 'settings.dashThreshold', 'settings.dashThresholdValue'),
+        range('gapTolerance', 'settings.gapTolerance', 'settings.gapToleranceValue'),
+        check('autoSpace', 'settings.autoSpace'),
         vibrationField,
       ]),
+      section('settings.text', [effectiveRange()]),
       resetAll,
       about(),
     ]),
