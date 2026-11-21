@@ -18,7 +18,7 @@ tests del player en reloj falso.
 
 **Hecho y revisado por el usuario en la rama `feat/f2-texto-a-morse`,
 commiteado y subido; falta la PR a `main` y el tag** (2026-11-21). `make check` y `make e2e` en verde:
-306 tests unitarios, 66 e2e (33 en escritorio y 33 en móvil emulado) y
+307 tests unitarios, 70 e2e (35 en escritorio y 35 en móvil emulado) y
 `player.ts` al 99 % en líneas. El bundle inicial, unos 25 kB gzip (JS, CSS
 y `workbox-window`), más la fuente.
 
@@ -79,15 +79,39 @@ Decisiones menores, por el camino:
   ocupa lo que queda, se encogía y se movía. Un e2e lo comprueba.
 - **Lo que se salta, atenuado y sin tachar**: una coma tachada parece un
   guion.
-- **El texto y su código empiezan centrados** (a petición del usuario):
-  cada caja mide lo que su contenido y se centra; cuando llena el ancho, lo
-  ocupa entero y las líneas siguientes empiezan por la izquierda.
-- **Sin texto, el hueco no queda en blanco** (a petición del usuario): un
-  marco discontinuo con "beepcode" en Morse, puntos y rayas con la forma y
-  los colores del árbol, por los que pasa despacio una onda de luz, como si
-  se transmitiera, y debajo "Aquí aparecerán tu texto y su código Morse".
-  El nombre sale de `app.name` y su código, del árbol; es decorativo
-  (`aria-hidden`), y con movimiento reducido se queda quieto.
+- **Se escribe sobre el texto como sonará** (a petición del usuario): había
+  dos textos iguales, el del campo y el normalizado, y el campo se comía
+  sitio. Ahora el campo es transparente y está encima del texto, letra sobre
+  letra (la fuente es monoespaciada): el campo pone el cursor, la selección
+  y el teclado; lo de debajo, lo que se ve. No con `contenteditable`, que
+  obliga a rehacer los spans sin perder el cursor y con los teclados de
+  Android da guerra. Para que coincidan: los saltos de línea pasan a
+  espacios (abajo todo blanco es un espacio), y lo que en mayúsculas serían
+  dos letras (`ß` → `SS`) se queda como está (`text.normalizeChar`).
+- **Sin marco alrededor del texto** (a petición del usuario): el texto es el
+  campo. Sin texto, lo que invita a escribir es un cursor que parpadea donde
+  saldrá el real y, debajo, "Escribe un texto para oírlo en Morse"; con el
+  foco, el falso deja sitio al real. En un ordenador, teclear sin nada
+  enfocado escribe en el campo, sin pulsarlo antes. No se enfoca solo al
+  entrar: en el móvil sacaría el teclado, y con el teclado en el selector de
+  modo, cada flecha cambia de modo y le robaría el foco.
+- **El texto y su código empiezan centrados** (a petición del usuario): la
+  transcripción mide lo que su contenido y se centra hasta llenar el ancho;
+  el texto, que no puede encoger porque es un campo, se centra mientras cabe
+  en una línea y, si no, va desde la izquierda. **Los dos, en la misma
+  columna**: el texto deja a cada lado el sitio del ✕ (`--side`), y el
+  código, el mismo. **Y la misma barra de desplazamiento**, fina y con los
+  colores del tema, con su hueco guardado a los dos lados en las dos cajas
+  (`scrollbar-gutter: stable both-edges`): así el campo y el texto de debajo
+  miden igual aunque la barra aparezca, el centro sigue en el centro y el
+  texto empieza donde el código. Al principio el campo no tenía barra, para
+  no descuadrarse, y el código sí. El pie (la ayuda y el contador) no: en el móvil, la
+  ayuda pasaría a tres líneas y, como guarda su sitio, encogería el árbol.
+- **Sin texto, "beepcode" en Morse donde irá el código** (a petición del
+  usuario): puntos y rayas con la forma y los colores del árbol, por los que
+  pasa despacio una onda de luz, como si se transmitiera. El nombre sale de
+  `app.name` y su código, del árbol; es decorativo (`aria-hidden`), y con
+  movimiento reducido se queda quieto.
 
 <!-- docs:historia -->
 ## Historia

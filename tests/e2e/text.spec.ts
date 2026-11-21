@@ -7,7 +7,8 @@ import { expect, test, type Page } from '@playwright/test';
 
 test.use({ locale: 'en-US' });
 
-const preview = (page: Page) => page.getByLabel('Text as it is played');
+// Only seen: what it says is in the field over it.
+const preview = (page: Page) => page.locator('.text-preview');
 const transcription = (page: Page) => page.getByLabel('Transcription');
 const input = (page: Page) => page.getByRole('textbox', { name: 'Text to play' });
 const node = (page: Page, char: string) => page.locator(`.node[data-char="${char}"]`);
@@ -83,14 +84,39 @@ test('takes at most 200 characters, and counts them', async ({ page }) => {
   await expect(page.getByText('200 / 200')).toBeVisible();
 });
 
-test('without text, the room waits with a caption', async ({ page }) => {
+test('the field lies over the text as it will be played, on one line of text', async ({ page }) => {
   await page.goto('./#/text');
-  const caption = page.getByText('Your text and its Morse code will appear here');
-  await expect(caption).toBeVisible();
+  expect(await input(page).boundingBox()).toEqual(await preview(page).boundingBox());
+  await expect(input(page)).toHaveCSS('color', 'rgba(0, 0, 0, 0)');
+  await input(page).fill('sos\nsos\tsos');
+  await expect(input(page)).toHaveValue('sos sos sos');
+  await expect(preview(page)).toHaveText('SOS SOS SOS');
+});
+
+test('without text, a caret and what to do; typing with nothing focused writes', async ({
+  page,
+}) => {
+  await page.goto('./#/text');
+  const prompt = page.getByText('Type a text to hear it in Morse');
+  await expect(prompt).toBeVisible();
+  await expect(page.locator('.text-caret')).toBeVisible();
+  await input(page).focus();
+  await expect(page.locator('.text-caret')).toBeHidden();
+  await input(page).blur();
+  await page.keyboard.type('Sos');
+  await expect(input(page)).toBeFocused();
+  await expect(input(page)).toHaveValue('Sos');
+  await expect(prompt).toBeHidden();
+});
+
+test('without text, the name of the app in Morse waits in place of the code', async ({ page }) => {
+  await page.goto('./#/text');
+  const ornament = page.locator('.text-empty');
+  await expect(ornament).toBeVisible();
   await input(page).fill('E');
-  await expect(caption).toBeHidden();
+  await expect(ornament).toBeHidden();
   await input(page).fill('');
-  await expect(caption).toBeVisible();
+  await expect(ornament).toBeVisible();
 });
 
 test('the clear button empties the text and stops', async ({ page }) => {
@@ -144,13 +170,26 @@ test('the text and its code start centred, and wrap from the left when full', as
   const output = await page.locator('.text-output').boundingBox();
   const centre = (box: { x: number; width: number } | null) => (box ? box.x + box.width / 2 : 0);
   await input(page).fill('SOS');
-  for (const line of [preview(page), transcription(page)]) {
-    const box = await line.boundingBox();
-    expect(box?.width).toBeLessThan((output?.width ?? 0) / 2);
-    expect(Math.abs(centre(box) - centre(output))).toBeLessThan(2);
-  }
+  for (const box of [input(page), preview(page)])
+    await expect(box).toHaveCSS('text-align', 'center');
+  const short = await transcription(page).boundingBox();
+  expect(short?.width).toBeLessThan((output?.width ?? 0) / 2);
+  expect(Math.abs(centre(short) - centre(output))).toBeLessThan(2);
   await input(page).fill('Hola mundo '.repeat(8));
-  expect((await preview(page).boundingBox())?.width).toBeCloseTo(output?.width ?? 0, 0);
+  for (const box of [input(page), preview(page)]) await expect(box).toHaveCSS('text-align', 'left');
+  // Full, both wrap in the same column: the code takes the room of the
+  // clear button too, and starts where the text starts.
+  const side = await page
+    .locator('.text-output')
+    .evaluate((element) => parseFloat(getComputedStyle(element).paddingLeft));
+  expect(side).toBeGreaterThan(0);
+  expect((await transcription(page).boundingBox())?.width).toBeCloseTo(
+    (output?.width ?? 0) - 2 * side,
+    0,
+  );
+  const text = await preview(page).locator('span').first().boundingBox();
+  const code = await transcription(page).locator('span').first().boundingBox();
+  expect(Math.abs((text?.x ?? 0) - (code?.x ?? 0))).toBeLessThan(2);
 });
 
 test('the tree does not move when the text is written', async ({ page }) => {

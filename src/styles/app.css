@@ -461,15 +461,120 @@
 }
 
 .text-panel {
+  /* The room of the clear button, on both sides of the text, so that the
+     centre is the centre of the box; the code takes it too, so that both
+     wrap in the same column. As wide as the button. */
+  --side: 44px;
   grid-area: text;
   display: grid;
   gap: 6px;
   min-width: 0;
 }
 
-/* The field, with its clear button in the corner. */
-.text-field {
+/* The text is written on the text as it will be played (text.ts): the field,
+   transparent, lies over it letter on letter, so both take the same font,
+   size, spacing, wrapping and room. Two lines, always: if it grew with the
+   text, the tree below would shrink and move; each scrolls with the other.
+   No frame: the text is the field. */
+.text-editor {
+  --tracking: 0.06em;
+  --line: 1.875rem;
   position: relative;
+  /* Out of the boxes that scroll: inside, it would show half of a third
+     line. */
+  padding-block: 8px;
+  text-align: center;
+  cursor: text;
+}
+
+.text-editor.is-wrapped {
+  text-align: left;
+}
+
+/* The room on the left that the highlight takes (below): the box scrolls,
+   so it clips, and the first character would lose it. */
+/* The same thin scroll bar for the text and for its code, and its room kept
+   on both sides, used or not: the field and the text below keep the same
+   width, the centre stays the centre, and both start where the code does. */
+.text-preview,
+.text-input,
+.text-code {
+  scrollbar-gutter: stable both-edges;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.text-preview,
+.text-input {
+  display: block;
+  height: calc(2 * var(--line));
+  margin: 0;
+  padding: 0 0 0 var(--tracking);
+  font: inherit;
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-variant-ligatures: none;
+  letter-spacing: var(--tracking);
+  line-height: var(--line);
+  text-align: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.text-preview {
+  margin-inline: var(--side);
+  overflow: hidden;
+}
+
+.text-input {
+  position: absolute;
+  top: 8px;
+  left: var(--side);
+  width: calc(100% - 2 * var(--side));
+  overflow-y: auto;
+  resize: none;
+  color: transparent;
+  caret-color: var(--color-accent);
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+/* Without text: on the first line, a caret that blinks where the real one
+   will be (until the field takes the focus, and its own caret, there); on
+   the second, what to do. Clicks go through, to the field. */
+.text-prompt {
+  position: absolute;
+  inset: 8px 0;
+  display: none;
+  grid-template-rows: var(--line) var(--line);
+  place-items: center;
+  pointer-events: none;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.text-editor.is-empty .text-prompt {
+  display: grid;
+}
+
+.text-caret {
+  width: 2px;
+  height: 1.5rem;
+  background: var(--color-accent);
+  animation: text-caret-blink 1.1s steps(1) infinite;
+}
+
+.text-editor:focus-within .text-caret {
+  visibility: hidden;
+}
+
+/* Visible at the end: with reduced motion it stays still, and lit. */
+@keyframes text-caret-blink {
+  50% {
+    opacity: 0;
+  }
 }
 
 .text-clear {
@@ -482,39 +587,23 @@
   visibility: hidden;
 }
 
-.text-input {
-  display: block;
-  width: 100%;
-  resize: none;
-  /* Room on the right for the clear button. */
-  padding: 8px 44px 8px 10px;
-  font: inherit;
-  font-size: 1rem;
-  color: var(--color-fg);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-}
-
-.text-input::placeholder {
-  color: var(--color-muted);
-  opacity: 1;
-}
-
-/* What will sound, and its code: two lines each, that scroll on their own
-   to what plays, so that both are always in sight. Always as tall, empty or
-   full: if they grew with the text, the tree below would shrink and move. */
+/* The code: two lines that scroll on their own to what plays; as wide as
+   its text, centred, until it takes the whole width, and then it wraps from
+   the left. Without text, the name of the app in Morse in its place. */
 .text-output {
   display: grid;
-  gap: 4px;
+  padding-inline: var(--side);
+  container-type: inline-size;
 }
 
-/* The room on the left that the highlight takes (below): the box scrolls,
-   so it clips, and the first character would lose it. */
-.text-preview,
+.text-code,
+.text-empty {
+  grid-area: 1 / 1;
+}
+
 .text-code {
-  /* As wide as its text, centred, until it takes the whole width; then it
-     wraps from the left. */
+  --tracking: 0.15em;
+  --line: 1.5rem;
   justify-self: center;
   max-width: 100%;
   height: calc(2 * var(--line));
@@ -522,54 +611,24 @@
   padding-left: var(--tracking);
   overflow-y: auto;
   line-height: var(--line);
+  letter-spacing: var(--tracking);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-}
-
-.text-preview {
-  --tracking: 0.06em;
-  --line: 1.875rem;
-  font-size: 1.25rem;
-  font-weight: 600;
-  letter-spacing: var(--tracking);
-}
-
-.text-code {
-  --tracking: 0.15em;
-  --line: 1.5rem;
-  letter-spacing: var(--tracking);
   color: var(--color-muted);
 }
 
-/* Faded, not struck through: a struck comma reads as a dash. */
-/* Without text, the room waits with the name of the app in Morse and a
-   caption, inside a dashed frame; it goes as soon as something is written. */
-.text-output {
-  position: relative;
-  container-type: inline-size;
-}
-
-.text-empty {
-  position: absolute;
-  inset: 2px 0;
-  display: none;
-  place-content: center;
-  justify-items: center;
-  gap: 12px;
-  border: 1px dashed var(--color-border);
-  border-radius: 8px;
-}
-
-.text-output.is-empty .text-empty {
-  display: grid;
-}
-
 /* Sized to the box: the whole name is some 29 em wide. */
-.text-empty-morse {
-  display: flex;
+.text-empty {
+  display: none;
+  align-self: center;
+  justify-self: center;
   align-items: center;
   gap: 0.9em;
   font-size: min(1rem, 3.1cqi);
+}
+
+.text-output.is-empty .text-empty {
+  display: flex;
 }
 
 .text-empty-letter {
@@ -611,19 +670,12 @@
   }
 }
 
-.text-empty-caption {
-  margin: 0;
-  padding: 0 12px;
-  font-size: 0.85rem;
-  text-align: center;
-  color: var(--color-muted);
-}
-
 /* The code of a letter is never split between two lines. */
 .text-code span {
   white-space: nowrap;
 }
 
+/* Faded, not struck through: a struck comma reads as a dash. */
 .text-preview .is-skipped {
   color: var(--color-muted);
   font-weight: 400;

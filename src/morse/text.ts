@@ -13,9 +13,14 @@ export type TextToken =
   | { readonly kind: 'space'; readonly char: string }
   | { readonly kind: 'skip'; readonly char: string };
 
-/** The character in upper case and, unless it is Ñ or Ç, without marks. */
+/**
+ * The character in upper case and, unless it is Ñ or Ç, without marks. One
+ * character in, one out: one whose upper case is two ('ß' → 'SS') stays as
+ * it is, so that the text played lies letter on letter under the one typed.
+ */
 export function normalizeChar(char: string): string {
   const upper = char.toUpperCase();
+  if ([...upper].length > 1) return char;
   if (OWN_LETTERS.has(upper)) return upper;
   return upper.normalize('NFD').replace(/\p{M}/gu, '');
 }

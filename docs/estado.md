@@ -44,7 +44,7 @@ F0 a F4, y F5 (las estadísticas) llega al final.
 - **`make hooks`**, una vez en este clon: el pre-commit con `make docs-check`.
 - **El logo** ([TODO 7](todo/07-logo.md)).
 - **Que alguien nativo revise** las traducciones al gallego, catalán y euskera
-  ([`traducciones.md`](traducciones.md)): 66 textos con F1 y 77 con F2.
+  ([`traducciones.md`](traducciones.md)): 66 textos con F1 y 78 con F2.
 - **Probar v0.1.0 en un móvil** (o con `make dev-https`): el sonido y el
   táctil no tienen e2e, y desde la prueba en el Pixel 7 cambiaron el
   pulsador, las pausas y el centrado del árbol.

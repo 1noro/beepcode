@@ -26,6 +26,11 @@ describe('normalizeChar (SPEC §6.5)', () => {
     expect(normalizeChar('ñ')).toBe('Ñ');
     expect(normalizeChar('ç')).toBe('Ç');
   });
+
+  it('gives one character for one: what would be two stays as it is', () => {
+    expect(normalizeChar('ß')).toBe('ß');
+    expect(normalizeChar('ﬁ')).toBe('ﬁ');
+  });
 });
 
 describe('tokenize', () => {

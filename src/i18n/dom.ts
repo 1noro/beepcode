@@ -4,7 +4,7 @@
 import { t, type MessageKey, type Params } from './index.ts';
 
 type Target = HTMLElement | SVGElement;
-type Attribute = 'aria-label' | 'title' | 'placeholder';
+type Attribute = 'aria-label' | 'title';
 
 function setParams(node: Target, params?: Params): void {
   if (params) node.dataset.i18nParams = JSON.stringify(params);
@@ -28,7 +28,7 @@ export function tAttr(node: Target, attribute: Attribute, key: MessageKey, param
 /** Translates again every node under root, after a change of language. */
 export function relocalize(root: ParentNode = document): void {
   const nodes = root.querySelectorAll<Target>(
-    '[data-i18n], [data-i18n-aria-label], [data-i18n-title], [data-i18n-placeholder]',
+    '[data-i18n], [data-i18n-aria-label], [data-i18n-title]',
   );
   for (const node of nodes) {
     const params = node.dataset.i18nParams
@@ -36,7 +36,7 @@ export function relocalize(root: ParentNode = document): void {
       : undefined;
     const text = node.dataset.i18n as MessageKey | undefined;
     if (text) node.textContent = t(text, params);
-    for (const attribute of ['aria-label', 'title', 'placeholder'] as const) {
+    for (const attribute of ['aria-label', 'title'] as const) {
       const key = node.getAttribute(`data-i18n-${attribute}`) as MessageKey | null;
       if (key) node.setAttribute(attribute, t(key, params));
     }

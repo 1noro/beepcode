@@ -32,12 +32,12 @@ function timingOf(settings: Settings) {
 }
 
 /**
- * While there is no text: the name of the app in Morse, as the tree draws
- * it (round dots, long dashes, in their colours), with a slow wave of light
- * running along it, as if it were being sent; and what will appear there.
+ * While there is no text, where its code goes: the name of the app in Morse,
+ * as the tree draws it (round dots, long dashes, in their colours), with a
+ * slow wave of light running along it, as if it were being sent.
  */
 function emptyState(codeOf: (char: string) => string | undefined): HTMLElement {
-  const ornament = el('div', { className: 'text-empty-morse' });
+  const ornament = el('div', { className: 'text-empty' });
   ornament.setAttribute('aria-hidden', 'true');
   let step = 0;
   for (const token of tokenize(t('app.name'), codeOf)) {
@@ -51,9 +51,7 @@ function emptyState(codeOf: (char: string) => string | undefined): HTMLElement {
     ornament.append(letter);
   }
   ornament.style.setProperty('--steps', String(step));
-  const caption = el('p', { className: 'text-empty-caption' });
-  tText(caption, 'text.empty');
-  return el('div', { className: 'text-empty' }, [ornament, caption]);
+  return ornament;
 }
 
 function button(name: IconName, label: MessageKey): HTMLButtonElement {
@@ -76,11 +74,14 @@ export function createTextMode(context: ModeContext): Mode {
   let tokens: TextToken[] = [];
   let txTimer: ReturnType<typeof setTimeout> | undefined;
 
-  const input = el('textarea', { className: 'text-input', rows: 3, maxLength: TEXT_MAX });
+  // The text is written on the text as it will be played: a transparent
+  // field over it, letter on letter (app.css). The field gives the caret, the
+  // selection and the keyboard; the text below, what is seen: normalized,
+  // what is skipped faded, and the current character highlighted.
+  const input = el('textarea', { className: 'text-input', rows: 2, maxLength: TEXT_MAX });
   input.spellcheck = false;
   input.autocapitalize = 'characters';
   tAttr(input, 'aria-label', 'text.input');
-  tAttr(input, 'placeholder', 'text.placeholder');
   const clear = el('button', { type: 'button', className: 'icon-button text-clear' }, [
     icon('clear'),
   ]);
@@ -89,11 +90,21 @@ export function createTextMode(context: ModeContext): Mode {
 
   // The text as it will be played, one span per character, and the
   // transcription, one span per letter, both with data-index of the token.
+  // The first, only seen: what it says is in the field.
   const preview = el('p', { className: 'text-preview' });
-  tAttr(preview, 'aria-label', 'text.preview');
+  preview.setAttribute('aria-hidden', 'true');
+  // Without text, nothing marks the field: a caret blinks where the real one
+  // will be, and below it, what to do. Only seen, too: the field has a name.
+  const promptText = el('span');
+  tText(promptText, 'text.prompt');
+  const prompt = el('div', { className: 'text-prompt' }, [
+    el('span', { className: 'text-caret' }),
+    promptText,
+  ]);
+  prompt.setAttribute('aria-hidden', 'true');
+  const editor = el('div', { className: 'text-editor' }, [preview, input, prompt, clear]);
   const transcription = el('p', { className: 'text-code' });
   const output = el('div', { className: 'text-output' }, [
-    preview,
     transcription,
     emptyState((char) => tree.nodeOf(char)?.code),
   ]);
@@ -131,9 +142,21 @@ export function createTextMode(context: ModeContext): Mode {
     transcription.replaceChildren(...codes);
     skippedHint.classList.toggle('is-off', !tokens.some((token) => token.kind === 'skip'));
     output.classList.toggle('is-empty', tokens.length === 0);
+    editor.classList.toggle('is-empty', lastText === '');
     tText(count, 'text.count', { count: lastText.length, max: TEXT_MAX });
     play.disabled = !tokens.some((token) => token.kind === 'letter');
     clear.disabled = tokens.length === 0;
+    align();
+  }
+
+  /**
+   * Centred while it fits on one line, from the left when it wraps: a field
+   * cannot be as wide as its text, as the transcription is.
+   */
+  function align(): void {
+    const first = preview.firstElementChild as HTMLElement | null;
+    const last = preview.lastElementChild as HTMLElement | null;
+    editor.classList.toggle('is-wrapped', !!first && !!last && last.offsetTop > first.offsetTop);
   }
 
   /** Highlights the character of token `index`, and its code; null, none. */
@@ -143,6 +166,7 @@ export function createTextMode(context: ModeContext): Mode {
       span.classList.toggle('is-current', current);
       if (current) span.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
+    input.scrollTop = preview.scrollTop;
   }
 
   function load(text: string): void {
@@ -200,7 +224,40 @@ export function createTextMode(context: ModeContext): Mode {
     board.clear();
     load(text);
   }
-  input.addEventListener('input', () => edit(input.value));
+  input.addEventListener('input', () => {
+    // One line of text: the text below shows any blank as a space, and a
+    // line break would no longer lie on it.
+    if (/[\r\n\t\v\f]/.test(input.value)) {
+      const { selectionStart, selectionEnd } = input;
+      input.value = input.value.replace(/[\r\n\t\v\f]/g, ' ');
+      input.setSelectionRange(selectionStart, selectionEnd);
+    }
+    edit(input.value);
+    preview.scrollTop = input.scrollTop;
+  });
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') event.preventDefault();
+  });
+  // The text below scrolls with the field.
+  input.addEventListener('scroll', () => {
+    preview.scrollTop = input.scrollTop;
+  });
+  // The edges of the box, outside the field, also go to it.
+  editor.addEventListener('pointerdown', (event) => {
+    if (event.target !== editor) return;
+    event.preventDefault();
+    input.focus();
+  });
+  // Typing with nothing focused writes in the field: on a computer, no need
+  // to click it first.
+  const typeToWrite = (event: KeyboardEvent) => {
+    const typing = event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey;
+    if (typing && document.activeElement === document.body) input.focus();
+  };
+  document.addEventListener('keydown', typeToWrite);
+  const resize = new ResizeObserver(align);
+  resize.observe(editor);
+  void document.fonts.ready.then(align);
   clear.addEventListener('click', () => {
     input.value = '';
     edit('');
@@ -236,7 +293,7 @@ export function createTextMode(context: ModeContext): Mode {
 
   const element = el('div', { className: 'mode mode-text' }, [
     el('section', { className: 'text-panel' }, [
-      el('div', { className: 'text-field' }, [input, clear]),
+      editor,
       output,
       el('div', { className: 'text-footer' }, [skippedHint, count]),
     ]),
@@ -250,8 +307,10 @@ export function createTextMode(context: ModeContext): Mode {
       player.dispose();
       silence();
       board.dispose();
+      resize.disconnect();
       for (const off of offs) off();
       document.removeEventListener('visibilitychange', hidden);
+      document.removeEventListener('keydown', typeToWrite);
     },
   };
 }
