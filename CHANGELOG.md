@@ -42,6 +42,10 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
   en las esquinas de la cinta y solo cuando hay texto.
 - **Borrar, una tecla junto al pulsador y el espacio**: borra la letra en
   curso o, si no hay, la última escrita, como `Retroceso`.
+- **Todas las teclas, como el pulsador**: espacio, borrar, Reproducir,
+  Parar y Bucle tienen su mismo cuerpo y su altura. Por defecto muestran
+  solo su símbolo, y el pulsador, un punto y una raya; con el ajuste
+  nuevo **Botones descriptivos** (en Aspecto), también sus nombres.
 
 ## 0.3.0 — 2026-11-21
 

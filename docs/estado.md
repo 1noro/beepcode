@@ -1,6 +1,6 @@
 # Estado
 
-**Al día:** 2026-11-23, 00:25 UTC. **Revisada:** 2026-11-20, la última
+**Al día:** 2026-11-23, 00:34 UTC. **Revisada:** 2026-11-20, la última
 [`/revisar-docs`](agentes/revisar-docs.md), que se lanza a mano cada semana.
 
 Lo vivo del desarrollo: en qué fase está, qué hay publicado, lo abierto y lo
@@ -47,7 +47,8 @@ de F0 a F4, y F5 (las estadísticas) llega al final.
 - **El logo** ([TODO 7](todo/07-logo.md)).
 - **Que alguien nativo revise** las traducciones al gallego, catalán y euskera
   ([`traducciones.md`](traducciones.md)): 66 textos con F1, 78 con F2 y 82
-  con v0.3.0; desde entonces, `key.delete` y `key.deleteHint`.
+  con v0.3.0; desde entonces, `key.delete`, `key.deleteHint` y
+  `settings.descriptiveButtons`.
 - **Probar v0.3.0 en un móvil** (o con `make dev-https`): el sonido y el
   táctil no tienen e2e, y desde la prueba en el Pixel 7 cambiaron el
   pulsador, las pausas y el centrado del árbol; del modo Texto, escribir
@@ -61,9 +62,11 @@ de F0 a F4, y F5 (las estadísticas) llega al final.
   Texto, el árbol arriba desde la punta de la antena y el cursor de bloque
   en los dos modos, y la cinta de `#/free` como el texto de `#/text`
   (centrada, con la filigrana, ⌫ junto al pulsador y copiar y × planos en
-  sus esquinas). El principio: **los componentes, equiparables entre
-  modos**. Falta llevar el nuevo orden al SPEC (§3.2, §3.4, §6.5), si el
-  usuario lo acepta.
+  sus esquinas), y las teclas de abajo con el cuerpo del pulsador y el
+  ajuste "botones descriptivos" (solo símbolos por defecto). El principio:
+  **los componentes, equiparables entre modos**. Falta llevar el nuevo
+  orden al SPEC (§3.2, §3.4, §6.5) y el ajuste a §7, si el usuario lo
+  acepta.
 - **La vibración**, hoy en la sección "Modo Libre" de los ajustes: cuando
   Aprender use el pulsador (F3), pasará a una sección común.
 - **F3 con `/tarea 4`**: Aprender y Escuchar, que usarán `player.ts`.
