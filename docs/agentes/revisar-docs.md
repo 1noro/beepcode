@@ -36,7 +36,9 @@ cada información".
 
 La fecha de hoy en `**Revisada:**`, arriba de `estado.md`; una línea en la
 bitácora del día; `make docs-check` sin errores, y un informe corto: qué se
-corrigió y qué se propone. No hagas commit: eso lo pide el usuario.
+corrigió y qué se propone. **El commit**: en `main`, se commitea y se sube
+directamente, como toda la documentación pedida en `main` (`AGENTS.md`,
+"Flujo de git"); en una rama, no se commitea: eso lo pide el usuario.
 
 ## Cuándo
 

@@ -58,3 +58,13 @@ v<X>`): el build saca la versión de `git describe`, y un tag que llegara
 después del push de `main` dejaría la app publicada con la versión de antes
 más los commits encima. GitHub da la PR por mergeada al ver sus commits en
 `main`. Las PR siguen sin comprobaciones automáticas: `make ci` en local.
+
+## 2026-11-22 — La documentación, directa a `main`
+
+A petición del usuario, para agilizar los arreglos de documentación: **si se
+está en `main` y lo pedido solo toca lo que `deploy.yml` no despliega** (su
+`paths-ignore`), se hace en `main`, sin rama, y se commitea y se sube
+directamente; pedir el cambio ya lo autoriza. No lanza ningún workflow, así
+que no gasta ejecuciones ni publica nada; la verificación es `make docs-check`
+(el pre-commit), no `make ci`. Lo demás no cambia: cualquier cambio que toque
+algo más va en una rama y llega a `main` como arriba.

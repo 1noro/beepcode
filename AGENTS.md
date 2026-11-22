@@ -99,7 +99,8 @@ está mal, dilo antes de tocar código; no la cambies por iniciativa propia.
    herramientas. **Ni commits por iniciativa propia ni atribución a la IA.**
 7. **Se desarrolla en ramas que acaban en `main`, y solo `main` se despliega**
    (ADR 0007): GitHub Actions solo corre en los push a `main` (`deploy.yml`);
-   las ramas se verifican con `make ci` en local.
+   las ramas se verifican con `make ci` en local. **Lo que solo es
+   documentación, pedido en `main`, va directo a `main`**: no despliega.
 8. **Toda la interfaz, en JetBrains Mono servida con la app** (ADR 0008):
    el subconjunto latino, del paquete `@fontsource-variable/jetbrains-mono`;
    nunca de un CDN.
@@ -202,6 +203,14 @@ make down | clean | distclean
   `fix/…`, `docs/…`, `ci/…`), y **una rama puede llevar más de un desarrollo**.
   - Al empezar una tarea **en una rama de desarrollo, se sigue en ella**. **En
     `main`, se crea una** antes de tocar nada (esto, sin preguntar).
+  - **Salvo la documentación** (decidido el 2026-11-22, ADR 0007): si se está
+    en `main` y lo pedido solo toca lo que `deploy.yml` no despliega (su
+    `paths-ignore`: los `.md`, `docs/`, los comandos de los agentes,
+    `.githooks/` y las licencias), se hace en `main`, sin rama, y **se
+    commitea y se sube a `main` directamente**: pedir el cambio ya lo
+    autoriza, y no lanza ningún despliegue. Basta `make docs-check` en verde
+    (el pre-commit), sin `make ci`. Si algo más cambia (código, el
+    `Makefile`, `package.json`, un workflow), rama, como siempre.
   - **No se cambia a otra rama existente, ni se fuerza contra `main`**, salvo
     que el usuario lo pida.
   - **A `main` se llega solo cuando lo pide el usuario**, con `make ci` en
@@ -211,13 +220,15 @@ make down | clean | distclean
     **Se hace con `/desplegar`** ([`docs/agentes/desplegar.md`](docs/agentes/desplegar.md)):
     la versión, la PR, el merge con su tag en un solo push y la espera al
     despliegue.
-  - **Push, solo cuando lo pide el usuario**, también el de una rama.
+  - **Push, solo cuando lo pide el usuario**, también el de una rama (o con
+    la documentación en `main`, arriba).
 - **Nunca una línea de atribución a un agente de IA o su herramienta**
   (`Co-Authored-By`, "Generated with …") en commits ni PRs, aunque la
   herramienta lo haga por defecto.
 - **Nunca commitear por iniciativa propia**, ni al terminar una tarea entera:
   se deja sin commitear para que el usuario lo revise, y se commitea solo
-  cuando lo pide en ese turno.
+  cuando lo pide en ese turno. La excepción, la documentación pedida en
+  `main` (arriba).
 - **`CHANGELOG.md`**: entre tags se anota en "Sin publicar", por lo que cambia
   para quien usa la app (Añadido, Cambiado, Corregido, Documentación). Al
   etiquetar, "Sin publicar" pasa a la versión con su fecha: changelog,

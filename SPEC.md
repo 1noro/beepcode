@@ -120,22 +120,25 @@ Test obligatorio: para cada nodo, el camino ROOT→nodo del layout reproduce exa
 ┌───────────────────────────────┐
 │ [Modo ▾]          [⚙] [🔊]    │  barra superior
 ├───────────────────────────────┤
-│ HELLO WOR█                    │  cinta histórica (§3.4)
-│ ·−··                          │  secuencia en curso
-├───────────────────────────────┤
 │                               │
-│        ÁRBOL MORSE (SVG)      │
+│        ÁRBOL MORSE (SVG)      │  desde la punta de la antena
 │                               │
 ├───────────────────────────────┤
-│                               │
-│     [  PULSADOR  ] [ ␣ ]      │  zona del pulgar
-│                               │
+│ ⧉          HELLO WOR█       × │  cinta histórica (§3.4)
+│              ·−··             │  secuencia en curso
+│ Espacio: pulsador · …         │  pistas (con teclado y ratón)
+├───────────────────────────────┤
+│  [     · −     ] [ ␣ ] [ ⌫ ]  │  zona del pulgar
 └───────────────────────────────┘
 ```
 
+- **El orden, igual en todos los modos** (decidido el 2026-11-22): el árbol arriba, empezando en la punta de la antena, cuyas ondas suben al espacio libre (la barra superior no tiene línea); el texto justo debajo, y los controles abajo. Árbol, texto y controles van juntos, centrados en la altura: lo que sobra queda arriba y abajo, no entre el texto y los botones. El principio: **los componentes, equiparables entre modos** (el modo Texto → Morse, §6.5).
 - Respetar `env(safe-area-inset-*)` (notch, barra de gestos).
-- En escritorio u horizontal: el árbol centrado y el pulsador debajo o al lado; mostrar una pista de teclas ("Espacio = manipulador · `.` / `-` · Enter (letra o palabra) · Retroceso").
-- **El botón de espacio** (␣, modo Libre; decidido el 2026-11-21): a la derecha del pulsador y de su misma altura, que cede esa franja; en horizontal, debajo de él. Lo de encima, el árbol incluido, no se mueve.
+- **En horizontal en un móvil**: el árbol a la izquierda; a la derecha, el texto y, debajo, los controles.
+- **Con teclado y ratón**: una pista de teclas ("Espacio: pulsador · `.` y `-`: punto y raya · Enter: letra o palabra · Retroceso: borrar") y otra de Explorar (§6.1), en el pie bajo la cinta, alineadas a la izquierda y en una línea cada una, como las del modo Texto → Morse. El pulsador y las teclas, más bajos que bajo un pulgar, y en una pantalla alta el árbol crece.
+- **Las teclas junto al pulsador** (modo Libre): ␣, el espacio de palabra (decidido el 2026-11-21), y ⌫, que hace lo de `Retroceso` (§3.6; decidido el 2026-11-22). A la derecha del pulsador y de su misma altura, que cede esa franja; en horizontal, debajo de él y lado a lado. Lo de encima, el árbol incluido, no se mueve.
+- **Todas las teclas de la zona del pulgar, con el cuerpo del pulsador** (§3.5; decidido el 2026-11-22), en todos los modos: su altura, la luz arriba, el faldón y el hundirse al pulsar. **Muestran solo su símbolo** (␣, ⌫, ▶, ■, ⟲), y el pulsador, un punto y una raya (`· −`); el nombre va en `aria-label` y `title`. Con **botones descriptivos** (§7), también el nombre, y el pulsador, el suyo y qué hace ("Toca para un punto, mantén para una raya").
+- **Lo que se hace al texto no es una tecla**: copiar y borrar todo, planos en las esquinas de la cinta (§3.4) o del texto (§6.5). La barra superior, también plana.
 
 ### 3.3 Estados visuales de los nodos
 
@@ -155,10 +158,11 @@ Test obligatorio: para cada nodo, el camino ROOT→nodo del layout reproduce exa
 
 ### 3.4 Cinta histórica
 
-- Línea horizontal encima del árbol donde se **apilan las letras** escritas. La más reciente queda a la derecha y la cinta se desplaza sola.
+- Una línea bajo el árbol (§3.2) donde se **apilan las letras** escritas, del mismo tamaño que el texto del modo Texto → Morse y con el mismo cursor, un bloque. **Empieza en el centro** (decidido el 2026-11-22): el texto crece centrado hasta llenar el ancho y luego corre hacia la izquierda, con la más reciente a la derecha.
 - Los espacios entre palabras se muestran como un hueco visible.
-- Debajo, la secuencia en curso en notación `·` / `−`.
-- Acciones: borrar todo, borrar la última letra y copiar al portapapeles.
+- Debajo, centrada, la secuencia en curso en notación `·` / `−`.
+- **Vacía, hasta la primera pulsación**, "beepcode" en Morse con una ola de luz, donde saldrán los `·` y `−`: la misma filigrana que el modo Texto → Morse (§6.5). Sin texto de ayuda: el cursor dice dónde van las letras.
+- Acciones: **copiar** al portapapeles y **borrar todo**, planos en las esquinas izquierda y derecha de la cinta y solo cuando hay texto; **borrar la última letra**, la tecla ⌫ junto al pulsador (§3.2).
 - Se guarda como máximo un número razonable de caracteres (p. ej. 500); no se persiste entre sesiones en v1.
 - Anuncio accesible: `aria-live="polite"` con la letra decodificada.
 
@@ -166,7 +170,7 @@ Test obligatorio: para cada nodo, el camino ROOT→nodo del layout reproduce exa
 
 ### 3.5 Pulsador (móvil y ratón)
 
-- Botón grande, a todo el ancho y con al menos 96 px de alto, en la zona inferior.
+- Botón grande, en la zona inferior: todo el ancho que dejan ␣ y ⌫ (§3.2), y entre 88 y 120 px de alto según la pantalla (80 px con ratón, que no pide un pulgar).
 - Reacciona en `pointerdown`/`pointerup` (nunca `click`) para minimizar la latencia.
 - `touch-action: none`, `user-select: none`, `-webkit-touch-callout: none`, `contextmenu` cancelado, sin zoom por doble toque y `overscroll-behavior: none` (evita el pull-to-refresh).
 - Usa `setPointerCapture` para que soltar fuera del botón cuente como soltar.
@@ -300,8 +304,10 @@ Selector de modo en la barra superior. Rutas por hash (`#/free`, `#/learn`, `#/l
 
 ### 6.5 Texto → Morse (`#/text`)
 
+- **La pantalla, como la del modo Libre** (§3.2; decidido el 2026-11-22): el árbol arriba, que aquí solo muestra (sus letras no se tocan); el texto debajo, y los controles abajo. En horizontal, el árbol a la izquierda y el texto a la derecha, con los controles debajo.
 - Campo de texto. Se normaliza a mayúsculas sin tildes; los caracteres fuera del alfabeto se muestran atenuados y se saltan, y los espacios generan una pausa de palabra.
-- Botones reproducir, pausa, parar y bucle.
+- **Vacío**: el cursor de bloque, como el de la cinta (§3.4), una línea de qué hacer y, en el sitio de la transcripción, la filigrana de "beepcode" en Morse. Borrar el texto, × plano en su esquina.
+- Botones reproducir, pausa, parar y bucle, con el cuerpo del pulsador (§3.2): **Reproducir es la tecla grande**, y pasa a Pausa mientras suena; Parar y Bucle, al lado, del ancho de ␣. Bucle, activado, se tiñe del color de acento.
 - Durante la reproducción se resalta el carácter actual, se ilumina su camino y suena el tono a la velocidad configurada.
 - Se muestra la transcripción `·−` completa.
 
@@ -317,6 +323,7 @@ Se abren desde el panel ⚙ y se persisten en `localStorage` (con versión de es
 | Tema | sistema | sistema / claro / oscuro / Gruvbox oscuro / Gruvbox claro / alto contraste |
 | Visión del color | por defecto | por defecto / protanopia / deuteranopia / tritanopia / acromatopsia |
 | Color de punto / raya | verde / rojo | selector de color |
+| Botones descriptivos | no | sí / no |
 | Velocidad (WPM) | 12 | 5–40 |
 | WPM efectivo (Farnsworth) | = WPM | 5–WPM |
 | Tolerancia de pausa | 1.5 | 1.0–3.0 |
@@ -334,6 +341,7 @@ Se abren desde el panel ⚙ y se persisten en `localStorage` (con versión de es
 
   La forma (círculo / rectángulo, §2.2) ya distingue punto y raya sin color; esto lo refuerza. El selector de color de punto / raya, si se usa, manda sobre los dos. Un test comprueba, simulando cada tipo de daltonismo, que punto y raya se distinguen en todos los temas.
 - **Agrupados por a qué afectan** (decidido el 2026-11-21): idioma; aspecto; sonido y velocidad (todos los modos: velocidad, tono, volumen); y una sección con el nombre de cada modo para lo que solo cambia ese modo. Modo Libre: umbral de raya, tolerancia de pausa, espacios automáticos y vibración; modo Texto → Morse: velocidad efectiva. Un modo nuevo con ajustes propios trae su sección.
+- **Botones descriptivos** (decidido el 2026-11-22), en el aspecto: las teclas de la zona del pulgar, con su nombre además de su símbolo (§3.2). Por defecto, solo los símbolos.
 - Botón "Restablecer valores por defecto".
 - **Acerca de**, al pie del panel: la versión del build (la de `git describe --tags --dirty --always`, como en dhtcrawler; `dev` si se construye sin el Makefile) y las licencias, con enlaces: el código, GPL-3.0-or-later; el logo y los textos, CC BY-SA 4.0 (ADR 0005); la tipografía, JetBrains Mono con OFL 1.1 (ADR 0008); y el código fuente. En el panel y no en la pantalla principal, que no tiene sitio que perder.
 
