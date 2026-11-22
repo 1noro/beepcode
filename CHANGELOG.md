@@ -26,6 +26,15 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
 - **El cursor del modo Texto → Morse, un bloque** como el de la cinta del
   modo Libre: al final del texto, un bloque; en medio, el carácter
   invertido. El de la cinta toma sus mismas proporciones.
+- **Los botones del modo Texto → Morse, con el cuerpo del pulsador del modo
+  Libre**: Reproducir grande y Parar y Bucle al lado.
+- **Las proporciones, según la pantalla**: el árbol, el texto y los
+  controles van juntos, centrados en la altura, y lo que sobra queda arriba
+  y abajo, no entre el texto y los botones. Con ratón, el pulsador y los
+  botones son más bajos y, en una pantalla alta, el árbol crece; en el
+  móvil, también son más bajos que antes.
+- **El texto, del mismo tamaño en los dos modos**: la cinta del modo Libre
+  ya no es el doble de grande que el texto del modo Texto → Morse.
 
 ## 0.3.0 — 2026-11-21
 
