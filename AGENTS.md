@@ -35,7 +35,7 @@ la elegancia**, y el bundle pequeño a la comodidad de una dependencia.
 | `src/ui/`, `src/modes/` | el árbol SVG, la cinta, el pulsador, los ajustes; un fichero por modo |
 | `src/state/` | el almacén observable y los ajustes persistidos (con versión de esquema) |
 | `src/i18n/` | `t()`, los diccionarios (`en.json` es la referencia) y las listas de palabras |
-| `src/styles/` | `tokens.css` (las variables de tema) y `base.css` |
+| `src/styles/` | `tokens.css` (las variables de tema), `base.css`, `app.css` (la pantalla y los modos) y `fonts.css` |
 | `src/pwa.ts` | el service worker y el aviso de versión nueva |
 | `tests/unit/`, `tests/e2e/` | Vitest; Playwright (escritorio y móvil emulado) |
 | `scripts/docs/` | el comprobador de la documentación (`make docs-check`) |

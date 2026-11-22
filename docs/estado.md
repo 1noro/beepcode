@@ -1,6 +1,6 @@
 # Estado
 
-**Al día:** 2026-11-22, 00:45 UTC. **Revisada:** 2026-11-20, la última
+**Al día:** 2026-11-22, 01:00 UTC. **Revisada:** 2026-11-22, la última
 [`/revisar-docs`](agentes/revisar-docs.md), que se lanza a mano cada semana.
 
 Lo vivo del desarrollo: en qué fase está, qué hay publicado, lo abierto y lo
@@ -14,8 +14,9 @@ Qué va en cada sitio, en `AGENTS.md`, "Dónde va cada información".
 cerrados** ([TODO 1](todo/01-andamiaje.md),
 [TODO 2](todo/02-nucleo-y-modo-libre.md),
 [TODO 3](todo/03-texto-a-morse.md)), publicados como **v0.2.0**, y unos
-refinamientos antes de F3, como **v0.3.0** y **v0.4.0**. Lo siguiente, **F3**: Aprender y Escuchar. El plan entero, en SPEC §13; v1 es
-de F0 a F4, y F5 (las estadísticas) llega al final.
+refinamientos antes de F3, como **v0.3.0** y **v0.4.0**. Lo siguiente,
+**F3**: Aprender y Escuchar. El plan entero, en SPEC §13; v1 es de F0 a F4,
+y F5 (las estadísticas) llega al final.
 
 ## Lo publicado
 
