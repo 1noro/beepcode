@@ -21,9 +21,10 @@ import type { Mode, ModeContext } from './mode.ts';
 const EXPLORE_HOLD_MS = 1500;
 
 /**
- * A key beside the key, as tall: an icon over a short label, and what it does in
- * the title. A click leaves the focus where it was: Enter and Backspace go on
- * working on the text.
+ * A key beside the key, as tall: an icon over a short label, shown only with
+ * descriptive buttons (app.css), so the name goes in aria-label too, and what
+ * it does in the title. A click leaves the focus where it was: Enter and
+ * Backspace go on working on the text.
  */
 function sideKey(
   name: IconName,
@@ -31,9 +32,10 @@ function sideKey(
   hint: MessageKey,
   action: () => void,
 ): HTMLButtonElement {
-  const text = el('span', { className: 'side-key-label' });
+  const text = el('span', { className: 'keycap-label' });
   tText(text, label);
-  const button = el('button', { type: 'button', className: 'side-key' }, [icon(name), text]);
+  const button = el('button', { type: 'button', className: 'keycap side-key' }, [icon(name), text]);
+  tAttr(button, 'aria-label', label);
   tAttr(button, 'title', hint);
   button.addEventListener('click', action);
   button.addEventListener('mousedown', (event) => event.preventDefault());
@@ -208,15 +210,26 @@ export function createFreeMode(context: ModeContext): Mode {
     el('span', { className: 'key-meter-fill' }),
   ]);
   meter.setAttribute('aria-hidden', 'true');
-  const key = el('button', { type: 'button', className: 'key' }, [
-    el('span', { className: 'key-label' }),
-    el('span', { className: 'key-hint' }),
+  // With descriptive buttons, its name and what it does; if not, what it
+  // makes, a dot and a dash, and those in aria-label and the title.
+  const symbol = el('span', { className: 'key-symbol' }, [
+    el('span', { className: 'key-symbol-dot' }),
+    el('span', { className: 'key-symbol-dash' }),
+  ]);
+  symbol.setAttribute('aria-hidden', 'true');
+  const keyLabel = el('span', { className: 'key-label' });
+  tText(keyLabel, 'key.label');
+  const keyHint = el('span', { className: 'key-hint' });
+  tText(keyHint, 'key.hint');
+  const key = el('button', { type: 'button', className: 'keycap key' }, [
+    symbol,
+    keyLabel,
+    keyHint,
     meter,
   ]);
   key.dataset.key = '';
-  const [keyLabel, keyHint] = key.children;
-  if (keyLabel instanceof HTMLElement) tText(keyLabel, 'key.label');
-  if (keyHint instanceof HTMLElement) tText(keyHint, 'key.hint');
+  tAttr(key, 'aria-label', 'key.label');
+  tAttr(key, 'title', 'key.hint');
 
   // The word space, by hand (SPEC §4.2), and the backspace, at hand while
   // keying: beside the key and as tall, so that nothing else moves, as the

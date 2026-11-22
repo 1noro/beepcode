@@ -33,6 +33,7 @@
   "vision.achromatopsia": "Acromatopsia (sin color)",
   "settings.dotColor": "Color del punto",
   "settings.dashColor": "Color de la raya",
+  "settings.descriptiveButtons": "Botones descriptivos",
   "settings.themeColor": "El del tema",
   "settings.wpm": "Velocidad",
   "settings.wpmValue": "{value} PPM",

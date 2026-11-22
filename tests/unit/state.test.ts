@@ -109,6 +109,12 @@ describe('the settings (SPEC §7)', () => {
     });
   });
 
+  it('show only the symbols on the keys by default', () => {
+    expect(DEFAULT_SETTINGS.descriptiveButtons).toBe(false);
+    expect(sanitize({ descriptiveButtons: true }).descriptiveButtons).toBe(true);
+    expect(sanitize({ descriptiveButtons: 'yes' }).descriptiveButtons).toBe(false);
+  });
+
   it('leave the word spaces of the Free mode to the hand by default', () => {
     expect(DEFAULT_SETTINGS.autoSpace).toBe(false);
     expect(sanitize({ autoSpace: true }).autoSpace).toBe(true);

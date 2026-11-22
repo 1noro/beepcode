@@ -33,6 +33,7 @@
   "vision.achromatopsia": "Achromatopsia (no colour)",
   "settings.dotColor": "Dot colour",
   "settings.dashColor": "Dash colour",
+  "settings.descriptiveButtons": "Descriptive buttons",
   "settings.themeColor": "Theme's",
   "settings.wpm": "Speed",
   "settings.wpmValue": "{value} WPM",

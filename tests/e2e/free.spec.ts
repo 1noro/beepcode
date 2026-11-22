@@ -122,6 +122,43 @@ test('the space and delete buttons sit beside the key, as tall', async ({ page }
   expect(erase?.x).toBeGreaterThan((space?.x ?? 0) + (space?.width ?? 0));
 });
 
+test('the keys show only their symbols, or their names with descriptive buttons', async ({
+  page,
+}) => {
+  await page.goto('./');
+  const key = page.getByRole('button', { name: /^Key/ });
+  const space = page.getByRole('button', { name: 'Space' });
+  // Without labels, the names stay in aria-label and the title.
+  await expect(key).toHaveAttribute('title', 'Tap for a dot, hold for a dash');
+  await expect(key.locator('.key-symbol')).toBeVisible();
+  await expect(key.getByText('Tap for a dot, hold for a dash')).toBeHidden();
+  await expect(space.getByText('Space')).toBeHidden();
+
+  await page.getByRole('button', { name: 'Settings' }).click();
+  const descriptive = page
+    .locator('section', { hasText: 'Appearance' })
+    .getByLabel('Descriptive buttons');
+  await expect(descriptive).not.toBeChecked();
+  await descriptive.check();
+  await page.keyboard.press('Escape');
+  await expect(key.locator('.key-symbol')).toBeHidden();
+  await expect(key.getByText('Tap for a dot, hold for a dash')).toBeVisible();
+  await expect(space.getByText('Space')).toBeVisible();
+});
+
+test('all the keys below the tree have the body of the key', async ({ page }) => {
+  await page.goto('./');
+  const body = (name: string | RegExp) =>
+    page.getByRole('button', { name, exact: typeof name === 'string' }).evaluate((node) => {
+      const style = getComputedStyle(node);
+      return [style.backgroundImage, style.borderRadius, style.boxShadow.split('),')[0]];
+    });
+  const key = await body(/^Key/);
+  expect(await body('Space')).toEqual(key);
+  await page.goto('./#/text');
+  expect(await body('Play')).toEqual(key);
+});
+
 test('automatic word spaces, from the settings: off by default', async ({ page }) => {
   await page.goto('./');
   await page.getByRole('button', { name: 'Settings' }).click();

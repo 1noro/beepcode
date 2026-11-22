@@ -32,17 +32,24 @@ function timingOf(settings: Settings) {
   return sendTiming(settings.wpm, effectiveWpm(settings));
 }
 
+/**
+ * A control, as the keys of the Free mode: an icon and a label, shown only
+ * with descriptive buttons (app.css), so the name goes in aria-label and the
+ * title too.
+ */
 function button(name: IconName, label: MessageKey): HTMLButtonElement {
-  const text = el('span');
-  tText(text, label);
-  return el('button', { type: 'button', className: 'player-button' }, [icon(name), text]);
+  const target = el('button', { type: 'button', className: 'keycap player-button' });
+  relabel(target, name, label);
+  return target;
 }
 
-/** Changes the icon and the text of a button made by button(). */
+/** Changes the icon and the label of a button made by button(). */
 function relabel(target: HTMLButtonElement, name: IconName, label: MessageKey): void {
-  const text = el('span');
+  const text = el('span', { className: 'keycap-label' });
   tText(text, label);
   target.replaceChildren(icon(name), text);
+  tAttr(target, 'aria-label', label);
+  tAttr(target, 'title', label);
 }
 
 export function createTextMode(context: ModeContext): Mode {

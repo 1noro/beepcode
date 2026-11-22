@@ -33,6 +33,7 @@
   "vision.achromatopsia": "Acromatòpsia (sense color)",
   "settings.dotColor": "Color del punt",
   "settings.dashColor": "Color de la ratlla",
+  "settings.descriptiveButtons": "Botons descriptius",
   "settings.themeColor": "El del tema",
   "settings.wpm": "Velocitat",
   "settings.wpmValue": "{value} PPM",
