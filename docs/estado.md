@@ -1,6 +1,6 @@
 # Estado
 
-**Al día:** 2026-11-22, 01:00 UTC. **Revisada:** 2026-11-22, la última
+**Al día:** 2026-11-22, 01:12 UTC. **Revisada:** 2026-11-22, la última
 [`/revisar-docs`](agentes/revisar-docs.md), que se lanza a mano cada semana.
 
 Lo vivo del desarrollo: en qué fase está, qué hay publicado, lo abierto y lo
@@ -60,9 +60,6 @@ y F5 (las estadísticas) llega al final.
   sobre el texto con el teclado del móvil y la barra de desplazamiento en el
   PC; de v0.3.0, el botón ␣; de v0.4.0, ⌫ y las proporciones de las teclas
   y del árbol en un móvil de verdad.
-- **El SPEC**, si lo acepta: el nuevo orden de la pantalla (§3.2, §3.4,
-  §6.5; el árbol arriba, la cinta centrada, ⌫ junto al pulsador) y el
-  ajuste "botones descriptivos" (§7).
 
 ## Lo próximo
 
