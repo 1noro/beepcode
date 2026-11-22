@@ -35,6 +35,13 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
   móvil, también son más bajos que antes.
 - **El texto, del mismo tamaño en los dos modos**: la cinta del modo Libre
   ya no es el doble de grande que el texto del modo Texto → Morse.
+- **La cinta del modo Libre, como el texto del modo Texto → Morse**: el
+  cursor empieza en el centro y el texto crece desde ahí hasta llenar el
+  ancho; vacía, en vez de "Aquí aparecen tus letras", "beepcode" en Morse
+  con su ola de luz, hasta la primera pulsación. Copiar y borrar todo,
+  en las esquinas de la cinta y solo cuando hay texto.
+- **Borrar, una tecla junto al pulsador y el espacio**: borra la letra en
+  curso o, si no hay, la última escrita, como `Retroceso`.
 
 ## 0.3.0 — 2026-11-21
 
