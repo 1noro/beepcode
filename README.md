@@ -19,7 +19,7 @@
 <p align="center"><b>Sin backend, sin conexión, instalable. En el móvil, con ratón o con teclado.</b></p>
 
 > **En desarrollo.** Publicados, el modo Libre y el modo Texto → Morse
-> (v0.2.0). El estado, en [`docs/estado.md`](docs/estado.md).
+> (v0.4.0). El estado, en [`docs/estado.md`](docs/estado.md).
 
 ## Cómo se usa (modo Libre)
 
@@ -28,13 +28,18 @@
 - **El espacio** entre palabras, con el botón ␣ junto al pulsador, que cierra
   antes la letra en curso. Si prefieres que llegue solo tras una pausa más
   larga, actívalo en los ajustes ("Espacios entre palabras automáticos").
+- **Borrar** (⌫), junto al espacio: la letra en curso o, si no hay, la
+  última escrita. Copiar y borrar todo, en las esquinas de la cinta.
+- **Las teclas** muestran solo su símbolo (el pulsador, `· −`); con
+  "Botones descriptivos", en los ajustes, también su nombre.
 - **Con teclado**: `Espacio` es el pulsador; `.` y `-` escriben un punto y una
   raya; `Enter` cierra la letra y, sin letra en curso, la palabra; `Retroceso` cancela la secuencia o borra la
   última letra; `Escape` cancela.
 - **Explorar**: toca una letra del árbol para ver su camino y oír su código.
 - **Ajustes** (⚙): idioma, tema (sistema, claro, oscuro, Gruvbox oscuro y
   claro, alto contraste), visión del color (para protanopia, deuteranopia,
-  tritanopia y acromatopsia), los colores del punto y la raya, la velocidad,
+  tritanopia y acromatopsia), los colores del punto y la raya, los botones
+  descriptivos, la velocidad,
   la velocidad efectiva (Farnsworth), las pausas, los espacios automáticos,
   el tono, el volumen y la vibración; agrupados por el modo al que afectan.
 
