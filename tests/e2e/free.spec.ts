@@ -109,13 +109,17 @@ test('Enter, with no letter in progress, and the space button end the word', asy
   await expect(space).not.toBeFocused();
 });
 
-test('the space button sits beside the key, as tall', async ({ page }) => {
+test('the space and delete buttons sit beside the key, as tall', async ({ page }) => {
   await page.goto('./');
   const key = await page.getByRole('button', { name: /^Key/ }).boundingBox();
   const space = await page.getByRole('button', { name: 'Space' }).boundingBox();
-  expect(space?.height).toBeCloseTo(key?.height ?? 0, 0);
-  expect(space?.y).toBeCloseTo(key?.y ?? 0, 0);
+  const erase = await page.getByRole('button', { name: 'Delete', exact: true }).boundingBox();
+  for (const side of [space, erase]) {
+    expect(side?.height).toBeCloseTo(key?.height ?? 0, 0);
+    expect(side?.y).toBeCloseTo(key?.y ?? 0, 0);
+  }
   expect(space?.x).toBeGreaterThan((key?.x ?? 0) + (key?.width ?? 0));
+  expect(erase?.x).toBeGreaterThan((space?.x ?? 0) + (space?.width ?? 0));
 });
 
 test('automatic word spaces, from the settings: off by default', async ({ page }) => {
@@ -148,11 +152,66 @@ test('a pause makes a word space; Backspace and the actions edit the tape', asyn
   await page.keyboard.press('.');
   await page.keyboard.press('Backspace');
   await expect(tape(page)).toHaveText('T ');
-  await page.getByRole('button', { name: 'Delete the last letter' }).click();
+  await page.getByRole('button', { name: 'Delete', exact: true }).click();
   await expect(tape(page)).toHaveText('T');
   await page.getByRole('button', { name: 'Clear all' }).click();
   await expect(tape(page)).toHaveText('');
-  await expect(page.getByText('Your letters appear here')).toBeVisible();
+  await expect(page.locator('.tape .ornament')).toBeVisible();
+});
+
+test('the delete key drops the letter in progress first, as Backspace', async ({ page }) => {
+  await page.goto('./');
+  const erase = page.getByRole('button', { name: 'Delete', exact: true });
+  await page.keyboard.press('-');
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('.');
+  await erase.click();
+  await expect(tape(page)).toHaveText('T');
+  await expect(page.locator('.tape-sequence')).toHaveText(/^\s*$/);
+  await erase.click();
+  await expect(tape(page)).toHaveText('');
+  await expect(erase).not.toBeFocused();
+});
+
+test('empty, the tape is its cursor, centred, and the ornament under it', async ({ page }) => {
+  await page.goto('./');
+  const ornament = page.locator('.tape .ornament');
+  const centre = async (selector: string) => {
+    const box = await page.locator(selector).boundingBox();
+    if (!box) throw new Error(`No ${selector}`);
+    return box.x + box.width / 2;
+  };
+  await expect(ornament).toBeVisible();
+  expect(Math.abs((await centre('.tape-cursor')) - (await centre('.tape-line')))).toBeLessThan(2);
+  // Nothing to clear or copy yet: hidden, out of the accessibility tree too.
+  await expect(page.locator('.tape-clear')).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Copy' })).toBeHidden();
+  // The first symbol takes its place, and the text grows from the centre.
+  await page.keyboard.press('-');
+  await expect(ornament).toBeHidden();
+  await page.keyboard.press('Enter');
+  await expect(tape(page)).toHaveText('T');
+  await expect(ornament).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Copy' })).toBeVisible();
+  const line = await page.locator('.tape-line').boundingBox();
+  const text = await page.locator('.tape-text').boundingBox();
+  const cursor = await page.locator('.tape-cursor').boundingBox();
+  if (!line || !text || !cursor) throw new Error('No tape');
+  const group = (text.x + cursor.x + cursor.width) / 2;
+  expect(Math.abs(group - (line.x + line.width / 2))).toBeLessThan(2);
+});
+
+test('a long text keeps the newest letter and the cursor on the right', async ({ page }) => {
+  await page.goto('./');
+  for (let i = 0; i < 60; i++) {
+    await page.keyboard.press('.');
+    await page.keyboard.press('Enter');
+  }
+  await expect(tape(page)).toHaveText('E'.repeat(60));
+  const line = await page.locator('.tape-line').boundingBox();
+  const cursor = await page.locator('.tape-cursor').boundingBox();
+  if (!line || !cursor) throw new Error('No tape');
+  expect(Math.abs(cursor.x + cursor.width - (line.x + line.width))).toBeLessThan(2);
 });
 
 test('an invalid sequence marks the last valid node and writes nothing', async ({ page }) => {

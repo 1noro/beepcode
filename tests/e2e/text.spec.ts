@@ -133,7 +133,7 @@ test('the caret is a block, as on the tape: at the end, on a character, gone whe
 
 test('without text, the name of the app in Morse waits in place of the code', async ({ page }) => {
   await page.goto('./#/text');
-  const ornament = page.locator('.text-empty');
+  const ornament = page.locator('.text-output .ornament');
   await expect(ornament).toBeVisible();
   await input(page).fill('E');
   await expect(ornament).toBeHidden();

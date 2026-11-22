@@ -5,14 +5,15 @@
 // the whole transcription in · and − is shown. Composes player, board and
 // audio through the player's events (ADR 0003).
 import { tAttr, tText } from '../i18n/dom.ts';
-import { t, type MessageKey } from '../i18n/index.ts';
-import { displayCode, symbolsOf } from '../morse/alphabet.ts';
+import type { MessageKey } from '../i18n/index.ts';
+import { displayCode } from '../morse/alphabet.ts';
 import { createPlayer } from '../morse/player.ts';
 import { tokenize, type TextToken } from '../morse/text.ts';
 import { sendTiming } from '../morse/timing.ts';
 import { effectiveWpm, type Settings } from '../state/settings.ts';
 import { createBoard } from '../ui/board.ts';
 import { el, icon, type IconName } from '../ui/dom.ts';
+import { createOrnament } from '../ui/ornament.ts';
 import type { Mode, ModeContext } from './mode.ts';
 
 /** How long the path of the last letter stays lit, its fade included. */
@@ -29,29 +30,6 @@ let lastText = '';
 
 function timingOf(settings: Settings) {
   return sendTiming(settings.wpm, effectiveWpm(settings));
-}
-
-/**
- * While there is no text, where its code goes: the name of the app in Morse,
- * as the tree draws it (round dots, long dashes, in their colours), with a
- * slow wave of light running along it, as if it were being sent.
- */
-function emptyState(codeOf: (char: string) => string | undefined): HTMLElement {
-  const ornament = el('div', { className: 'text-empty' });
-  ornament.setAttribute('aria-hidden', 'true');
-  let step = 0;
-  for (const token of tokenize(t('app.name'), codeOf)) {
-    if (token.kind !== 'letter') continue;
-    const letter = el('span', { className: 'text-empty-letter' });
-    for (const symbol of symbolsOf(token.code)) {
-      const mark = el('span', { className: `text-empty-${symbol}` });
-      mark.style.setProperty('--step', String(step++));
-      letter.append(mark);
-    }
-    ornament.append(letter);
-  }
-  ornament.style.setProperty('--steps', String(step));
-  return ornament;
 }
 
 function button(name: IconName, label: MessageKey): HTMLButtonElement {
@@ -112,7 +90,7 @@ export function createTextMode(context: ModeContext): Mode {
   const transcription = el('p', { className: 'text-code' });
   const output = el('div', { className: 'text-output' }, [
     transcription,
-    emptyState((char) => tree.nodeOf(char)?.code),
+    createOrnament((char) => tree.nodeOf(char)?.code),
   ]);
   tAttr(transcription, 'aria-label', 'text.transcription');
   // Hidden with a class, not with `hidden`: it keeps its room (app.css).

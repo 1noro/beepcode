@@ -61,27 +61,24 @@
   padding: var(--space);
 }
 
-/* The tape (SPEC §3.4). */
+/* The tape (SPEC §3.4): the room of its buttons on both sides, as in the
+   Text mode, so that the centre is the centre of the box. */
 .tape {
+  --side: 44px;
   grid-area: tape;
+  position: relative;
   min-width: 0;
 }
 
-.tape-row {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.tape-main {
-  flex: 1;
-  min-width: 0;
-}
-
-/* Fixed heights, whatever they hold (the placeholder, letters or nothing):
-   if the tape grew with its first letter, the tree below would jump. */
+/* Fixed heights, whatever they hold (letters or nothing): if the tape grew
+   with its first letter, the tree below would jump. The text and its cursor,
+   centred between two springs; once they take the whole width the springs
+   are gone, and what does not fit goes off on the left: the newest letter
+   stays on the right. In a margin, not a padding: the box clips at its
+   padding, and the text would show under the button. */
 .tape-line {
   height: 1.3em;
+  margin-inline: var(--side);
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -94,19 +91,14 @@
   letter-spacing: 0.06em;
 }
 
-.tape-text {
-  flex: none;
+.tape-line::before,
+.tape-line::after {
+  content: '';
+  flex: 1 1 0;
 }
 
-.tape-placeholder {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  font-weight: 400;
-  letter-spacing: normal;
-  color: var(--color-muted);
+.tape-text {
+  flex: none;
 }
 
 /* The same block as the caret of the Text mode: a character wide, with its
@@ -128,21 +120,109 @@
   }
 }
 
-.tape-actions {
-  display: flex;
-  flex: none;
+/* Under the text, the sequence in progress or, before anything, the
+   ornament, one over the other: the same room for both. */
+.tape-below {
+  display: grid;
+  margin-inline: var(--side);
+  container-type: inline-size;
 }
 
+.tape-sequence,
+.tape-below .ornament {
+  grid-area: 1 / 1;
+}
+
+/* Centred as the text. The letter spacing goes after each mark, the last one
+   too: the same before the first keeps it in the middle. */
 .tape-sequence {
   height: 1.5em;
   overflow: hidden;
   white-space: nowrap;
-  text-align: right;
+  text-align: center;
+  padding-left: 0.25em;
   font-family: var(--font-mono);
   font-size: 1.5rem;
   line-height: 1.5;
   letter-spacing: 0.25em;
   color: var(--color-muted);
+}
+
+.tape.is-empty .ornament {
+  display: flex;
+}
+
+/* Copy and clear, in the corners of the text, as the clear of the Text
+   mode. Hidden without text, out of the accessibility tree too. */
+.tape-copy,
+.tape-clear {
+  position: absolute;
+  top: 0;
+}
+
+.tape-copy {
+  left: 0;
+}
+
+.tape-clear {
+  right: 0;
+}
+
+.tape-copy:disabled,
+.tape-clear:disabled {
+  visibility: hidden;
+}
+
+/* The ornament (ornament.ts), where the code goes while there is none: in
+   the Text mode, under the text; in the Free mode, under the tape. Shown by
+   the mode. Sized to the box, a container: the whole name is some 29 em
+   wide. */
+.ornament {
+  display: none;
+  align-self: center;
+  justify-self: center;
+  align-items: center;
+  gap: 0.9em;
+  font-size: min(1rem, 3.1cqi);
+}
+
+.ornament-letter {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+/* Round dots and long dashes, as the nodes of the tree. */
+.ornament-dot,
+.ornament-dash {
+  height: 0.5em;
+  border-radius: 0.25em;
+  opacity: 0.35;
+  animation: ornament-wave calc(var(--steps) * 0.18s + 2s) ease-in-out infinite;
+  animation-delay: calc(var(--step) * 0.18s);
+}
+
+.ornament-dot {
+  width: 0.5em;
+  background: var(--color-dot);
+}
+
+.ornament-dash {
+  width: 1.5em;
+  background: var(--color-dash);
+}
+
+/* Each mark lights up in turn and goes back: a wave along the name. */
+@keyframes ornament-wave {
+  0%,
+  12%,
+  100% {
+    opacity: 0.35;
+  }
+
+  5% {
+    opacity: 1;
+  }
 }
 
 /* The footer of the top panel, the same in every mode: what to do, in short
@@ -324,19 +404,20 @@
    into at once when pressed and springs back from when released. While held
    it takes the colour of the dot and, past the dash threshold, of the dash,
    and the meter sweeps across it in that time. */
-/* The key and, beside it, as tall, the word space: what sits below the tree
-   is as high with it as without. */
+/* The key and, beside it, as tall, the word space and the backspace: what
+   sits below the tree is as high with them as without, and as in the Text
+   mode, play and its two buttons. */
 .key-row {
   grid-area: key;
   align-self: end;
   display: grid;
   margin-top: 8px;
-  grid-template-columns: minmax(0, 1fr) clamp(64px, 22%, 112px);
+  grid-template-columns: minmax(0, 1fr) repeat(2, clamp(64px, 22%, 112px));
   gap: 12px;
 }
 
 .key,
-.space-key {
+.side-key {
   --key-tone: var(--color-border);
   --key-skirt: color-mix(in srgb, var(--key-tone) 65%, var(--color-bg));
 }
@@ -429,8 +510,9 @@
   transition: transform var(--dash-ms, 200ms) linear;
 }
 
-/* The space: the same body as the key, plainer, and it only goes down. */
-.space-key {
+/* The space and the backspace: the same body as the key, plainer, and they
+   only go down. */
+.side-key {
   display: grid;
   place-content: center;
   place-items: center;
@@ -454,29 +536,33 @@
   -webkit-user-select: none;
 }
 
-.space-key:hover {
+.side-key:hover {
   color: var(--color-fg);
 }
 
-.space-key:active {
+.side-key:active {
   transition: none;
   transform: translateY(6px);
   box-shadow: 0 2px 0 var(--key-skirt);
 }
 
-.space-key .icon {
+.side-key .icon {
   width: 32px;
   height: 32px;
 }
 
-.space-key-label {
+/* A long word is cut rather than widening the column. */
+.side-key-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .space-key {
+  .side-key {
     transition: none;
   }
 }
@@ -533,22 +619,30 @@
     grid-template-areas: 'board tape' 'board hints' 'board key';
   }
 
-  /* The space, under the key, as wide; both, all the height left. */
+  /* The space and the backspace, under the key, side by side; the key,
+     all the height left. */
   .key-row {
     align-self: stretch;
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: minmax(0, 1fr) auto;
   }
 
   .key {
+    grid-column: 1 / -1;
     height: 100%;
   }
 
-  .space-key {
+  .side-key {
     height: 56px;
     min-height: 0;
     grid-auto-flow: column;
-    gap: 8px;
+    gap: 6px;
+    padding-inline: 4px;
+  }
+
+  .side-key .icon {
+    width: 24px;
+    height: 24px;
   }
 }
 
@@ -744,8 +838,12 @@
 }
 
 .text-code,
-.text-empty {
+.text-output .ornament {
   grid-area: 1 / 1;
+}
+
+.text-output.is-empty .ornament {
+  display: flex;
 }
 
 .text-code {
@@ -762,59 +860,6 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   color: var(--color-muted);
-}
-
-/* Sized to the box: the whole name is some 29 em wide. */
-.text-empty {
-  display: none;
-  align-self: center;
-  justify-self: center;
-  align-items: center;
-  gap: 0.9em;
-  font-size: min(1rem, 3.1cqi);
-}
-
-.text-output.is-empty .text-empty {
-  display: flex;
-}
-
-.text-empty-letter {
-  display: flex;
-  align-items: center;
-  gap: 0.3em;
-}
-
-/* Round dots and long dashes, as the nodes of the tree. */
-.text-empty-dot,
-.text-empty-dash {
-  height: 0.5em;
-  border-radius: 0.25em;
-  opacity: 0.35;
-  animation: text-empty-wave calc(var(--steps) * 0.18s + 2s) ease-in-out infinite;
-  animation-delay: calc(var(--step) * 0.18s);
-}
-
-.text-empty-dot {
-  width: 0.5em;
-  background: var(--color-dot);
-}
-
-.text-empty-dash {
-  width: 1.5em;
-  background: var(--color-dash);
-}
-
-/* Each mark lights up in turn and goes back: a wave along the name. */
-@keyframes text-empty-wave {
-  0%,
-  12%,
-  100% {
-    opacity: 0.35;
-  }
-
-  5% {
-    opacity: 1;
-  }
 }
 
 /* The code of a letter is never split between two lines. */
@@ -966,7 +1011,7 @@
   }
 
   .key,
-  .space-key {
+  .side-key {
     height: 80px;
     min-height: 0;
   }

@@ -6,19 +6,39 @@
 import { attachKeyboard } from '../input/keyboard.ts';
 import { attachPointerKey } from '../input/pointer.ts';
 import { tAttr, tText } from '../i18n/dom.ts';
-import { t } from '../i18n/index.ts';
+import { t, type MessageKey } from '../i18n/index.ts';
 import { createKeyer } from '../morse/keyer.ts';
 import { keyerTiming, letterTimeline, sendTiming } from '../morse/timing.ts';
 import type { MorseNode } from '../morse/tree.ts';
 import { appendLetter, appendSpace, deleteLast } from '../state/history.ts';
 import type { Settings } from '../state/settings.ts';
 import { createBoard } from '../ui/board.ts';
-import { el, icon } from '../ui/dom.ts';
+import { el, icon, type IconName } from '../ui/dom.ts';
 import { copyText, createTape } from '../ui/tape.ts';
 import type { Mode, ModeContext } from './mode.ts';
 
 /** How long Explore keeps the path of a letter lit, its fade included. */
 const EXPLORE_HOLD_MS = 1500;
+
+/**
+ * A key beside the key, as tall: an icon over a short label, and what it does in
+ * the title. A click leaves the focus where it was: Enter and Backspace go on
+ * working on the text.
+ */
+function sideKey(
+  name: IconName,
+  label: MessageKey,
+  hint: MessageKey,
+  action: () => void,
+): HTMLButtonElement {
+  const text = el('span', { className: 'side-key-label' });
+  tText(text, label);
+  const button = el('button', { type: 'button', className: 'side-key' }, [icon(name), text]);
+  tAttr(button, 'title', hint);
+  button.addEventListener('click', action);
+  button.addEventListener('mousedown', (event) => event.preventDefault());
+  return button;
+}
 
 function timingOf(settings: Settings) {
   return keyerTiming({
@@ -41,19 +61,15 @@ export function createFreeMode(context: ModeContext): Mode {
   let exploring: ReturnType<typeof setTimeout>[] = [];
 
   const tape = createTape({
-    deleteLast() {
-      keyer.cancel();
-      deleteLastChar();
+    codeOf: (char) => tree.nodeOf(char)?.code,
+    copy() {
+      void copyText(text).then(context.notify);
     },
     clear() {
       keyer.cancel();
       setText('');
     },
-    copy() {
-      void copyText(text).then(context.notify);
-    },
   });
-  tape.setText('');
   tape.setSequence('');
 
   function setText(value: string): void {
@@ -65,6 +81,11 @@ export function createFreeMode(context: ModeContext): Mode {
   function deleteLastChar(): void {
     if (text.endsWith(' ')) keyer.rejectSpace();
     setText(deleteLast(text));
+  }
+
+  /** As Backspace: the letter in progress, if any; if not, the last one. */
+  function backspace(): void {
+    if (!keyer.cancel()) deleteLastChar();
   }
 
   function stopExploring(): void {
@@ -197,15 +218,11 @@ export function createFreeMode(context: ModeContext): Mode {
   if (keyLabel instanceof HTMLElement) tText(keyLabel, 'key.label');
   if (keyHint instanceof HTMLElement) tText(keyHint, 'key.hint');
 
-  // The word space, by hand (SPEC §4.2): beside the key and as tall, so that
-  // nothing else moves. It closes the letter in progress too.
-  const label = el('span', { className: 'space-key-label' });
-  tText(label, 'key.space');
-  const space = el('button', { type: 'button', className: 'space-key' }, [icon('space'), label]);
-  tAttr(space, 'title', 'key.spaceHint');
-  space.addEventListener('click', () => keyer.space());
-  // A click leaves the focus where it was: Enter goes on closing letters.
-  space.addEventListener('mousedown', (event) => event.preventDefault());
+  // The word space, by hand (SPEC §4.2), and the backspace, at hand while
+  // keying: beside the key and as tall, so that nothing else moves, as the
+  // controls of the Text mode. Both close or drop the letter in progress.
+  const space = sideKey('space', 'key.space', 'key.spaceHint', () => keyer.space());
+  const erase = sideKey('backspace', 'key.delete', 'key.deleteHint', backspace);
 
   // In the footer of the tape, as the hints of the other modes (app.css).
   const hints = el('div', { className: 'mode-footer hints' }, [
@@ -215,6 +232,7 @@ export function createFreeMode(context: ModeContext): Mode {
   const [keysHint, exploreHint] = hints.children;
   if (keysHint instanceof HTMLElement) tText(keysHint, 'hint.keys');
   if (exploreHint instanceof HTMLElement) tText(exploreHint, 'hint.explore');
+  setText('');
 
   // Losing the focus or hiding the page with the key down releases it, so
   // that the tone does not keep sounding (SPEC §3.6).
@@ -233,9 +251,7 @@ export function createFreeMode(context: ModeContext): Mode {
     dash: () => typeSymbol('dash'),
     // Enter closes the letter; with none in progress, the word.
     commit: () => (keyer.sequence ? keyer.commit() : keyer.space()),
-    backspace() {
-      if (!keyer.cancel()) deleteLastChar();
-    },
+    backspace,
     escape: () => keyer.cancel(),
   });
 
@@ -243,7 +259,7 @@ export function createFreeMode(context: ModeContext): Mode {
     tape.element,
     hints,
     el('div', { className: 'board-wrap' }, [board.element]),
-    el('div', { className: 'key-row' }, [key, space]),
+    el('div', { className: 'key-row' }, [key, space, erase]),
   ]);
 
   return {
