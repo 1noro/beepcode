@@ -14,6 +14,8 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
 
 ## Sin publicar
 
+## 0.4.0 — 2026-11-22
+
 ### Cambiado
 
 - **Las ayudas del modo Libre, como las del modo Texto → Morse**: debajo de
