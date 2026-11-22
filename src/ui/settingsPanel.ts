@@ -234,7 +234,10 @@ export function createSettingsPanel(
     (value) => set({ vision: value }),
   );
 
-  function check(key: 'autoSpace' | 'vibration', label: MessageKey): HTMLElement {
+  function check(
+    key: 'descriptiveButtons' | 'autoSpace' | 'vibration',
+    label: MessageKey,
+  ): HTMLElement {
     const control = el('input', { type: 'checkbox' });
     control.addEventListener('change', () => set({ [key]: control.checked }));
     updaters.push((settings) => (control.checked = settings[key]));
@@ -267,6 +270,7 @@ export function createSettingsPanel(
         field('settings.vision', vision),
         color('dotColor', 'settings.dotColor'),
         color('dashColor', 'settings.dashColor'),
+        check('descriptiveButtons', 'settings.descriptiveButtons'),
       ]),
       // What every mode uses, then what only one does, under its name.
       section('settings.sound', [

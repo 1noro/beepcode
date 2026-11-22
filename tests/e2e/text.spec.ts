@@ -109,9 +109,31 @@ test('without text, a caret and what to do; typing with nothing focused writes',
   await expect(prompt).toBeHidden();
 });
 
+test('the caret is a block, as on the tape: at the end, on a character, gone when not focused', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'The arrows of a keyboard move it');
+  await page.goto('./#/text');
+  const end = preview(page).locator('.text-caret-end');
+  const onChar = preview(page).locator('.is-caret');
+  await input(page).focus();
+  await expect(end).toBeAttached();
+  await page.keyboard.type('Sos');
+  await expect(end).toBeAttached();
+  await expect(onChar).toHaveCount(0);
+  await page.keyboard.press('ArrowLeft');
+  await expect(end).toHaveCount(0);
+  await expect(onChar).toHaveText('S');
+  await expect(onChar).toHaveAttribute('data-index', '2');
+  await input(page).blur();
+  await expect(onChar).toHaveCount(0);
+  await expect(end).toHaveCount(0);
+});
+
 test('without text, the name of the app in Morse waits in place of the code', async ({ page }) => {
   await page.goto('./#/text');
-  const ornament = page.locator('.text-empty');
+  const ornament = page.locator('.text-output .ornament');
   await expect(ornament).toBeVisible();
   await input(page).fill('E');
   await expect(ornament).toBeHidden();

@@ -1,6 +1,7 @@
 // Applies the appearance settings to <html>: data-theme (none for "system",
-// which follows prefers-color-scheme in tokens.css), data-vision, and the dot
-// and dash colours chosen by the user, which win over both (SPEC §7).
+// which follows prefers-color-scheme in tokens.css), data-vision,
+// data-buttons (the names on the keys, app.css), and the dot and dash
+// colours chosen by the user, which win over both (SPEC §7).
 import type { Settings } from '../state/settings.ts';
 
 export function applyAppearance(settings: Settings): void {
@@ -9,6 +10,8 @@ export function applyAppearance(settings: Settings): void {
   else root.dataset.theme = settings.theme;
   if (settings.vision === 'default') delete root.dataset.vision;
   else root.dataset.vision = settings.vision;
+  if (settings.descriptiveButtons) root.dataset.buttons = 'descriptive';
+  else delete root.dataset.buttons;
   for (const [name, value] of [
     ['--color-dot', settings.dotColor],
     ['--color-dash', settings.dashColor],

@@ -14,6 +14,41 @@ que ya existía), **Corregido** (bugs) y **Documentación**.
 
 ## Sin publicar
 
+## 0.4.0 — 2026-11-22
+
+### Cambiado
+
+- **Las ayudas del modo Libre, como las del modo Texto → Morse**: debajo de
+  la cinta, alineadas a la izquierda y en una sola línea cada una, en los
+  cinco idiomas. Antes iban centradas entre el árbol y el pulsador, y la de
+  las teclas partía línea.
+- **El árbol, arriba, en los dos modos**, empezando en la punta de la
+  antena; el texto, justo debajo, y los controles, abajo. En horizontal, el
+  árbol a la izquierda. La barra superior ya no tiene línea.
+- **El cursor del modo Texto → Morse, un bloque** como el de la cinta del
+  modo Libre: al final del texto, un bloque; en medio, el carácter
+  invertido. El de la cinta toma sus mismas proporciones.
+- **Los botones del modo Texto → Morse, con el cuerpo del pulsador del modo
+  Libre**: Reproducir grande y Parar y Bucle al lado.
+- **Las proporciones, según la pantalla**: el árbol, el texto y los
+  controles van juntos, centrados en la altura, y lo que sobra queda arriba
+  y abajo, no entre el texto y los botones. Con ratón, el pulsador y los
+  botones son más bajos y, en una pantalla alta, el árbol crece; en el
+  móvil, también son más bajos que antes.
+- **El texto, del mismo tamaño en los dos modos**: la cinta del modo Libre
+  ya no es el doble de grande que el texto del modo Texto → Morse.
+- **La cinta del modo Libre, como el texto del modo Texto → Morse**: el
+  cursor empieza en el centro y el texto crece desde ahí hasta llenar el
+  ancho; vacía, en vez de "Aquí aparecen tus letras", "beepcode" en Morse
+  con su ola de luz, hasta la primera pulsación. Copiar y borrar todo,
+  en las esquinas de la cinta y solo cuando hay texto.
+- **Borrar, una tecla junto al pulsador y el espacio**: borra la letra en
+  curso o, si no hay, la última escrita, como `Retroceso`.
+- **Todas las teclas, como el pulsador**: espacio, borrar, Reproducir,
+  Parar y Bucle tienen su mismo cuerpo y su altura. Por defecto muestran
+  solo su símbolo, y el pulsador, un punto y una raya; con el ajuste
+  nuevo **Botones descriptivos** (en Aspecto), también sus nombres.
+
 ## 0.3.0 — 2026-11-21
 
 ### Añadido

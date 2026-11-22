@@ -28,6 +28,11 @@ export interface Settings {
   locale: Locale | null;
   theme: Theme;
   vision: Vision;
+  /**
+   * The keys below the tree with their names (and the key, with what it
+   * does); if not, only their symbols, and the names in the title.
+   */
+  descriptiveButtons: boolean;
   /** A colour chosen by the user, or null for the theme's. */
   dotColor: string | null;
   dashColor: string | null;
@@ -57,6 +62,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   locale: null,
   theme: 'system',
   vision: 'default',
+  descriptiveButtons: false,
   dotColor: null,
   dashColor: null,
   wpm: 12,
@@ -129,6 +135,7 @@ export function sanitize(raw: Raw): Settings {
     locale: (LOCALES as readonly unknown[]).includes(raw.locale) ? (raw.locale as Locale) : null,
     theme: oneOf(THEMES, raw.theme, DEFAULT_SETTINGS.theme),
     vision: oneOf(VISIONS, raw.vision, DEFAULT_SETTINGS.vision),
+    descriptiveButtons: bool(raw.descriptiveButtons, DEFAULT_SETTINGS.descriptiveButtons),
     dotColor: color(raw.dotColor),
     dashColor: color(raw.dashColor),
     wpm,

@@ -5,14 +5,15 @@
 // the whole transcription in · and − is shown. Composes player, board and
 // audio through the player's events (ADR 0003).
 import { tAttr, tText } from '../i18n/dom.ts';
-import { t, type MessageKey } from '../i18n/index.ts';
-import { displayCode, symbolsOf } from '../morse/alphabet.ts';
+import type { MessageKey } from '../i18n/index.ts';
+import { displayCode } from '../morse/alphabet.ts';
 import { createPlayer } from '../morse/player.ts';
 import { tokenize, type TextToken } from '../morse/text.ts';
 import { sendTiming } from '../morse/timing.ts';
 import { effectiveWpm, type Settings } from '../state/settings.ts';
 import { createBoard } from '../ui/board.ts';
 import { el, icon, type IconName } from '../ui/dom.ts';
+import { createOrnament } from '../ui/ornament.ts';
 import type { Mode, ModeContext } from './mode.ts';
 
 /** How long the path of the last letter stays lit, its fade included. */
@@ -32,39 +33,23 @@ function timingOf(settings: Settings) {
 }
 
 /**
- * While there is no text, where its code goes: the name of the app in Morse,
- * as the tree draws it (round dots, long dashes, in their colours), with a
- * slow wave of light running along it, as if it were being sent.
+ * A control, as the keys of the Free mode: an icon and a label, shown only
+ * with descriptive buttons (app.css), so the name goes in aria-label and the
+ * title too.
  */
-function emptyState(codeOf: (char: string) => string | undefined): HTMLElement {
-  const ornament = el('div', { className: 'text-empty' });
-  ornament.setAttribute('aria-hidden', 'true');
-  let step = 0;
-  for (const token of tokenize(t('app.name'), codeOf)) {
-    if (token.kind !== 'letter') continue;
-    const letter = el('span', { className: 'text-empty-letter' });
-    for (const symbol of symbolsOf(token.code)) {
-      const mark = el('span', { className: `text-empty-${symbol}` });
-      mark.style.setProperty('--step', String(step++));
-      letter.append(mark);
-    }
-    ornament.append(letter);
-  }
-  ornament.style.setProperty('--steps', String(step));
-  return ornament;
-}
-
 function button(name: IconName, label: MessageKey): HTMLButtonElement {
-  const text = el('span');
-  tText(text, label);
-  return el('button', { type: 'button', className: 'player-button' }, [icon(name), text]);
+  const target = el('button', { type: 'button', className: 'keycap player-button' });
+  relabel(target, name, label);
+  return target;
 }
 
-/** Changes the icon and the text of a button made by button(). */
+/** Changes the icon and the label of a button made by button(). */
 function relabel(target: HTMLButtonElement, name: IconName, label: MessageKey): void {
-  const text = el('span');
+  const text = el('span', { className: 'keycap-label' });
   tText(text, label);
   target.replaceChildren(icon(name), text);
+  tAttr(target, 'aria-label', label);
+  tAttr(target, 'title', label);
 }
 
 export function createTextMode(context: ModeContext): Mode {
@@ -103,18 +88,25 @@ export function createTextMode(context: ModeContext): Mode {
   ]);
   prompt.setAttribute('aria-hidden', 'true');
   const editor = el('div', { className: 'text-editor' }, [preview, input, prompt, clear]);
+  // The caret, a block like the one of the tape: the field's own, a line,
+  // is hidden (app.css) and drawn on the text below, the same in every
+  // browser. On a character, it is that character; at the end, this.
+  // A zero-width space in it: empty, with no text around it, it would have
+  // no line, and no height.
+  const caretEnd = el('span', { className: 'text-caret-end' }, ['\u200b']);
   const transcription = el('p', { className: 'text-code' });
   const output = el('div', { className: 'text-output' }, [
     transcription,
-    emptyState((char) => tree.nodeOf(char)?.code),
+    createOrnament((char) => tree.nodeOf(char)?.code),
   ]);
   tAttr(transcription, 'aria-label', 'text.transcription');
   // Hidden with a class, not with `hidden`: it keeps its room (app.css).
-  const skippedHint = el('p', { className: 'text-hint is-off' });
+  const skippedHint = el('p', { className: 'hint is-off' });
   tText(skippedHint, 'text.skipped');
   const count = el('p', { className: 'text-count' });
 
   const play = button('play', 'text.play');
+  play.classList.add('player-button--main');
   const stop = button('stop', 'text.stop');
   const loop = button('loop', 'text.loop');
   loop.setAttribute('aria-pressed', 'false');
@@ -147,6 +139,27 @@ export function createTextMode(context: ModeContext): Mode {
     play.disabled = !tokens.some((token) => token.kind === 'letter');
     clear.disabled = tokens.length === 0;
     align();
+    placeCaret();
+  }
+
+  /**
+   * Draws the caret where the field has it: only with the focus, nothing
+   * selected and nothing playing (the character played is lit the same way).
+   */
+  function placeCaret(): void {
+    for (const span of preview.querySelectorAll('.is-caret')) span.classList.remove('is-caret');
+    caretEnd.remove();
+    const { selectionStart, selectionEnd } = input;
+    const show =
+      document.activeElement === input &&
+      selectionStart === selectionEnd &&
+      player.state === 'stopped';
+    if (!show) return;
+    // Counted as the tokens are: by code point, composed.
+    const index = Array.from(input.value.slice(0, selectionStart).normalize('NFC')).length;
+    const span = preview.children[index];
+    if (span) span.classList.add('is-caret');
+    else preview.append(caretEnd);
   }
 
   /**
@@ -154,8 +167,9 @@ export function createTextMode(context: ModeContext): Mode {
    * cannot be as wide as its text, as the transcription is.
    */
   function align(): void {
-    const first = preview.firstElementChild as HTMLElement | null;
-    const last = preview.lastElementChild as HTMLElement | null;
+    const chars = preview.querySelectorAll<HTMLElement>('[data-index]');
+    const first = chars[0];
+    const last = chars[chars.length - 1];
     editor.classList.toggle('is-wrapped', !!first && !!last && last.offsetTop > first.offsetTop);
   }
 
@@ -211,6 +225,7 @@ export function createTextMode(context: ModeContext): Mode {
         board.clear();
       }
       if (state === 'stopped') highlight(null);
+      placeCaret();
     }),
     settings.subscribe((value, previous) => {
       if (value.wpm !== previous.wpm || value.effectiveWpm !== previous.effectiveWpm) {
@@ -238,6 +253,11 @@ export function createTextMode(context: ModeContext): Mode {
   input.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') event.preventDefault();
   });
+  // Wherever the caret goes: typing, the arrows, a click, the focus.
+  for (const type of ['focus', 'blur', 'select', 'keyup', 'pointerup', 'selectionchange']) {
+    input.addEventListener(type, placeCaret);
+  }
+  document.addEventListener('selectionchange', placeCaret);
   // The text below scrolls with the field.
   input.addEventListener('scroll', () => {
     preview.scrollTop = input.scrollTop;
@@ -297,7 +317,7 @@ export function createTextMode(context: ModeContext): Mode {
     el('section', { className: 'text-panel' }, [
       editor,
       output,
-      el('div', { className: 'text-footer' }, [skippedHint, count]),
+      el('div', { className: 'mode-footer' }, [skippedHint, count]),
     ]),
     el('div', { className: 'board-wrap' }, [board.element]),
     el('div', { className: 'player-controls' }, [play, stop, loop]),
@@ -313,6 +333,7 @@ export function createTextMode(context: ModeContext): Mode {
       for (const off of offs) off();
       document.removeEventListener('visibilitychange', hidden);
       document.removeEventListener('keydown', typeToWrite);
+      document.removeEventListener('selectionchange', placeCaret);
     },
   };
 }

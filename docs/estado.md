@@ -1,6 +1,6 @@
 # Estado
 
-**Al día:** 2026-11-21, 17:45 UTC. **Revisada:** 2026-11-20, la última
+**Al día:** 2026-11-22, 00:45 UTC. **Revisada:** 2026-11-20, la última
 [`/revisar-docs`](agentes/revisar-docs.md), que se lanza a mano cada semana.
 
 Lo vivo del desarrollo: en qué fase está, qué hay publicado, lo abierto y lo
@@ -14,15 +14,19 @@ Qué va en cada sitio, en `AGENTS.md`, "Dónde va cada información".
 cerrados** ([TODO 1](todo/01-andamiaje.md),
 [TODO 2](todo/02-nucleo-y-modo-libre.md),
 [TODO 3](todo/03-texto-a-morse.md)), publicados como **v0.2.0**, y unos
-refinamientos antes de F3, como **v0.3.0**. Lo siguiente, **F3**: Aprender y Escuchar. El plan entero, en SPEC §13; v1 es
+refinamientos antes de F3, como **v0.3.0** y **v0.4.0**. Lo siguiente, **F3**: Aprender y Escuchar. El plan entero, en SPEC §13; v1 es
 de F0 a F4, y F5 (las estadísticas) llega al final.
 
 ## Lo publicado
 
-- **v0.3.0, el modo Libre (F1) y el modo Texto → Morse (F2)**, en
-  `https://1noro.github.io/beepcode/`. Desde v0.2.0: el audio al arrancar,
-  los espacios del modo Libre a mano (el botón ␣ y `Enter`; los
-  automáticos, un ajuste) y los ajustes agrupados por modo. Se despliega con
+- **v0.4.0, el modo Libre (F1) y el modo Texto → Morse (F2)**, en
+  `https://1noro.github.io/beepcode/`. Desde v0.3.0, las mejoras gráficas
+  de la rama `feat/mejoras-graficas`, con un principio: **los componentes,
+  equiparables entre modos**. El árbol arriba desde la punta de la antena,
+  las ayudas en el mismo pie, el cursor de bloque, la cinta de `#/free`
+  como el texto de `#/text` (centrada, con la filigrana, ⌫ junto al
+  pulsador), y todas las teclas de abajo con el cuerpo del pulsador, solo
+  con sus símbolos salvo con "botones descriptivos". Se despliega con
   [`/desplegar`](agentes/desplegar.md).
   **Solo se publica `main`** (ADR 0007): `deploy.yml`, en cada push a `main`
   que no sea solo documentación.
@@ -47,17 +51,20 @@ de F0 a F4, y F5 (las estadísticas) llega al final.
 - **El logo** ([TODO 7](todo/07-logo.md)).
 - **Que alguien nativo revise** las traducciones al gallego, catalán y euskera
   ([`traducciones.md`](traducciones.md)): 66 textos con F1, 78 con F2 y 82
-  con v0.3.0.
-- **Probar v0.3.0 en un móvil** (o con `make dev-https`): el sonido y el
+  con v0.3.0; desde entonces, `key.delete`, `key.deleteHint` y
+  `settings.descriptiveButtons`.
+- **Probar v0.4.0 en un móvil** (o con `make dev-https`): el sonido y el
   táctil no tienen e2e, y desde la prueba en el Pixel 7 cambiaron el
   pulsador, las pausas y el centrado del árbol; del modo Texto, escribir
   sobre el texto con el teclado del móvil y la barra de desplazamiento en el
-  PC; de v0.3.0, el botón ␣ junto al pulsador.
+  PC; de v0.3.0, el botón ␣; de v0.4.0, ⌫ y las proporciones de las teclas
+  y del árbol en un móvil de verdad.
+- **El SPEC**, si lo acepta: el nuevo orden de la pantalla (§3.2, §3.4,
+  §6.5; el árbol arriba, la cinta centrada, ⌫ junto al pulsador) y el
+  ajuste "botones descriptivos" (§7).
 
 ## Lo próximo
 
-- **Más refinamientos antes de F3**, si el usuario los pide, en una rama
-  nueva: los de `fix/audio-arranque` salieron en v0.3.0.
 - **La vibración**, hoy en la sección "Modo Libre" de los ajustes: cuando
   Aprender use el pulsador (F3), pasará a una sección común.
 - **F3 con `/tarea 4`**: Aprender y Escuchar, que usarán `player.ts`.

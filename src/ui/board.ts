@@ -19,6 +19,11 @@ const FADE_MS = 300;
 const RING = 5;
 /** The space left between the drawing and the sides of the board. */
 const EDGE = 8;
+/** The antenna: how far its tip is above the root, and its size. */
+const ANTENNA_TIP = 6;
+const TIP_RADIUS = 3.5;
+/** As .antenna in app.css. */
+const ANTENNA_STROKE = 2.5;
 
 export interface Board {
   readonly element: SVGSVGElement;
@@ -66,8 +71,13 @@ function shapeElement(
   });
 }
 
-function antenna(cx: number, top: number): SVGGElement {
-  const tip = top + 8;
+/** The top of the tip of the antenna at `rootY`, its stroke included. */
+function antennaTop(rootY: number): number {
+  return rootY - ANTENNA_TIP - TIP_RADIUS - ANTENNA_STROKE / 2;
+}
+
+function antenna(cx: number, rootY: number): SVGGElement {
+  const tip = rootY - ANTENNA_TIP;
   const wave = (r: number, side: 1 | -1) => {
     const dx = Math.sin(Math.PI / 4) * r * side;
     const dy = Math.cos(Math.PI / 4) * r;
@@ -78,7 +88,7 @@ function antenna(cx: number, top: number): SVGGElement {
       class: 'mast',
       d: `M${cx} ${tip} V0 M${cx - 7} 0 L${cx} ${tip + 14} L${cx + 7} 0`,
     }),
-    svg('circle', { class: 'tip', cx, cy: tip, r: 3.5 }),
+    svg('circle', { class: 'tip', cx, cy: tip, r: TIP_RADIUS }),
     svg('path', { class: 'waves', d: [8, 14].flatMap((r) => [wave(r, 1), wave(r, -1)]).join(' ') }),
   ]);
 }
@@ -109,23 +119,27 @@ export function createBoard(tree: MorseTree, options: BoardOptions = {}): Board 
   const rootY = layout.root.y * CELL_Y;
   const ys = layout.nodes.map((n) => n.y * CELL_Y);
   const margin = 46;
-  // Centred on the antenna, where the light starts (columns.ts).
+  // Centred on the antenna, where the light starts (columns.ts), and from
+  // the tip of the antenna down: it is where the content begins. The waves,
+  // above it, are drawn outside.
   const halfWidth = columns.halfWidth + EDGE;
   const minX = rootX - halfWidth;
-  const minY = Math.min(rootY - 22, Math.min(...ys) - margin);
+  const minY = antennaTop(rootY);
   const width = 2 * halfWidth;
   const height = Math.max(...ys) + margin - minY;
 
   const element = svg('svg', {
     class: interactive ? 'board' : 'board board--static',
     viewBox: `${minX} ${minY} ${width} ${height}`,
+    // On top of its room; what is left goes below, towards the text.
+    preserveAspectRatio: 'xMidYMin meet',
     role: 'group',
   });
   tAttr(element, 'aria-label', 'board.label');
 
   const edges = svg('g', { class: 'edges' });
   const nodes = svg('g', { class: 'nodes' });
-  const antennaGroup = antenna(rootX, rootY - 14);
+  const antennaGroup = antenna(rootX, rootY);
   element.append(edges, antennaGroup, nodes);
 
   const edgeOf = new Map<Code, SVGElement>();
