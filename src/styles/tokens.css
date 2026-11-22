@@ -31,7 +31,12 @@
   --font-mono:
     'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
   --radius: 12px;
+  /* The blocks: the carets and the character that plays. */
+  --radius-block: 1px;
   --space: 16px;
+  /* The text written, the same in every mode: the tape of the Free mode and
+     the text of the Text mode. */
+  --text-size: clamp(1.25rem, 4.5vw, 1.75rem);
 }
 
 @media (prefers-color-scheme: dark) {

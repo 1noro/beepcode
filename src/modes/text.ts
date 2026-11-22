@@ -121,6 +121,7 @@ export function createTextMode(context: ModeContext): Mode {
   const count = el('p', { className: 'text-count' });
 
   const play = button('play', 'text.play');
+  play.classList.add('player-button--main');
   const stop = button('stop', 'text.stop');
   const loop = button('loop', 'text.loop');
   loop.setAttribute('aria-pressed', 'false');
